@@ -70,7 +70,7 @@ Nous prenons la sécurité au sérieux :
 Vous avez le droit de :
 - Désinstaller l'extension à tout moment
 - Effacer le cache local via les paramètres Chrome
-- Nous contacter pour toute question : [TON_EMAIL]
+- Nous contacter pour toute question : [pricewatch@gmail.com]
 
 ## Modifications de cette Politique
 
@@ -79,7 +79,7 @@ Nous pouvons mettre à jour cette politique de confidentialité. Les modificatio
 ## Contact
 
 Pour toute question concernant cette politique de confidentialité :
-- Email : [TON_EMAIL]
+- Email : [pricewatch@gmail.com]
 - Extension : PriceWatch sur Chrome Web Store
 
 ## Conformité RGPD
