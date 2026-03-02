@@ -13,7 +13,7 @@ export default function PricingPage() {
   const t = useTranslations('pricing');
 
   const planFeatures = (plan: 'free' | 'premium') => {
-    const features = PLANS[plan].features as Record<string, string[]>;
+    const features = PLANS[plan].features as Record<string, readonly string[]>;
     return features[locale] || features.fr;
   };
 
