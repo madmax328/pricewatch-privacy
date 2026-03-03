@@ -48,7 +48,13 @@ export default function StoryGenerator({
         body: JSON.stringify({ childName, childAge, theme, language }),
       });
 
-      const data = await res.json();
+      let data: { code?: string; error?: string; story?: { _id: string } } = {};
+      try {
+        data = await res.json();
+      } catch {
+        toast.error('Erreur serveur — consultez les logs Vercel.');
+        return;
+      }
 
       if (!res.ok) {
         if (data.code === 'LIMIT_REACHED') {
@@ -56,13 +62,14 @@ export default function StoryGenerator({
           router.push(`/${locale}/pricing`);
           return;
         }
-        throw new Error(data.error || 'Error');
+        toast.error(data.error || tc('error'));
+        return;
       }
 
       toast.success('✨ Histoire créée !');
-      router.push(`/${locale}/story/${data.story._id}`);
+      router.push(`/${locale}/story/${data.story!._id}`);
     } catch (err) {
-      toast.error(tc('error'));
+      toast.error(err instanceof Error ? err.message : tc('error'));
       console.error(err);
     } finally {
       setLoading(false);
