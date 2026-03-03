@@ -21,6 +21,33 @@
       "stories": "histórias criadas"
     }
   },
+  "home": {
+    "howItWorks": {
+      "title": "Como funciona?",
+      "subtitle": "Em 3 passos simples, crie uma aventura única para seu filho",
+      "step1": { "title": "Preencha o formulário", "desc": "Nome, idade, tema favorito. 30 segundos!" },
+      "step2": { "title": "A IA cria a magia", "desc": "Nossa IA gera uma história única onde seu filho é o herói." },
+      "step3": { "title": "Leia e peça", "desc": "Leia a história com seu filho. Peça um livro de verdade se quiser!" }
+    },
+    "features": {
+      "title": "Tudo que você precisa",
+      "ai": { "title": "IA Personalizada", "desc": "Cada história é única. Seu filho é sempre o herói!" },
+      "languages": { "title": "5 Idiomas", "desc": "Francês, inglês, espanhol, português, alemão. O mundo inteiro!" },
+      "audio": { "title": "Leitura em Áudio", "desc": "Faça a história ser lida em voz alta com nosso TTS premium." },
+      "book": { "title": "Livro Real", "desc": "Peça sua história impressa e encadernada. Presente perfeito!" },
+      "themes": { "title": "10 Temas", "desc": "Dragões, espaço, piratas, fadas... Aventuras para todos os gostos!" },
+      "safe": { "title": "100% Seguro", "desc": "Conteúdo adequado para crianças, sem publicidade, sem violência." }
+    },
+    "testimonials": {
+      "title": "Os pais adoram o Kidshade ❤️"
+    },
+    "cta": {
+      "title": "Pronto para criar magia? ✨",
+      "subtitle": "Junte-se a mais de 12.000 famílias e crie sua primeira história grátis em 30 segundos.",
+      "button": "Começar grátis",
+      "noCard": "Sem cartão de crédito"
+    }
+  },
   "generator": {
     "title": "Crie sua história",
     "subtitle": "Preencha o formulário em 30 segundos",
@@ -39,7 +66,7 @@
     "readTime": "min de leitura",
     "share": "Compartilhar",
     "download": "Baixar",
-    "orderBook": "Pedir livro físico (R$89,90)",
+    "orderBook": "Pedir livro físico (€14,99)",
     "newStory": "Criar nova história",
     "for": "para",
     "age": "anos",
@@ -58,9 +85,9 @@
     "title": "Escolha seu plano",
     "subtitle": "Simples, transparente, sem compromisso",
     "monthly": "/ mês",
-    "free": { "name": "Grátis", "price": "R$0", "cta": "Começar grátis" },
-    "premium": { "name": "Premium", "price": "R$14,90", "cta": "Assinar agora", "popular": "Mais popular" },
-    "book": { "name": "Livro Físico", "price": "R$89,90", "cta": "Pedir livro", "desc": "Por livro impresso" }
+    "free": { "name": "Grátis", "price": "€0", "cta": "Começar grátis" },
+    "premium": { "name": "Premium", "price": "€2,99", "cta": "Assinar agora", "popular": "Mais popular" },
+    "book": { "name": "Livro Físico", "price": "€14,99", "cta": "Pedir livro", "desc": "Por livro impresso" }
   },
   "auth": {
     "signin": {
@@ -83,7 +110,21 @@
       "submit": "Criar minha conta",
       "google": "Cadastrar com Google",
       "hasAccount": "Já tem conta?",
-      "signin": "Entrar"
+      "signin": "Entrar",
+      "freePerksTitle": "✅ Gratuito para sempre incluído:",
+      "perk1": "5 histórias / mês",
+      "perk2": "Todos os idiomas",
+      "perk3": "Sem cartão de crédito",
+      "or": "ou",
+      "passwordValid": "Senha válida",
+      "passwordMin": "Mínimo 6 caracteres",
+      "termsNoticePrefix": "Ao criar uma conta, você concorda com nossos",
+      "termsNoticeMid": "e nossa",
+      "termsLink": "Termos",
+      "privacyLink": "Política de Privacidade",
+      "successToast": "Conta criada! Bem-vindo ao Kidshade 🎉",
+      "errorPassword": "A senha deve ter pelo menos 6 caracteres",
+      "errorGeneric": "Erro ao criar a conta"
     }
   },
   "footer": {
@@ -116,5 +157,102 @@
       "pt": "🇧🇷 Português",
       "de": "🇩🇪 Deutsch"
     }
+  },
+  "privacy": {
+    "title": "Política de Privacidade",
+    "updated": "Última atualização",
+    "intro": "O Kidshade compromete-se a proteger a privacidade dos seus utilizadores. Esta política explica quais dados recolhemos e como os utilizamos.",
+    "s1title": "1. Dados recolhidos",
+    "s1body": "Recolhemos apenas os dados necessários para prestar o serviço: nome, endereço de e-mail, histórias criadas. Em relação às suas crianças, recolhemos apenas o nome e a idade que você fornece para a geração de histórias. Não são recolhidos dados biométricos nem dados sensíveis.",
+    "s2title": "2. Utilização dos dados",
+    "s2body": "Os seus dados são utilizados exclusivamente para: prestar o serviço Kidshade, personalizar histórias, gerir a sua subscrição, melhorar a aplicação. Nunca vendemos os seus dados a terceiros.",
+    "s3title": "3. Segurança",
+    "s3body": "Os seus dados são armazenados de forma segura em servidores MongoDB Atlas (nuvem). As senhas são encriptadas com bcrypt. As comunicações são encriptadas via HTTPS.",
+    "s4title": "4. Os seus direitos (RGPD)",
+    "s4body": "De acordo com o RGPD, tem os seguintes direitos: acesso aos seus dados, retificação, eliminação, portabilidade, oposição. Para exercer estes direitos, contacte-nos em: contact@kidshade.com",
+    "s5title": "5. Cookies",
+    "s5body": "Utilizamos apenas cookies essenciais para gestão de sessão e autenticação. Não são utilizados cookies publicitários.",
+    "s6title": "6. Contacto",
+    "s6body": "Para qualquer questão sobre proteção de dados: contact@kidshade.com"
+  },
+  "terms": {
+    "title": "Termos de Serviço",
+    "updated": "Última atualização",
+    "intro": "Estes Termos de Serviço regulam a utilização do serviço Kidshade.",
+    "s1title": "1. Descrição do serviço",
+    "s1body": "O Kidshade é um serviço online de geração de histórias personalizadas para crianças, impulsionado por inteligência artificial. O serviço está disponível através de uma subscrição ou numa versão gratuita limitada.",
+    "s2title": "2. Registo e conta",
+    "s2body": "Para utilizar o Kidshade, deve criar uma conta com um endereço de e-mail válido. Você é responsável pela confidencialidade das suas credenciais. Deve ter pelo menos 18 anos para criar uma conta.",
+    "s3title": "3. Utilização aceitável",
+    "s3body": "O serviço destina-se a pais e tutores para criar histórias para crianças. É proibido usar o serviço para fins comerciais, reproduzir ou distribuir o conteúdo gerado em grande escala, ou tentar contornar os limites do serviço.",
+    "s4title": "4. Subscrições e pagamentos",
+    "s4body": "A subscrição Premium custa €2,99/mês, faturada mensalmente. A subscrição pode ser cancelada a qualquer momento a partir da sua conta. Não são concedidos reembolsos por períodos iniciados. Os pagamentos são geridos de forma segura pelo Stripe.",
+    "s5title": "5. Propriedade intelectual",
+    "s5body": "As histórias geradas pertencem ao utilizador que as criou. O código, design e marca Kidshade permanecem propriedade exclusiva do Kidshade.",
+    "s6title": "6. Limitação de responsabilidade",
+    "s6body": "O Kidshade não é responsável por interrupções de serviço, perda de dados ou conteúdo gerado por IA. O serviço é fornecido \"tal como está\".",
+    "s7title": "7. Contacto",
+    "s7body": "contact@kidshade.com"
+  },
+  "about": {
+    "title": "Sobre o Kidshade",
+    "subtitle": "Criamos magia para crianças em todo o mundo",
+    "missionTitle": "Nossa missão",
+    "missionBody": "O Kidshade nasceu de uma ideia simples: cada criança merece ser a heroína da sua própria história. Usando inteligência artificial, criamos em segundos histórias únicas e personalizadas que cativam os pequenos leitores e desenvolvem o seu amor pela leitura.",
+    "storyTitle": "Nossa história",
+    "storyBody": "Fundada em 2024 por pais apaixonados por tecnologia e literatura infantil, o Kidshade conquistou rapidamente mais de 12.000 famílias em 42 países. A nossa equipa trabalha todos os dias para melhorar a experiência e adicionar novos temas, idiomas e funcionalidades.",
+    "valuesTitle": "Nossos valores",
+    "value1Title": "Segurança em primeiro lugar",
+    "value1Body": "Todo o nosso conteúdo é rigorosamente filtrado e adequado para crianças. Sem publicidade, sem violência, sem conteúdo inapropriado.",
+    "value2Title": "Inclusividade",
+    "value2Body": "Histórias em 5 idiomas para famílias de todo o mundo. A magia da leitura não tem fronteiras.",
+    "value3Title": "Inovação",
+    "value3Body": "Utilizamos os melhores modelos de IA para criar histórias de qualidade literária adaptadas a cada faixa etária.",
+    "teamTitle": "Uma equipa apaixonada",
+    "teamBody": "A nossa pequena equipa de desenvolvedores, escritores e pais está dedicada a tornar cada história memorável.",
+    "ctaTitle": "Junte-se à aventura",
+    "ctaBody": "Crie a sua primeira história grátis hoje.",
+    "ctaButton": "Começar grátis"
+  },
+  "contact": {
+    "title": "Contacte-nos",
+    "subtitle": "Geralmente respondemos em 24 horas",
+    "emailTitle": "Por e-mail",
+    "emailBody": "Para qualquer questão, sugestão ou problema técnico:",
+    "email": "contact@kidshade.com",
+    "faqTitle": "Perguntas frequentes",
+    "faq1q": "Como cancelo a minha subscrição?",
+    "faq1a": "Pode cancelar a sua subscrição a qualquer momento a partir da sua conta Kidshade. O acesso Premium permanece ativo até ao final do período pago.",
+    "faq2q": "As minhas histórias são guardadas?",
+    "faq2a": "Sim, todas as suas histórias são automaticamente guardadas no seu painel de controlo.",
+    "faq3q": "Posso pedir um livro físico em vários idiomas?",
+    "faq3a": "Sim! Pode pedir um livro para qualquer história gerada, independentemente do idioma.",
+    "faq4q": "O que fazer se a IA gerar conteúdo inapropriado?",
+    "faq4a": "Denuncie em contact@kidshade.com. Levamos cada denúncia a sério."
+  },
+  "blog": {
+    "title": "Blog do Kidshade",
+    "subtitle": "Dicas, inspiração e novidades para famílias",
+    "comingSoon": "Em breve",
+    "comingSoonBody": "O nosso blog chegará em breve com artigos sobre educação, leitura e imaginação infantil.",
+    "notifyTitle": "Seja notificado",
+    "notifyBody": "Deixe o seu e-mail para ser informado quando os nossos primeiros artigos forem publicados.",
+    "notifyPlaceholder": "seu@email.com",
+    "notifyButton": "Notificar-me"
+  },
+  "cookies": {
+    "title": "Política de Cookies",
+    "updated": "Última atualização",
+    "intro": "O Kidshade utiliza cookies para garantir o correto funcionamento do serviço. Esta página explica quais cookies utilizamos e porquê.",
+    "s1title": "1. Cookies essenciais",
+    "s1body": "Estes cookies são essenciais para o funcionamento do site. Gerem a sua sessão de login e as preferências de idioma. Sem estes cookies, o serviço não pode funcionar corretamente.",
+    "s2title": "2. Cookies de desempenho",
+    "s2body": "Não utilizamos cookies de desempenho ou análise de terceiros. Podemos recolher estatísticas anónimas internamente para melhorar o serviço.",
+    "s3title": "3. Cookies publicitários",
+    "s3body": "O Kidshade não utiliza cookies publicitários. Não praticamos publicidade direcionada e não vendemos dados a anunciantes.",
+    "s4title": "4. Gestão de cookies",
+    "s4body": "Pode desativar os cookies nas definições do seu navegador. Note que isto pode impedir o início de sessão na sua conta.",
+    "s5title": "5. Contacto",
+    "s5body": "Para qualquer questão sobre os nossos cookies: contact@kidshade.com"
   }
 }

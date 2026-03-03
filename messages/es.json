@@ -21,6 +21,33 @@
       "stories": "cuentos creados"
     }
   },
+  "home": {
+    "howItWorks": {
+      "title": "¿Cómo funciona?",
+      "subtitle": "En 3 sencillos pasos, crea una aventura única para tu hijo",
+      "step1": { "title": "Rellena el formulario", "desc": "Nombre, edad, tema favorito. ¡30 segundos exactos!" },
+      "step2": { "title": "La IA crea la magia", "desc": "Nuestra IA genera un cuento único donde tu hijo es el héroe." },
+      "step3": { "title": "Lee y pide", "desc": "Lee el cuento con tu hijo. ¡Pide un libro de verdad si quieres!" }
+    },
+    "features": {
+      "title": "Todo lo que necesitas",
+      "ai": { "title": "IA Personalizada", "desc": "Cada cuento es único. ¡Tu hijo siempre es el héroe!" },
+      "languages": { "title": "5 Idiomas", "desc": "Francés, inglés, español, portugués, alemán. ¡El mundo entero!" },
+      "audio": { "title": "Lectura en Audio", "desc": "Haz que el cuento se lea en voz alta con nuestro TTS premium." },
+      "book": { "title": "Libro Real", "desc": "Pide tu cuento impreso y encuadernado. ¡El regalo perfecto!" },
+      "themes": { "title": "10 Temas", "desc": "Dragones, espacio, piratas, hadas... ¡Aventuras para todos los gustos!" },
+      "safe": { "title": "100% Seguro", "desc": "Contenido adaptado para niños, sin publicidad, sin violencia." }
+    },
+    "testimonials": {
+      "title": "Los padres adoran Kidshade ❤️"
+    },
+    "cta": {
+      "title": "¿Listo para crear magia? ✨",
+      "subtitle": "Únete a +12.000 familias y crea tu primer cuento gratis en 30 segundos.",
+      "button": "Comenzar gratis",
+      "noCard": "Sin tarjeta de crédito"
+    }
+  },
   "generator": {
     "title": "Crea tu cuento",
     "subtitle": "Rellena el formulario en 30 segundos",
@@ -83,7 +110,21 @@
       "submit": "Crear mi cuenta",
       "google": "Registrarse con Google",
       "hasAccount": "¿Ya tienes cuenta?",
-      "signin": "Iniciar sesión"
+      "signin": "Iniciar sesión",
+      "freePerksTitle": "✅ Gratis para siempre incluido:",
+      "perk1": "5 cuentos / mes",
+      "perk2": "Todos los idiomas",
+      "perk3": "Sin tarjeta de crédito",
+      "or": "o",
+      "passwordValid": "Contraseña válida",
+      "passwordMin": "Mínimo 6 caracteres",
+      "termsNoticePrefix": "Al crear una cuenta, aceptas nuestros",
+      "termsNoticeMid": "y nuestra",
+      "termsLink": "Términos",
+      "privacyLink": "Política de Privacidad",
+      "successToast": "¡Cuenta creada! Bienvenido a Kidshade 🎉",
+      "errorPassword": "La contraseña debe tener al menos 6 caracteres",
+      "errorGeneric": "Error al crear la cuenta"
     }
   },
   "footer": {
@@ -116,5 +157,102 @@
       "pt": "🇧🇷 Português",
       "de": "🇩🇪 Deutsch"
     }
+  },
+  "privacy": {
+    "title": "Política de Privacidad",
+    "updated": "Última actualización",
+    "intro": "Kidshade se compromete a proteger la privacidad de sus usuarios. Esta política explica qué datos recopilamos y cómo los utilizamos.",
+    "s1title": "1. Datos recopilados",
+    "s1body": "Solo recopilamos los datos necesarios para prestar el servicio: nombre, dirección de correo electrónico, cuentos creados. En cuanto a sus hijos, solo recopilamos el nombre y la edad que usted proporciona para la generación de cuentos. No se recopilan datos biométricos ni datos sensibles.",
+    "s2title": "2. Uso de datos",
+    "s2body": "Sus datos se utilizan exclusivamente para: proporcionar el servicio Kidshade, personalizar cuentos, gestionar su suscripción, mejorar la aplicación. Nunca vendemos sus datos a terceros.",
+    "s3title": "3. Seguridad",
+    "s3body": "Sus datos se almacenan de forma segura en servidores MongoDB Atlas (nube). Las contraseñas se cifran con bcrypt. Las comunicaciones están cifradas mediante HTTPS.",
+    "s4title": "4. Sus derechos (RGPD)",
+    "s4body": "De conformidad con el RGPD, tiene los siguientes derechos: acceso a sus datos, rectificación, supresión, portabilidad, oposición. Para ejercer estos derechos, contáctenos en: contact@kidshade.com",
+    "s5title": "5. Cookies",
+    "s5body": "Solo utilizamos cookies esenciales para la gestión de sesiones y la autenticación. No se utilizan cookies publicitarias.",
+    "s6title": "6. Contacto",
+    "s6body": "Para cualquier pregunta sobre protección de datos: contact@kidshade.com"
+  },
+  "terms": {
+    "title": "Términos de Servicio",
+    "updated": "Última actualización",
+    "intro": "Estos Términos de Servicio regulan el uso del servicio Kidshade.",
+    "s1title": "1. Descripción del servicio",
+    "s1body": "Kidshade es un servicio en línea para generar cuentos personalizados para niños, impulsado por inteligencia artificial. El servicio está disponible a través de una suscripción o en una versión gratuita limitada.",
+    "s2title": "2. Registro y cuenta",
+    "s2body": "Para usar Kidshade, debe crear una cuenta con una dirección de correo electrónico válida. Usted es responsable de la confidencialidad de sus credenciales. Debe tener al menos 18 años para crear una cuenta.",
+    "s3title": "3. Uso aceptable",
+    "s3body": "El servicio está destinado a padres y tutores para crear cuentos para niños. Está prohibido usar el servicio con fines comerciales, reproducir o distribuir el contenido generado a gran escala, o intentar eludir los límites del servicio.",
+    "s4title": "4. Suscripciones y pagos",
+    "s4body": "La suscripción Premium cuesta 2,99€/mes, facturado mensualmente. La suscripción se puede cancelar en cualquier momento desde su cuenta. No se realizan reembolsos por períodos iniciados. Los pagos son gestionados de forma segura por Stripe.",
+    "s5title": "5. Propiedad intelectual",
+    "s5body": "Los cuentos generados pertenecen al usuario que los creó. El código, el diseño y la marca Kidshade siguen siendo propiedad exclusiva de Kidshade.",
+    "s6title": "6. Limitación de responsabilidad",
+    "s6body": "Kidshade no es responsable de interrupciones del servicio, pérdida de datos o contenido generado por IA. El servicio se proporciona \"tal cual\".",
+    "s7title": "7. Contacto",
+    "s7body": "contact@kidshade.com"
+  },
+  "about": {
+    "title": "Sobre Kidshade",
+    "subtitle": "Creamos magia para niños de todo el mundo",
+    "missionTitle": "Nuestra misión",
+    "missionBody": "Kidshade nació de una idea sencilla: cada niño merece ser el héroe de su propia historia. Usando inteligencia artificial, creamos en segundos cuentos únicos y personalizados que cautivan a los pequeños lectores y desarrollan su amor por la lectura.",
+    "storyTitle": "Nuestra historia",
+    "storyBody": "Fundada en 2024 por padres apasionados por la tecnología y la literatura infantil, Kidshade conquistó rápidamente a más de 12.000 familias en 42 países. Nuestro equipo trabaja cada día para mejorar la experiencia y añadir nuevos temas, idiomas y funciones.",
+    "valuesTitle": "Nuestros valores",
+    "value1Title": "Seguridad ante todo",
+    "value1Body": "Todo nuestro contenido está rigurosamente filtrado y adaptado para niños. Sin publicidad, sin violencia, sin contenido inapropiado.",
+    "value2Title": "Inclusividad",
+    "value2Body": "Cuentos en 5 idiomas para familias de todo el mundo. La magia de la lectura no tiene fronteras.",
+    "value3Title": "Innovación",
+    "value3Body": "Usamos los mejores modelos de IA para crear cuentos de calidad literaria adaptados a cada grupo de edad.",
+    "teamTitle": "Un equipo apasionado",
+    "teamBody": "Nuestro pequeño equipo de desarrolladores, escritores y padres está dedicado a hacer que cada cuento sea memorable.",
+    "ctaTitle": "Únete a la aventura",
+    "ctaBody": "Crea tu primer cuento gratis hoy.",
+    "ctaButton": "Comenzar gratis"
+  },
+  "contact": {
+    "title": "Contáctenos",
+    "subtitle": "Generalmente respondemos en 24 horas",
+    "emailTitle": "Por correo electrónico",
+    "emailBody": "Para cualquier pregunta, sugerencia o problema técnico:",
+    "email": "contact@kidshade.com",
+    "faqTitle": "Preguntas frecuentes",
+    "faq1q": "¿Cómo cancelo mi suscripción?",
+    "faq1a": "Puede cancelar su suscripción en cualquier momento desde su cuenta de Kidshade. El acceso Premium permanece activo hasta el final del período pagado.",
+    "faq2q": "¿Se guardan mis cuentos?",
+    "faq2a": "Sí, todos sus cuentos se guardan automáticamente en su panel de control.",
+    "faq3q": "¿Puedo pedir un libro físico en varios idiomas?",
+    "faq3a": "¡Sí! Puede pedir un libro para cualquier cuento generado, independientemente del idioma.",
+    "faq4q": "¿Qué hago si la IA genera contenido inapropiado?",
+    "faq4a": "Infórmelo a contact@kidshade.com. Tomamos cada informe en serio."
+  },
+  "blog": {
+    "title": "Blog de Kidshade",
+    "subtitle": "Consejos, inspiración y novedades para familias",
+    "comingSoon": "Próximamente",
+    "comingSoonBody": "Nuestro blog llega pronto con artículos sobre educación, lectura e imaginación infantil.",
+    "notifyTitle": "Recibe notificaciones",
+    "notifyBody": "Deja tu correo electrónico para recibir información cuando se publiquen nuestros primeros artículos.",
+    "notifyPlaceholder": "tu@email.com",
+    "notifyButton": "Notificarme"
+  },
+  "cookies": {
+    "title": "Política de Cookies",
+    "updated": "Última actualización",
+    "intro": "Kidshade utiliza cookies para garantizar el correcto funcionamiento del servicio. Esta página explica qué cookies utilizamos y por qué.",
+    "s1title": "1. Cookies esenciales",
+    "s1body": "Estas cookies son esenciales para el funcionamiento del sitio. Gestionan su sesión de inicio de sesión y sus preferencias de idioma. Sin estas cookies, el servicio no puede funcionar correctamente.",
+    "s2title": "2. Cookies de rendimiento",
+    "s2body": "No utilizamos cookies de rendimiento o análisis de terceros. Podemos recopilar estadísticas anónimas internamente para mejorar el servicio.",
+    "s3title": "3. Cookies publicitarias",
+    "s3body": "Kidshade no utiliza cookies publicitarias. No practicamos publicidad dirigida y no vendemos datos a anunciantes.",
+    "s4title": "4. Gestión de cookies",
+    "s4body": "Puede desactivar las cookies en la configuración de su navegador. Tenga en cuenta que esto puede impedir que inicie sesión en su cuenta.",
+    "s5title": "5. Contacto",
+    "s5body": "Para cualquier pregunta sobre nuestras cookies: contact@kidshade.com"
   }
 }

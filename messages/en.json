@@ -21,6 +21,33 @@
       "stories": "stories created"
     }
   },
+  "home": {
+    "howItWorks": {
+      "title": "How does it work?",
+      "subtitle": "In 3 simple steps, create a unique adventure for your child",
+      "step1": { "title": "Fill in the form", "desc": "Name, age, favorite theme. 30 seconds flat!" },
+      "step2": { "title": "AI creates the magic", "desc": "Our AI generates a unique story where your child is the hero." },
+      "step3": { "title": "Read & order", "desc": "Read the story with your child. Order a real book if you want!" }
+    },
+    "features": {
+      "title": "Everything you need",
+      "ai": { "title": "Personalized AI", "desc": "Every story is unique. Your child is always the hero!" },
+      "languages": { "title": "5 Languages", "desc": "French, English, Spanish, Portuguese, German. The whole world!" },
+      "audio": { "title": "Audio Reading", "desc": "Have the story read aloud with our premium TTS." },
+      "book": { "title": "Real Book", "desc": "Order your printed and bound story. The perfect gift!" },
+      "themes": { "title": "10 Themes", "desc": "Dragons, space, pirates, fairies... Adventures for all tastes!" },
+      "safe": { "title": "100% Safe", "desc": "Child-appropriate content, no ads, no violence." }
+    },
+    "testimonials": {
+      "title": "Parents love Kidshade ❤️"
+    },
+    "cta": {
+      "title": "Ready to create magic? ✨",
+      "subtitle": "Join +12,000 families and create your first free story in 30 seconds.",
+      "button": "Start for free",
+      "noCard": "No credit card required"
+    }
+  },
   "generator": {
     "title": "Create your story",
     "subtitle": "Fill in the form in 30 seconds",
@@ -58,23 +85,9 @@
     "title": "Choose your plan",
     "subtitle": "Simple, transparent, no commitment",
     "monthly": "/ month",
-    "free": {
-      "name": "Free",
-      "price": "€0",
-      "cta": "Start for free"
-    },
-    "premium": {
-      "name": "Premium",
-      "price": "€2.99",
-      "cta": "Subscribe now",
-      "popular": "Most popular"
-    },
-    "book": {
-      "name": "Physical Book",
-      "price": "€14.99",
-      "cta": "Order a book",
-      "desc": "Per printed book"
-    }
+    "free": { "name": "Free", "price": "€0", "cta": "Start for free" },
+    "premium": { "name": "Premium", "price": "€2.99", "cta": "Subscribe now", "popular": "Most popular" },
+    "book": { "name": "Physical Book", "price": "€14.99", "cta": "Order a book", "desc": "Per printed book" }
   },
   "auth": {
     "signin": {
@@ -97,7 +110,21 @@
       "submit": "Create my account",
       "google": "Sign up with Google",
       "hasAccount": "Already have an account?",
-      "signin": "Sign in"
+      "signin": "Sign in",
+      "freePerksTitle": "✅ Free forever included:",
+      "perk1": "5 stories / month",
+      "perk2": "All languages",
+      "perk3": "No credit card",
+      "or": "or",
+      "passwordValid": "Password valid",
+      "passwordMin": "Minimum 6 characters",
+      "termsNoticePrefix": "By creating an account, you agree to our",
+      "termsNoticeMid": "and our",
+      "termsLink": "Terms",
+      "privacyLink": "Privacy Policy",
+      "successToast": "Account created! Welcome to Kidshade 🎉",
+      "errorPassword": "Password must be at least 6 characters",
+      "errorGeneric": "Error creating account"
     }
   },
   "footer": {
@@ -130,5 +157,102 @@
       "pt": "🇧🇷 Português",
       "de": "🇩🇪 Deutsch"
     }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "updated": "Last updated",
+    "intro": "Kidshade is committed to protecting its users' privacy. This policy explains what data we collect and how we use it.",
+    "s1title": "1. Data collected",
+    "s1body": "We only collect data necessary to provide the service: name, email address, stories created. Regarding your children, we only collect the first name and age you provide for story generation. No biometric or sensitive data is collected.",
+    "s2title": "2. Data use",
+    "s2body": "Your data is used exclusively to: provide the Kidshade service, personalize stories, manage your subscription, improve the application. We never sell your data to third parties.",
+    "s3title": "3. Security",
+    "s3body": "Your data is stored securely on MongoDB Atlas (cloud) servers. Passwords are hashed with bcrypt. Communications are encrypted via HTTPS.",
+    "s4title": "4. Your rights (GDPR)",
+    "s4body": "Under GDPR, you have the following rights: access to your data, rectification, deletion, portability, objection. To exercise these rights, contact us at: contact@kidshade.com",
+    "s5title": "5. Cookies",
+    "s5body": "We only use essential cookies for session management and authentication. No advertising cookies are used.",
+    "s6title": "6. Contact",
+    "s6body": "For any questions about data protection: contact@kidshade.com"
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "updated": "Last updated",
+    "intro": "These Terms of Service govern the use of the Kidshade service.",
+    "s1title": "1. Service description",
+    "s1body": "Kidshade is an online service for generating personalized stories for children, powered by artificial intelligence. The service is available through a subscription or in a limited free version.",
+    "s2title": "2. Registration and account",
+    "s2body": "To use Kidshade, you must create an account with a valid email address. You are responsible for the confidentiality of your credentials. You must be at least 18 years old to create an account.",
+    "s3title": "3. Acceptable use",
+    "s3body": "The service is intended for parents and guardians to create stories for children. It is forbidden to use the service for commercial purposes, to reproduce or distribute generated content at scale, or to attempt to circumvent service limits.",
+    "s4title": "4. Subscriptions and payments",
+    "s4body": "The Premium subscription costs €2.99/month, billed monthly. The subscription can be cancelled at any time from your account. No refund is given for started periods. Payments are securely handled by Stripe.",
+    "s5title": "5. Intellectual property",
+    "s5body": "The stories generated belong to the user who created them. The code, design, and Kidshade brand remain the exclusive property of Kidshade.",
+    "s6title": "6. Limitation of liability",
+    "s6body": "Kidshade is not responsible for service interruptions, data loss, or content generated by AI. The service is provided \"as is\".",
+    "s7title": "7. Contact",
+    "s7body": "contact@kidshade.com"
+  },
+  "about": {
+    "title": "About Kidshade",
+    "subtitle": "We create magic for children around the world",
+    "missionTitle": "Our mission",
+    "missionBody": "Kidshade was born from a simple idea: every child deserves to be the hero of their own story. Using artificial intelligence, we create unique, personalized stories in seconds that captivate young readers and develop their love of reading.",
+    "storyTitle": "Our story",
+    "storyBody": "Founded in 2024 by parents passionate about technology and children's literature, Kidshade quickly won over more than 12,000 families in 42 countries. Our team works every day to improve the experience and add new themes, languages, and features.",
+    "valuesTitle": "Our values",
+    "value1Title": "Safety first",
+    "value1Body": "All our content is rigorously filtered and appropriate for children. No advertising, no violence, no inappropriate content.",
+    "value2Title": "Inclusivity",
+    "value2Body": "Stories in 5 languages for families around the world. The magic of reading knows no borders.",
+    "value3Title": "Innovation",
+    "value3Body": "We use the best AI models to create literary-quality stories adapted to each age group.",
+    "teamTitle": "A passionate team",
+    "teamBody": "Our small team of developers, writers, and parents is dedicated to making every story memorable.",
+    "ctaTitle": "Join the adventure",
+    "ctaBody": "Create your first free story today.",
+    "ctaButton": "Start for free"
+  },
+  "contact": {
+    "title": "Contact us",
+    "subtitle": "We usually respond within 24 hours",
+    "emailTitle": "By email",
+    "emailBody": "For any questions, suggestions, or technical issues:",
+    "email": "contact@kidshade.com",
+    "faqTitle": "Frequently asked questions",
+    "faq1q": "How do I cancel my subscription?",
+    "faq1a": "You can cancel your subscription at any time from your Kidshade account. Premium access remains active until the end of the paid period.",
+    "faq2q": "Are my stories saved?",
+    "faq2a": "Yes, all your stories are automatically saved in your dashboard.",
+    "faq3q": "Can I order a physical book in multiple languages?",
+    "faq3a": "Yes! You can order a book for any generated story, regardless of the language.",
+    "faq4q": "What if the AI generates inappropriate content?",
+    "faq4a": "Report it to contact@kidshade.com. We take every report seriously."
+  },
+  "blog": {
+    "title": "Kidshade Blog",
+    "subtitle": "Tips, inspiration, and news for families",
+    "comingSoon": "Coming soon",
+    "comingSoonBody": "Our blog is coming soon with articles about education, reading, and children's imagination.",
+    "notifyTitle": "Get notified",
+    "notifyBody": "Leave your email to be informed as soon as our first articles are published.",
+    "notifyPlaceholder": "your@email.com",
+    "notifyButton": "Notify me"
+  },
+  "cookies": {
+    "title": "Cookie Policy",
+    "updated": "Last updated",
+    "intro": "Kidshade uses cookies to ensure the proper functioning of the service. This page explains which cookies we use and why.",
+    "s1title": "1. Essential cookies",
+    "s1body": "These cookies are essential for the site to work. They manage your login session and language preferences. Without these cookies, the service cannot function properly.",
+    "s2title": "2. Performance cookies",
+    "s2body": "We do not use third-party performance or analytics cookies. We may collect anonymous statistics internally to improve the service.",
+    "s3title": "3. Advertising cookies",
+    "s3body": "Kidshade uses no advertising cookies. We do not practice ad targeting and do not sell any data to advertisers.",
+    "s4title": "4. Managing cookies",
+    "s4body": "You can disable cookies in your browser settings. Please note that this may prevent you from logging into your account.",
+    "s5title": "5. Contact",
+    "s5body": "For any questions about our cookies: contact@kidshade.com"
   }
 }

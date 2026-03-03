@@ -23,7 +23,7 @@ export default function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password.length < 6) {
-      toast.error('Le mot de passe doit contenir au moins 6 caractères');
+      toast.error(t('errorPassword'));
       return;
     }
     setLoading(true);
@@ -37,12 +37,11 @@ export default function SignUpPage() {
     const data = await res.json();
 
     if (!res.ok) {
-      toast.error(data.error || 'Erreur lors de la création du compte');
+      toast.error(data.error || t('errorGeneric'));
       setLoading(false);
       return;
     }
 
-    // Auto sign in
     const signInRes = await signIn('credentials', {
       email,
       password,
@@ -50,7 +49,7 @@ export default function SignUpPage() {
     });
 
     if (signInRes?.ok) {
-      toast.success('Compte créé ! Bienvenue sur Kidshade 🎉');
+      toast.success(t('successToast'));
       router.push(`/${locale}/generate`);
     } else {
       router.push(`/${locale}/auth/signin`);
@@ -67,7 +66,6 @@ export default function SignUpPage() {
   return (
     <div className="min-h-screen gradient-warm flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-8">
           <Link href={`/${locale}`} className="inline-flex items-center gap-2 font-bold text-2xl">
             <span className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
@@ -81,20 +79,18 @@ export default function SignUpPage() {
           <h1 className="text-2xl font-extrabold text-gray-900 mb-1">{t('title')}</h1>
           <p className="text-gray-500 text-sm mb-8">{t('subtitle')}</p>
 
-          {/* Free perks */}
           <div className="bg-green-50 border border-green-100 rounded-xl p-4 mb-6">
-            <p className="text-xs font-semibold text-green-800 mb-2">✅ Gratuit pour toujours inclus :</p>
+            <p className="text-xs font-semibold text-green-800 mb-2">{t('freePerksTitle')}</p>
             <div className="space-y-1">
-              {['5 histoires / mois', 'Toutes les langues', 'Sans carte bancaire'].map((p) => (
-                <div key={p} className="flex items-center gap-2 text-xs text-green-700">
+              {[t('perk1'), t('perk2'), t('perk3')].map((perk) => (
+                <div key={perk} className="flex items-center gap-2 text-xs text-green-700">
                   <Check className="w-3 h-3 flex-shrink-0" />
-                  {p}
+                  {perk}
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Google */}
           <button
             onClick={handleGoogle}
             disabled={googleLoading}
@@ -115,11 +111,10 @@ export default function SignUpPage() {
 
           <div className="relative flex items-center gap-3 mb-4">
             <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs text-gray-400">ou</span>
+            <span className="text-xs text-gray-400">{t('or')}</span>
             <div className="flex-1 h-px bg-gray-200" />
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('name')}</label>
@@ -158,7 +153,7 @@ export default function SignUpPage() {
                   minLength={6}
                   autoComplete="new-password"
                   className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
-                  placeholder="6 caractères minimum"
+                  placeholder={t('passwordMin')}
                 />
                 <button
                   type="button"
@@ -171,7 +166,7 @@ export default function SignUpPage() {
               {password.length > 0 && (
                 <div className={`mt-1 text-xs flex items-center gap-1 ${passwordStrong ? 'text-green-600' : 'text-orange-500'}`}>
                   <Check className="w-3 h-3" />
-                  {passwordStrong ? 'Mot de passe valide' : 'Minimum 6 caractères'}
+                  {passwordStrong ? t('passwordValid') : t('passwordMin')}
                 </div>
               )}
             </div>
@@ -187,10 +182,10 @@ export default function SignUpPage() {
           </form>
 
           <p className="text-center text-xs text-gray-400 mt-4">
-            En créant un compte, vous acceptez nos{' '}
-            <Link href={`/${locale}/terms`} className="text-purple-600 hover:underline">CGU</Link>
-            {' '}et notre{' '}
-            <Link href={`/${locale}/privacy`} className="text-purple-600 hover:underline">politique de confidentialité</Link>.
+            {t('termsNoticePrefix')}{' '}
+            <Link href={`/${locale}/terms`} className="text-purple-600 hover:underline">{t('termsLink')}</Link>
+            {' '}{t('termsNoticeMid')}{' '}
+            <Link href={`/${locale}/privacy`} className="text-purple-600 hover:underline">{t('privacyLink')}</Link>.
           </p>
 
           <p className="text-center text-sm text-gray-500 mt-4">

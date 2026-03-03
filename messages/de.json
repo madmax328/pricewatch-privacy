@@ -21,6 +21,33 @@
       "stories": "Geschichten erstellt"
     }
   },
+  "home": {
+    "howItWorks": {
+      "title": "Wie funktioniert es?",
+      "subtitle": "In 3 einfachen Schritten ein einzigartiges Abenteuer für Ihr Kind erstellen",
+      "step1": { "title": "Formular ausfüllen", "desc": "Vorname, Alter, Lieblingsthema. 30 Sekunden!" },
+      "step2": { "title": "KI erschafft die Magie", "desc": "Unsere KI generiert eine einzigartige Geschichte, in der Ihr Kind der Held ist." },
+      "step3": { "title": "Lesen & bestellen", "desc": "Lesen Sie die Geschichte mit Ihrem Kind. Bestellen Sie ein echtes Buch, wenn Sie möchten!" }
+    },
+    "features": {
+      "title": "Alles, was Sie brauchen",
+      "ai": { "title": "Personalisierte KI", "desc": "Jede Geschichte ist einzigartig. Ihr Kind ist immer der Held!" },
+      "languages": { "title": "5 Sprachen", "desc": "Französisch, Englisch, Spanisch, Portugiesisch, Deutsch. Die ganze Welt!" },
+      "audio": { "title": "Audio-Lesung", "desc": "Lassen Sie die Geschichte laut vorlesen mit unserem Premium-TTS." },
+      "book": { "title": "Echtes Buch", "desc": "Bestellen Sie Ihre gedruckte und gebundene Geschichte. Das perfekte Geschenk!" },
+      "themes": { "title": "10 Themen", "desc": "Drachen, Weltraum, Piraten, Feen... Abenteuer für jeden Geschmack!" },
+      "safe": { "title": "100% Sicher", "desc": "Kindgerechte Inhalte, keine Werbung, keine Gewalt." }
+    },
+    "testimonials": {
+      "title": "Eltern lieben Kidshade ❤️"
+    },
+    "cta": {
+      "title": "Bereit, Magie zu erschaffen? ✨",
+      "subtitle": "Schließen Sie sich +12.000 Familien an und erstellen Sie Ihre erste kostenlose Geschichte in 30 Sekunden.",
+      "button": "Kostenlos starten",
+      "noCard": "Keine Kreditkarte erforderlich"
+    }
+  },
   "generator": {
     "title": "Erstelle deine Geschichte",
     "subtitle": "Fülle das Formular in 30 Sekunden aus",
@@ -83,7 +110,21 @@
       "submit": "Mein Konto erstellen",
       "google": "Mit Google registrieren",
       "hasAccount": "Hast du schon ein Konto?",
-      "signin": "Anmelden"
+      "signin": "Anmelden",
+      "freePerksTitle": "✅ Für immer kostenlos enthalten:",
+      "perk1": "5 Geschichten / Monat",
+      "perk2": "Alle Sprachen",
+      "perk3": "Keine Kreditkarte",
+      "or": "oder",
+      "passwordValid": "Passwort gültig",
+      "passwordMin": "Mindestens 6 Zeichen",
+      "termsNoticePrefix": "Mit der Kontoerstellung stimmen Sie unseren",
+      "termsNoticeMid": "und unserer",
+      "termsLink": "AGB",
+      "privacyLink": "Datenschutzrichtlinie",
+      "successToast": "Konto erstellt! Willkommen bei Kidshade 🎉",
+      "errorPassword": "Das Passwort muss mindestens 6 Zeichen lang sein",
+      "errorGeneric": "Fehler beim Erstellen des Kontos"
     }
   },
   "footer": {
@@ -116,5 +157,102 @@
       "pt": "🇧🇷 Português",
       "de": "🇩🇪 Deutsch"
     }
+  },
+  "privacy": {
+    "title": "Datenschutzrichtlinie",
+    "updated": "Letzte Aktualisierung",
+    "intro": "Kidshade verpflichtet sich, die Privatsphäre seiner Nutzer zu schützen. Diese Richtlinie erklärt, welche Daten wir sammeln und wie wir sie verwenden.",
+    "s1title": "1. Erhobene Daten",
+    "s1body": "Wir erheben nur die für den Dienst notwendigen Daten: Name, E-Mail-Adresse, erstellte Geschichten. Bezüglich Ihrer Kinder erheben wir nur den Vornamen und das Alter, das Sie für die Geschichtsgenerierung angeben. Keine biometrischen oder sensiblen Daten werden gesammelt.",
+    "s2title": "2. Datenverwendung",
+    "s2body": "Ihre Daten werden ausschließlich verwendet, um: den Kidshade-Dienst bereitzustellen, Geschichten zu personalisieren, Ihr Abonnement zu verwalten, die Anwendung zu verbessern. Wir verkaufen Ihre Daten nie an Dritte.",
+    "s3title": "3. Sicherheit",
+    "s3body": "Ihre Daten werden sicher auf MongoDB Atlas (Cloud) Servern gespeichert. Passwörter werden mit bcrypt gehasht. Kommunikationen werden über HTTPS verschlüsselt.",
+    "s4title": "4. Ihre Rechte (DSGVO)",
+    "s4body": "Gemäß DSGVO haben Sie folgende Rechte: Zugang zu Ihren Daten, Berichtigung, Löschung, Portabilität, Widerspruch. Zur Ausübung dieser Rechte kontaktieren Sie uns unter: contact@kidshade.com",
+    "s5title": "5. Cookies",
+    "s5body": "Wir verwenden nur essenzielle Cookies für Sitzungsverwaltung und Authentifizierung. Keine Werbe-Cookies werden verwendet.",
+    "s6title": "6. Kontakt",
+    "s6body": "Bei Fragen zum Datenschutz: contact@kidshade.com"
+  },
+  "terms": {
+    "title": "Allgemeine Nutzungsbedingungen",
+    "updated": "Letzte Aktualisierung",
+    "intro": "Diese Allgemeinen Nutzungsbedingungen regeln die Nutzung des Kidshade-Dienstes.",
+    "s1title": "1. Dienstbeschreibung",
+    "s1body": "Kidshade ist ein Online-Dienst zur Erstellung personalisierter Kindergeschichten, angetrieben durch künstliche Intelligenz. Der Dienst ist über ein Abonnement oder in einer eingeschränkten kostenlosen Version verfügbar.",
+    "s2title": "2. Registrierung und Konto",
+    "s2body": "Um Kidshade zu nutzen, müssen Sie ein Konto mit einer gültigen E-Mail-Adresse erstellen. Sie sind für die Vertraulichkeit Ihrer Zugangsdaten verantwortlich. Sie müssen mindestens 18 Jahre alt sein.",
+    "s3title": "3. Akzeptable Nutzung",
+    "s3body": "Der Dienst ist für Eltern und Erziehungsberechtigte zur Erstellung von Kindergeschichten gedacht. Es ist verboten, den Dienst für kommerzielle Zwecke zu nutzen, generierte Inhalte in großem Maßstab zu reproduzieren oder Dienstgrenzen zu umgehen.",
+    "s4title": "4. Abonnements und Zahlungen",
+    "s4body": "Das Premium-Abonnement kostet 2,99€/Monat, monatlich abgerechnet. Das Abonnement kann jederzeit über Ihr Konto gekündigt werden. Keine Rückerstattungen für begonnene Zeiträume. Zahlungen werden sicher über Stripe abgewickelt.",
+    "s5title": "5. Geistiges Eigentum",
+    "s5body": "Die generierten Geschichten gehören dem Benutzer, der sie erstellt hat. Code, Design und Marke Kidshade bleiben ausschließliches Eigentum von Kidshade.",
+    "s6title": "6. Haftungsbeschränkung",
+    "s6body": "Kidshade haftet nicht für Dienstunterbrechungen, Datenverluste oder durch KI generierte Inhalte. Der Dienst wird \"wie besehen\" bereitgestellt.",
+    "s7title": "7. Kontakt",
+    "s7body": "contact@kidshade.com"
+  },
+  "about": {
+    "title": "Über Kidshade",
+    "subtitle": "Wir erschaffen Magie für Kinder auf der ganzen Welt",
+    "missionTitle": "Unsere Mission",
+    "missionBody": "Kidshade entstand aus einer einfachen Idee: Jedes Kind verdient es, der Held seiner eigenen Geschichte zu sein. Mit künstlicher Intelligenz erstellen wir in Sekunden einzigartige, personalisierte Geschichten, die junge Leser begeistern und ihre Lesefreude fördern.",
+    "storyTitle": "Unsere Geschichte",
+    "storyBody": "2024 von Eltern gegründet, die von Technologie und Kinderliteratur begeistert sind, hat Kidshade schnell über 12.000 Familien in 42 Ländern gewonnen. Unser Team arbeitet jeden Tag daran, die Erfahrung zu verbessern und neue Themen, Sprachen und Funktionen hinzuzufügen.",
+    "valuesTitle": "Unsere Werte",
+    "value1Title": "Sicherheit zuerst",
+    "value1Body": "Alle unsere Inhalte sind sorgfältig gefiltert und kindgerecht. Keine Werbung, keine Gewalt, keine unangemessenen Inhalte.",
+    "value2Title": "Inklusivität",
+    "value2Body": "Geschichten in 5 Sprachen für Familien auf der ganzen Welt. Die Magie des Lesens kennt keine Grenzen.",
+    "value3Title": "Innovation",
+    "value3Body": "Wir verwenden die besten KI-Modelle, um Geschichten in literarischer Qualität zu erstellen, die an jede Altersgruppe angepasst sind.",
+    "teamTitle": "Ein leidenschaftliches Team",
+    "teamBody": "Unser kleines Team aus Entwicklern, Schriftstellern und Eltern ist darauf ausgerichtet, jede Geschichte unvergesslich zu machen.",
+    "ctaTitle": "Schließen Sie sich dem Abenteuer an",
+    "ctaBody": "Erstellen Sie noch heute Ihre erste kostenlose Geschichte.",
+    "ctaButton": "Kostenlos starten"
+  },
+  "contact": {
+    "title": "Kontaktieren Sie uns",
+    "subtitle": "Wir antworten in der Regel innerhalb von 24 Stunden",
+    "emailTitle": "Per E-Mail",
+    "emailBody": "Bei Fragen, Anregungen oder technischen Problemen:",
+    "email": "contact@kidshade.com",
+    "faqTitle": "Häufig gestellte Fragen",
+    "faq1q": "Wie kündige ich mein Abonnement?",
+    "faq1a": "Sie können Ihr Abonnement jederzeit über Ihr Kidshade-Konto kündigen. Der Premium-Zugang bleibt bis zum Ende des bezahlten Zeitraums aktiv.",
+    "faq2q": "Werden meine Geschichten gespeichert?",
+    "faq2a": "Ja, alle Ihre Geschichten werden automatisch in Ihrem Dashboard gespeichert.",
+    "faq3q": "Kann ich ein physisches Buch in mehreren Sprachen bestellen?",
+    "faq3a": "Ja! Sie können für jede generierte Geschichte ein Buch bestellen, unabhängig von der Sprache.",
+    "faq4q": "Was tun, wenn die KI unangemessene Inhalte generiert?",
+    "faq4a": "Melden Sie es an contact@kidshade.com. Wir nehmen jeden Bericht ernst."
+  },
+  "blog": {
+    "title": "Kidshade Blog",
+    "subtitle": "Tipps, Inspiration und Neuigkeiten für Familien",
+    "comingSoon": "Bald verfügbar",
+    "comingSoonBody": "Unser Blog kommt bald mit Artikeln über Bildung, Lesen und die Vorstellungskraft von Kindern.",
+    "notifyTitle": "Benachrichtigt werden",
+    "notifyBody": "Hinterlassen Sie Ihre E-Mail-Adresse, um informiert zu werden, sobald unsere ersten Artikel veröffentlicht werden.",
+    "notifyPlaceholder": "ihre@email.de",
+    "notifyButton": "Benachrichtigen"
+  },
+  "cookies": {
+    "title": "Cookie-Richtlinie",
+    "updated": "Letzte Aktualisierung",
+    "intro": "Kidshade verwendet Cookies, um die ordnungsgemäße Funktionsweise des Dienstes zu gewährleisten. Diese Seite erklärt, welche Cookies wir verwenden und warum.",
+    "s1title": "1. Essenzielle Cookies",
+    "s1body": "Diese Cookies sind für die Funktion der Website unerlässlich. Sie verwalten Ihre Anmeldesitzung und Spracheinstellungen. Ohne diese Cookies kann der Dienst nicht ordnungsgemäß funktionieren.",
+    "s2title": "2. Performance-Cookies",
+    "s2body": "Wir verwenden keine Performance- oder Analyse-Cookies von Drittanbietern. Wir können anonym interne Statistiken sammeln, um den Dienst zu verbessern.",
+    "s3title": "3. Werbe-Cookies",
+    "s3body": "Kidshade verwendet keine Werbe-Cookies. Wir betreiben kein Anzeigen-Targeting und verkaufen keine Daten an Werbetreibende.",
+    "s4title": "4. Cookie-Verwaltung",
+    "s4body": "Sie können Cookies in Ihren Browser-Einstellungen deaktivieren. Bitte beachten Sie, dass dies die Anmeldung in Ihrem Konto verhindern kann.",
+    "s5title": "5. Kontakt",
+    "s5body": "Bei Fragen zu unseren Cookies: contact@kidshade.com"
   }
 }

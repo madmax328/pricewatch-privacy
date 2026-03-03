@@ -5,13 +5,12 @@ import StoryGenerator from '@/components/StoryGenerator';
 
 export default function HomePage({ params: { locale } }: { params: { locale: string } }) {
   const t = useTranslations('hero');
-  const tGen = useTranslations('generator');
+  const tHome = useTranslations('home');
 
   return (
     <>
       {/* ═══ HERO ═══ */}
       <section className="relative overflow-hidden gradient-warm min-h-[90vh] flex items-center">
-        {/* Decorative blobs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-20 -right-20 w-96 h-96 bg-purple-200 rounded-full opacity-20 blur-3xl" />
           <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-orange-200 rounded-full opacity-20 blur-3xl" />
@@ -19,9 +18,7 @@ export default function HomePage({ params: { locale } }: { params: { locale: str
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left: text */}
             <div>
-              {/* Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-purple-100 rounded-full text-sm font-medium text-purple-700 shadow-sm mb-8">
                 <Sparkles className="w-4 h-4 text-purple-500" />
                 {t('badge')}
@@ -53,7 +50,6 @@ export default function HomePage({ params: { locale } }: { params: { locale: str
                 </Link>
               </div>
 
-              {/* Social proof */}
               <div className="flex flex-wrap items-center gap-6">
                 <div className="flex -space-x-2">
                   {['👩', '👨', '👩‍🦱', '👨‍🦰', '👩‍🦳'].map((emoji, i) => (
@@ -73,7 +69,6 @@ export default function HomePage({ params: { locale } }: { params: { locale: str
               </div>
             </div>
 
-            {/* Right: Generator */}
             <div>
               <StoryGenerator />
             </div>
@@ -86,21 +81,20 @@ export default function HomePage({ params: { locale } }: { params: { locale: str
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4">
-              Comment ça marche ?
+              {tHome('howItWorks.title')}
             </h2>
             <p className="text-lg text-gray-500 max-w-xl mx-auto">
-              En 3 étapes simples, créez une aventure unique pour votre enfant
+              {tHome('howItWorks.subtitle')}
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 relative">
-            {/* Connecting line */}
             <div className="hidden md:block absolute top-12 left-1/3 right-1/3 h-0.5 bg-gradient-to-r from-purple-200 to-orange-200" />
 
             {[
-              { icon: Wand2, step: '01', title: 'Remplis le formulaire', desc: 'Prénom, âge, thème préféré. 30 secondes chrono !', color: 'from-purple-100 to-purple-50', iconColor: 'text-purple-600' },
-              { icon: Sparkles, step: '02', title: 'L\'IA crée la magie', desc: 'Notre IA génère une histoire unique où ton enfant est le héros.', color: 'from-pink-100 to-pink-50', iconColor: 'text-pink-600' },
-              { icon: BookOpen, step: '03', title: 'Lis & commande', desc: 'Lis l\'histoire avec ton enfant. Commande un vrai livre si tu veux !', color: 'from-orange-100 to-orange-50', iconColor: 'text-orange-600' },
+              { icon: Wand2, step: '01', titleKey: 'howItWorks.step1.title', descKey: 'howItWorks.step1.desc', color: 'from-purple-100 to-purple-50', iconColor: 'text-purple-600' },
+              { icon: Sparkles, step: '02', titleKey: 'howItWorks.step2.title', descKey: 'howItWorks.step2.desc', color: 'from-pink-100 to-pink-50', iconColor: 'text-pink-600' },
+              { icon: BookOpen, step: '03', titleKey: 'howItWorks.step3.title', descKey: 'howItWorks.step3.desc', color: 'from-orange-100 to-orange-50', iconColor: 'text-orange-600' },
             ].map((item) => (
               <div key={item.step} className="relative flex flex-col items-center text-center">
                 <div className={`w-24 h-24 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-6 shadow-sm`}>
@@ -109,8 +103,8 @@ export default function HomePage({ params: { locale } }: { params: { locale: str
                 <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full gradient-primary text-white text-sm font-bold flex items-center justify-center shadow-md">
                   {item.step}
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
-                <p className="text-gray-500">{item.desc}</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{tHome(item.titleKey)}</h3>
+                <p className="text-gray-500">{tHome(item.descKey)}</p>
               </div>
             ))}
           </div>
@@ -122,25 +116,25 @@ export default function HomePage({ params: { locale } }: { params: { locale: str
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4">
-              Tout ce dont vous avez besoin
+              {tHome('features.title')}
             </h2>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { icon: Sparkles, title: 'IA Personnalisée', desc: 'Chaque histoire est unique. Votre enfant est toujours le héros !', color: 'text-purple-600 bg-purple-50' },
-              { icon: Globe, title: '5 Langues', desc: 'Français, anglais, espagnol, portugais, allemand. Le monde entier !', color: 'text-blue-600 bg-blue-50' },
-              { icon: Mic, title: 'Lecture Audio', desc: 'Faites lire l\'histoire à voix haute avec notre TTS premium.', color: 'text-green-600 bg-green-50' },
-              { icon: Printer, title: 'Vrai Livre', desc: 'Commandez votre histoire imprimée et reliée. Cadeau parfait !', color: 'text-orange-600 bg-orange-50' },
-              { icon: Heart, title: '10 Thèmes', desc: 'Dragons, espace, pirates, fées... Des aventures pour tous les goûts !', color: 'text-red-600 bg-red-50' },
-              { icon: Shield, title: '100% Sûr', desc: 'Contenu adapté aux enfants, sans publicité, sans violence.', color: 'text-teal-600 bg-teal-50' },
+              { icon: Sparkles, titleKey: 'features.ai.title', descKey: 'features.ai.desc', color: 'text-purple-600 bg-purple-50' },
+              { icon: Globe, titleKey: 'features.languages.title', descKey: 'features.languages.desc', color: 'text-blue-600 bg-blue-50' },
+              { icon: Mic, titleKey: 'features.audio.title', descKey: 'features.audio.desc', color: 'text-green-600 bg-green-50' },
+              { icon: Printer, titleKey: 'features.book.title', descKey: 'features.book.desc', color: 'text-orange-600 bg-orange-50' },
+              { icon: Heart, titleKey: 'features.themes.title', descKey: 'features.themes.desc', color: 'text-red-600 bg-red-50' },
+              { icon: Shield, titleKey: 'features.safe.title', descKey: 'features.safe.desc', color: 'text-teal-600 bg-teal-50' },
             ].map((feature) => (
-              <div key={feature.title} className="bg-white rounded-2xl p-6 shadow-sm card-hover border border-gray-50">
+              <div key={feature.titleKey} className="bg-white rounded-2xl p-6 shadow-sm card-hover border border-gray-50">
                 <div className={`w-12 h-12 rounded-xl ${feature.color} flex items-center justify-center mb-4`}>
                   <feature.icon className="w-6 h-6" />
                 </div>
-                <h3 className="font-bold text-gray-900 mb-2">{feature.title}</h3>
-                <p className="text-gray-500 text-sm">{feature.desc}</p>
+                <h3 className="font-bold text-gray-900 mb-2">{tHome(feature.titleKey)}</h3>
+                <p className="text-gray-500 text-sm">{tHome(feature.descKey)}</p>
               </div>
             ))}
           </div>
@@ -152,7 +146,7 @@ export default function HomePage({ params: { locale } }: { params: { locale: str
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4">
-              Les parents adorent Kidshade ❤️
+              {tHome('testimonials.title')}
             </h2>
           </div>
 
@@ -186,19 +180,19 @@ export default function HomePage({ params: { locale } }: { params: { locale: str
       <section className="py-20 gradient-primary">
         <div className="max-w-3xl mx-auto text-center px-4">
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-6">
-            Prêt à créer la magie ? ✨
+            {tHome('cta.title')}
           </h2>
           <p className="text-purple-100 text-lg mb-8">
-            Rejoignez +12 000 familles et créez votre première histoire gratuite en 30 secondes.
+            {tHome('cta.subtitle')}
           </p>
           <Link
             href={`/${locale}/auth/signup`}
             className="inline-flex items-center gap-2 px-10 py-5 rounded-xl bg-white text-purple-700 font-bold text-lg hover:bg-purple-50 transition-colors shadow-xl"
           >
             <Sparkles className="w-5 h-5" />
-            Commencer gratuitement
+            {tHome('cta.button')}
           </Link>
-          <p className="mt-4 text-purple-200 text-sm">Aucune carte bancaire requise</p>
+          <p className="mt-4 text-purple-200 text-sm">{tHome('cta.noCard')}</p>
         </div>
       </section>
     </>

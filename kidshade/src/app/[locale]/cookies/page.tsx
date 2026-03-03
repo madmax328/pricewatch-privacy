@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 
-export default function PrivacyPage() {
-  const t = useTranslations('privacy');
+export default function CookiesPage() {
+  const t = useTranslations('cookies');
 
   const sections = [
     { title: t('s1title'), body: t('s1body') },
@@ -9,7 +9,6 @@ export default function PrivacyPage() {
     { title: t('s3title'), body: t('s3body') },
     { title: t('s4title'), body: t('s4body') },
     { title: t('s5title'), body: t('s5body') },
-    { title: t('s6title'), body: t('s6body') },
   ];
 
   return (
