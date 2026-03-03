@@ -4,7 +4,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Story from '@/models/Story';
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, BookOpen, Clock, Globe } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, Globe, Sparkles } from 'lucide-react';
 import StoryActions from '@/components/StoryActions';
 
 const THEME_EMOJIS: Record<string, string> = {
