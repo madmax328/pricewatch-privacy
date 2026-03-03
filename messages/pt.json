@@ -84,10 +84,27 @@
   "pricing": {
     "title": "Escolha seu plano",
     "subtitle": "Simples, transparente, sem compromisso",
+    "badge": "Preços simples",
     "monthly": "/ mês",
     "free": { "name": "Grátis", "price": "€0", "cta": "Começar grátis" },
     "premium": { "name": "Premium", "price": "€2,99", "cta": "Assinar agora", "popular": "Mais popular" },
-    "book": { "name": "Livro Físico", "price": "€14,99", "cta": "Pedir livro", "desc": "Por livro impresso" }
+    "book": {
+      "name": "Livro Físico", "price": "€14,99", "cta": "Pedir livro", "desc": "Por livro impresso",
+      "f1": "História ilustrada impressa",
+      "f2": "Entrega em 7 dias",
+      "f3": "Capa dura",
+      "f4": "Presente perfeito",
+      "f5": "Personalizado com o nome"
+    },
+    "faqTitle": "Perguntas frequentes",
+    "faq1q": "Posso cancelar a qualquer momento?",
+    "faq1a": "Sim, pode cancelar a sua subscrição Premium a qualquer momento na sua conta Stripe, sem custos.",
+    "faq2q": "Em quantos idiomas?",
+    "faq2a": "Francês, inglês, espanhol, português e alemão. Mais idiomas em breve!",
+    "faq3q": "Quanto tempo demora a entrega do livro?",
+    "faq3a": "O livro físico é enviado em 3-5 dias úteis e entregue em 5-7 dias conforme o país.",
+    "faq4q": "As histórias são realmente únicas?",
+    "faq4a": "Sim! Cada história é gerada em tempo real pela IA. Mesmo duas histórias sobre o mesmo tema serão diferentes."
   },
   "auth": {
     "signin": {

@@ -52,7 +52,7 @@ export default function PricingPage() {
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-purple-100 rounded-full text-sm font-medium text-purple-700 shadow-sm mb-6">
             <Zap className="w-4 h-4 text-purple-500" />
-            Tarifs simples
+            {t('badge')}
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-4">
             {t('title')}
@@ -101,7 +101,7 @@ export default function PricingPage() {
           <div className="relative bg-white rounded-3xl border-2 border-purple-400 shadow-xl p-8">
             {/* Popular badge */}
             <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-              <span className="px-4 py-1.5 rounded-full gradient-primary text-white text-xs font-bold shadow-lg">
+              <span className="whitespace-nowrap px-4 py-1.5 rounded-full gradient-primary text-white text-xs font-bold shadow-lg">
                 ⭐ {t('premium.popular')}
               </span>
             </div>
@@ -145,16 +145,10 @@ export default function PricingPage() {
               </div>
             </div>
             <ul className="space-y-3 mb-8">
-              {[
-                'Histoire illustrée imprimée',
-                'Livraison sous 7 jours',
-                'Couverture rigide',
-                'Cadeau parfait',
-                'Personnalisé avec le prénom',
-              ].map((feat) => (
-                <li key={feat} className="flex items-center gap-2 text-sm text-gray-600">
+              {([1, 2, 3, 4, 5] as const).map((i) => (
+                <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
                   <Check className="w-4 h-4 text-orange-500 flex-shrink-0" />
-                  {feat}
+                  {t(`book.f${i}`)}
                 </li>
               ))}
             </ul>
@@ -169,17 +163,12 @@ export default function PricingPage() {
 
         {/* FAQ */}
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8 sm:p-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Questions fréquentes</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">{t('faqTitle')}</h2>
           <div className="grid md:grid-cols-2 gap-6">
-            {[
-              { q: 'Puis-je annuler à tout moment ?', a: 'Oui, vous pouvez annuler votre abonnement Premium à tout moment depuis votre compte Stripe, sans frais.' },
-              { q: 'Dans combien de langues ?', a: 'Français, anglais, espagnol, portugais et allemand. D\'autres langues arrivent bientôt !' },
-              { q: 'Combien de temps pour livrer le livre ?', a: 'Le livre physique est expédié sous 3-5 jours ouvrables et livré en 5-7 jours selon votre pays.' },
-              { q: 'Les histoires sont-elles vraiment uniques ?', a: 'Oui ! Chaque histoire est générée en temps réel par l\'IA. Même si vous demandez 2 histoires sur le même thème, elles seront différentes.' },
-            ].map((faq) => (
-              <div key={faq.q} className="border-b border-gray-100 pb-4 last:border-0">
-                <h3 className="font-semibold text-gray-900 mb-2 text-sm">{faq.q}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{faq.a}</p>
+            {([1, 2, 3, 4] as const).map((i) => (
+              <div key={i} className="border-b border-gray-100 pb-4 last:border-0">
+                <h3 className="font-semibold text-gray-900 mb-2 text-sm">{t(`faq${i}q`)}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">{t(`faq${i}a`)}</p>
               </div>
             ))}
           </div>

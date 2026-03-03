@@ -84,10 +84,27 @@
   "pricing": {
     "title": "Wähle deinen Plan",
     "subtitle": "Einfach, transparent, ohne Verpflichtung",
+    "badge": "Einfache Preise",
     "monthly": "/ Monat",
     "free": { "name": "Kostenlos", "price": "0€", "cta": "Kostenlos starten" },
     "premium": { "name": "Premium", "price": "2,99€", "cta": "Jetzt abonnieren", "popular": "Am beliebtesten" },
-    "book": { "name": "Physisches Buch", "price": "14,99€", "cta": "Buch bestellen", "desc": "Pro gedrucktem Buch" }
+    "book": {
+      "name": "Physisches Buch", "price": "14,99€", "cta": "Buch bestellen", "desc": "Pro gedrucktem Buch",
+      "f1": "Illustrierte gedruckte Geschichte",
+      "f2": "Lieferung in 7 Tagen",
+      "f3": "Hardcover",
+      "f4": "Perfektes Geschenk",
+      "f5": "Personalisiert mit dem Namen"
+    },
+    "faqTitle": "Häufig gestellte Fragen",
+    "faq1q": "Kann ich jederzeit kündigen?",
+    "faq1a": "Ja, Sie können Ihr Premium-Abonnement jederzeit über Ihr Stripe-Konto kündigen, ohne Kosten.",
+    "faq2q": "In wie vielen Sprachen?",
+    "faq2a": "Französisch, Englisch, Spanisch, Portugiesisch und Deutsch. Weitere Sprachen kommen bald!",
+    "faq3q": "Wie lange dauert die Buchlieferung?",
+    "faq3a": "Das physische Buch wird innerhalb von 3-5 Werktagen versandt und in 5-7 Tagen geliefert.",
+    "faq4q": "Sind die Geschichten wirklich einzigartig?",
+    "faq4a": "Ja! Jede Geschichte wird von der KI in Echtzeit generiert. Selbst zwei Geschichten zum selben Thema werden unterschiedlich sein."
   },
   "auth": {
     "signin": {

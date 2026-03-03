@@ -84,10 +84,27 @@
   "pricing": {
     "title": "Choose your plan",
     "subtitle": "Simple, transparent, no commitment",
+    "badge": "Simple pricing",
     "monthly": "/ month",
     "free": { "name": "Free", "price": "€0", "cta": "Start for free" },
     "premium": { "name": "Premium", "price": "€2.99", "cta": "Subscribe now", "popular": "Most popular" },
-    "book": { "name": "Physical Book", "price": "€14.99", "cta": "Order a book", "desc": "Per printed book" }
+    "book": {
+      "name": "Physical Book", "price": "€14.99", "cta": "Order a book", "desc": "Per printed book",
+      "f1": "Illustrated printed story",
+      "f2": "Delivered in 7 days",
+      "f3": "Hardcover",
+      "f4": "Perfect gift",
+      "f5": "Personalized with child's name"
+    },
+    "faqTitle": "Frequently asked questions",
+    "faq1q": "Can I cancel at any time?",
+    "faq1a": "Yes, you can cancel your Premium subscription at any time from your Stripe account, with no fees.",
+    "faq2q": "In how many languages?",
+    "faq2a": "French, English, Spanish, Portuguese, and German. More languages coming soon!",
+    "faq3q": "How long does book delivery take?",
+    "faq3a": "The physical book is shipped within 3-5 business days and delivered in 5-7 days depending on your country.",
+    "faq4q": "Are the stories truly unique?",
+    "faq4a": "Yes! Every story is generated in real time by AI. Even two stories on the same theme will be different."
   },
   "auth": {
     "signin": {

@@ -84,10 +84,27 @@
   "pricing": {
     "title": "Choisissez votre formule",
     "subtitle": "Simple, transparent, sans engagement",
+    "badge": "Tarifs simples",
     "monthly": "/ mois",
     "free": { "name": "Gratuit", "price": "0€", "cta": "Commencer gratuitement" },
     "premium": { "name": "Premium", "price": "2,99€", "cta": "S'abonner maintenant", "popular": "Le plus populaire" },
-    "book": { "name": "Livre Physique", "price": "14,99€", "cta": "Commander un livre", "desc": "Par livre imprimé" }
+    "book": {
+      "name": "Livre Physique", "price": "14,99€", "cta": "Commander un livre", "desc": "Par livre imprimé",
+      "f1": "Histoire illustrée imprimée",
+      "f2": "Livraison sous 7 jours",
+      "f3": "Couverture rigide",
+      "f4": "Cadeau parfait",
+      "f5": "Personnalisé avec le prénom"
+    },
+    "faqTitle": "Questions fréquentes",
+    "faq1q": "Puis-je annuler à tout moment ?",
+    "faq1a": "Oui, vous pouvez annuler votre abonnement Premium à tout moment depuis votre compte Stripe, sans frais.",
+    "faq2q": "Dans combien de langues ?",
+    "faq2a": "Français, anglais, espagnol, portugais et allemand. D'autres langues arrivent bientôt !",
+    "faq3q": "Combien de temps pour livrer le livre ?",
+    "faq3a": "Le livre physique est expédié sous 3-5 jours ouvrables et livré en 5-7 jours selon votre pays.",
+    "faq4q": "Les histoires sont-elles vraiment uniques ?",
+    "faq4a": "Oui ! Chaque histoire est générée en temps réel par l'IA. Même deux histoires sur le même thème seront différentes."
   },
   "auth": {
     "signin": {

@@ -15,6 +15,10 @@ export const metadata: Metadata = {
   title: 'Kidshade — Histoires magiques pour enfants',
   description: 'L\'IA crée des histoires personnalisées où votre enfant est le héros. En 30 secondes, dans votre langue.',
   keywords: 'histoires pour enfants, IA, personnalisé, bedtime stories, contes',
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+  },
   openGraph: {
     title: 'Kidshade — Histoires magiques pour enfants',
     description: 'L\'IA crée des histoires personnalisées où votre enfant est le héros.',

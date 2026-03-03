@@ -58,7 +58,16 @@ export async function POST(req: NextRequest) {
   }
 
   // Generate story with AI
-  const generated = await generateStory({ childName, childAge, theme, language });
+  let generated;
+  try {
+    generated = await generateStory({ childName, childAge, theme, language });
+  } catch (err) {
+    console.error('Anthropic error:', err);
+    return NextResponse.json(
+      { error: 'Story generation failed. Check your ANTHROPIC_API_KEY.' },
+      { status: 500 }
+    );
+  }
 
   // Save to database
   const story = await Story.create({
