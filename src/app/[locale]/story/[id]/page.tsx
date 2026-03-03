@@ -4,7 +4,8 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Story from '@/models/Story';
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, BookOpen, Clock, Globe, Printer, Sparkles } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, Globe } from 'lucide-react';
+import StoryActions from '@/components/StoryActions';
 
 const THEME_EMOJIS: Record<string, string> = {
   dragons: '🐉', space: '🚀', forest: '🌲', ocean: '🌊',
@@ -102,22 +103,7 @@ export default async function StoryPage({
         </article>
 
         {/* Actions */}
-        <div className="mt-8 grid sm:grid-cols-2 gap-4">
-          <Link
-            href={`/${locale}/generate`}
-            className="flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-purple-200 text-purple-700 font-semibold hover:bg-purple-50 transition-colors"
-          >
-            <Sparkles className="w-5 h-5" />
-            Créer une nouvelle histoire
-          </Link>
-          <button
-            className="flex items-center justify-center gap-2 py-4 rounded-xl gradient-primary text-white font-semibold hover:opacity-90 transition-opacity"
-            onClick={() => {}}
-          >
-            <Printer className="w-5 h-5" />
-            Commander le livre (14,99€)
-          </button>
-        </div>
+        <StoryActions locale={locale} storyId={story._id.toString()} />
 
         {/* Reading tips */}
         <div className="mt-8 bg-blue-50 border border-blue-100 rounded-2xl p-6">
