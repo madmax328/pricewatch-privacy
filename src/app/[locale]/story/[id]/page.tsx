@@ -4,8 +4,9 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Story from '@/models/Story';
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, BookOpen, Clock, Globe, Sparkles } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, Globe } from 'lucide-react';
 import StoryActions from '@/components/StoryActions';
+import StoryBook from '@/components/StoryBook';
 
 const THEME_EMOJIS: Record<string, string> = {
   dragons: '🐉', space: '🚀', forest: '🌲', ocean: '🌊',
@@ -38,7 +39,7 @@ export default async function StoryPage({
 
   const wordCount = story.content.split(' ').length;
   const readingTime = Math.ceil(wordCount / 150);
-  const paragraphs = story.content.split('\n\n').filter(Boolean);
+  const themeEmoji = THEME_EMOJIS[story.theme] || '📖';
 
   return (
     <div className="min-h-screen gradient-warm py-12">
@@ -52,55 +53,29 @@ export default async function StoryPage({
           Retour à mes histoires
         </Link>
 
-        {/* Story card */}
-        <article className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-          {/* Header gradient */}
-          <div className="h-3 gradient-primary" />
+        {/* Meta badges */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          <span className="px-3 py-1 bg-white border border-purple-100 text-purple-700 rounded-full text-xs font-semibold shadow-sm">
+            {themeEmoji} {story.childName} · {story.childAge} ans
+          </span>
+          <span className="px-3 py-1 bg-white border border-orange-100 text-orange-700 rounded-full text-xs font-semibold shadow-sm flex items-center gap-1">
+            <Globe className="w-3 h-3" />
+            {story.language.toUpperCase()}
+          </span>
+          <span className="px-3 py-1 bg-white border border-gray-100 text-gray-500 rounded-full text-xs font-medium shadow-sm flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            {readingTime} min
+          </span>
+        </div>
 
-          <div className="p-8 sm:p-12">
-            {/* Meta */}
-            <div className="flex flex-wrap items-center gap-3 mb-6">
-              <span className="text-5xl">{THEME_EMOJIS[story.theme] || '📖'}</span>
-              <div>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-semibold">
-                    {story.childName} · {story.childAge} ans
-                  </span>
-                  <span className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-xs font-semibold flex items-center gap-1">
-                    <Globe className="w-3 h-3" />
-                    {story.language.toUpperCase()}
-                  </span>
-                  <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {readingTime} min
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Title */}
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-8 leading-tight">
-              {story.title}
-            </h1>
-
-            {/* Story content */}
-            <div className="prose prose-lg max-w-none">
-              {paragraphs.map((para, i) => (
-                <p key={i} className="text-gray-700 leading-relaxed mb-4 text-base sm:text-lg">
-                  {para}
-                </p>
-              ))}
-            </div>
-
-            {/* The end */}
-            <div className="mt-10 text-center">
-              <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-50 to-orange-50 rounded-full border border-purple-100">
-                <Sparkles className="w-4 h-4 text-purple-500" />
-                <span className="text-sm font-semibold text-purple-700">✨ Fin ✨</span>
-              </div>
-            </div>
-          </div>
-        </article>
+        {/* Book */}
+        <StoryBook
+          title={story.title}
+          content={story.content}
+          childName={story.childName}
+          theme={story.theme}
+          themeEmoji={themeEmoji}
+        />
 
         {/* Actions */}
         <StoryActions locale={locale} storyId={story._id.toString()} />

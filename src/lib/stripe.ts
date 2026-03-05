@@ -12,11 +12,11 @@ export const PLANS = {
     price: 0,
     storiesPerMonth: 5,
     features: {
-      fr: ['5 histoires / mois', 'Texte uniquement', 'Toutes les langues'],
-      en: ['5 stories / month', 'Text only', 'All languages'],
-      es: ['5 cuentos / mes', 'Solo texto', 'Todos los idiomas'],
-      pt: ['5 histórias / mês', 'Somente texto', 'Todos os idiomas'],
-      de: ['5 Geschichten / Monat', 'Nur Text', 'Alle Sprachen'],
+      fr: ['5 histoires / mois', 'Toutes les langues', 'Sauvegarde cloud'],
+      en: ['5 stories / month', 'All languages', 'Cloud backup'],
+      es: ['5 cuentos / mes', 'Todos los idiomas', 'Nube'],
+      pt: ['5 histórias / mês', 'Todos os idiomas', 'Nuvem'],
+      de: ['5 Geschichten / Monat', 'Alle Sprachen', 'Cloud'],
     },
   },
   premium: {
@@ -26,11 +26,11 @@ export const PLANS = {
     storiesPerMonth: Infinity,
     priceId: process.env.STRIPE_PREMIUM_PRICE_ID,
     features: {
-      fr: ['Histoires illimitées', 'Illustrations IA', 'Lecture audio', 'Sauvegarde cloud', 'Option livre physique'],
-      en: ['Unlimited stories', 'AI illustrations', 'Audio reading', 'Cloud backup', 'Physical book option'],
-      es: ['Cuentos ilimitados', 'Ilustraciones IA', 'Lectura en audio', 'Nube', 'Opción libro físico'],
-      pt: ['Histórias ilimitadas', 'Ilustrações IA', 'Leitura em áudio', 'Nuvem', 'Livro físico'],
-      de: ['Unbegrenzte Geschichten', 'KI-Illustrationen', 'Audiovorlesen', 'Cloud', 'Physisches Buch'],
+      fr: ['Histoires illimitées', 'Toutes les langues', 'Sauvegarde cloud', 'Option livre physique', 'Support prioritaire'],
+      en: ['Unlimited stories', 'All languages', 'Cloud backup', 'Physical book option', 'Priority support'],
+      es: ['Cuentos ilimitados', 'Todos los idiomas', 'Nube', 'Opción libro físico', 'Soporte prioritario'],
+      pt: ['Histórias ilimitadas', 'Todos os idiomas', 'Nuvem', 'Livro físico', 'Suporte prioritário'],
+      de: ['Unbegrenzte Geschichten', 'Alle Sprachen', 'Cloud', 'Physisches Buch', 'Prioritätssupport'],
     },
   },
 } as const;
