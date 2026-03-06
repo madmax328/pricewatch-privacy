@@ -26,11 +26,11 @@ export const PLANS = {
     storiesPerMonth: Infinity,
     priceId: process.env.STRIPE_PREMIUM_PRICE_ID,
     features: {
-      fr: ['Histoires illimitées', 'Toutes les langues', 'Sauvegarde cloud', 'Option livre physique', 'Support prioritaire'],
-      en: ['Unlimited stories', 'All languages', 'Cloud backup', 'Physical book option', 'Priority support'],
-      es: ['Cuentos ilimitados', 'Todos los idiomas', 'Nube', 'Opción libro físico', 'Soporte prioritario'],
-      pt: ['Histórias ilimitadas', 'Todos os idiomas', 'Nuvem', 'Livro físico', 'Suporte prioritário'],
-      de: ['Unbegrenzte Geschichten', 'Alle Sprachen', 'Cloud', 'Physisches Buch', 'Prioritätssupport'],
+      fr: ['Histoires illimitées', 'Illustrations IA', 'Lecture audio', 'Sauvegarde cloud', 'Option livre physique'],
+      en: ['Unlimited stories', 'AI illustrations', 'Audio reading', 'Cloud backup', 'Physical book option'],
+      es: ['Cuentos ilimitados', 'Ilustraciones IA', 'Lectura en audio', 'Nube', 'Opción libro físico'],
+      pt: ['Histórias ilimitadas', 'Ilustrações IA', 'Leitura em áudio', 'Nuvem', 'Livro físico'],
+      de: ['Unbegrenzte Geschichten', 'KI-Illustrationen', 'Audiovorlesen', 'Cloud', 'Physisches Buch'],
     },
   },
 } as const;
