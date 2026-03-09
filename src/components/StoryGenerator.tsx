@@ -11,6 +11,22 @@ import Link from 'next/link';
 
 const AGES = Array.from({ length: 13 }, (_, i) => i + 2); // 2 to 14
 
+const HAIR_OPTIONS = [
+  { value: 'blonde', label: 'Blond', color: '#F5D060' },
+  { value: 'brown', label: 'Châtain', color: '#8B5E3C' },
+  { value: 'black', label: 'Noir', color: '#1C1C1C' },
+  { value: 'red', label: 'Roux', color: '#C0392B' },
+  { value: 'white', label: 'Blanc', color: '#E8E8E8' },
+];
+
+const SKIN_OPTIONS = [
+  { value: 'fair', label: 'Très clair', color: '#FDDBB4' },
+  { value: 'light', label: 'Clair', color: '#F1C27D' },
+  { value: 'medium', label: 'Moyen', color: '#C68642' },
+  { value: 'tan', label: 'Hâlé', color: '#8D5524' },
+  { value: 'dark', label: 'Foncé', color: '#3D1F00' },
+];
+
 export default function StoryGenerator({
   storiesLeft,
   isPremium,
@@ -30,6 +46,11 @@ export default function StoryGenerator({
   const [language, setLanguage] = useState(locale);
   const [loading, setLoading] = useState(false);
 
+  // Avatar
+  const [gender, setGender] = useState<'boy' | 'girl'>('boy');
+  const [hair, setHair] = useState('brown');
+  const [skin, setSkin] = useState('light');
+
   const themes = THEMES[locale as keyof typeof THEMES] || THEMES.fr;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,7 +66,13 @@ export default function StoryGenerator({
       const res = await fetch('/api/stories', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ childName, childAge, theme, language }),
+        body: JSON.stringify({
+          childName,
+          childAge,
+          theme,
+          language,
+          childAvatar: { gender, hair, skin },
+        }),
       });
 
       let data: { code?: string; error?: string; story?: { _id: string } } = {};
@@ -160,6 +187,89 @@ export default function StoryGenerator({
             <option value="pt">🇧🇷 Português</option>
             <option value="de">🇩🇪 Deutsch</option>
           </select>
+        </div>
+
+        {/* Avatar section */}
+        <div className="border border-purple-100 rounded-xl p-4 bg-purple-50/40 space-y-4">
+          <p className="text-sm font-semibold text-purple-800">🧒 Personnaliser le héros de l&apos;histoire</p>
+
+          {/* Gender */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-2">Genre</label>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setGender('boy')}
+                className={`flex-1 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all ${
+                  gender === 'boy'
+                    ? 'border-blue-400 bg-blue-50 text-blue-700'
+                    : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'
+                }`}
+              >
+                👦 Garçon
+              </button>
+              <button
+                type="button"
+                onClick={() => setGender('girl')}
+                className={`flex-1 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all ${
+                  gender === 'girl'
+                    ? 'border-pink-400 bg-pink-50 text-pink-700'
+                    : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'
+                }`}
+              >
+                👧 Fille
+              </button>
+            </div>
+          </div>
+
+          {/* Hair color */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-2">Couleur des cheveux</label>
+            <div className="flex gap-2 flex-wrap">
+              {HAIR_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setHair(opt.value)}
+                  title={opt.label}
+                  className={`w-9 h-9 rounded-full border-4 transition-all ${
+                    hair === opt.value ? 'border-purple-500 scale-110' : 'border-white shadow-md hover:scale-105'
+                  }`}
+                  style={{ backgroundColor: opt.color }}
+                />
+              ))}
+              <span className="text-xs text-gray-400 self-center ml-1">
+                {HAIR_OPTIONS.find(o => o.value === hair)?.label}
+              </span>
+            </div>
+          </div>
+
+          {/* Skin tone */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-2">Teinte de peau</label>
+            <div className="flex gap-2 flex-wrap">
+              {SKIN_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setSkin(opt.value)}
+                  title={opt.label}
+                  className={`w-9 h-9 rounded-full border-4 transition-all ${
+                    skin === opt.value ? 'border-purple-500 scale-110' : 'border-white shadow-md hover:scale-105'
+                  }`}
+                  style={{ backgroundColor: opt.color }}
+                />
+              ))}
+              <span className="text-xs text-gray-400 self-center ml-1">
+                {SKIN_OPTIONS.find(o => o.value === skin)?.label}
+              </span>
+            </div>
+          </div>
+
+          {/* Avatar preview text */}
+          <p className="text-xs text-purple-600 italic">
+            ✨ Les illustrations seront générées avec ce personnage
+          </p>
         </div>
 
         {/* Submit */}

@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, BookOpen, Volume2, VolumeX, Image } from 'lucide-react';
+import { ChevronLeft, ChevronRight, BookOpen, Volume2, VolumeX } from 'lucide-react';
 
-const PARAGRAPHS_PER_PAGE = 3;
+const PARAGRAPHS_PER_PAGE = 2;
 
 const LANGUAGE_CODES: Record<string, string> = {
   fr: 'fr-FR',
@@ -14,7 +14,7 @@ const LANGUAGE_CODES: Record<string, string> = {
 };
 
 const THEME_PROMPTS: Record<string, string> = {
-  dragons: 'dragon magic castle',
+  dragons: 'dragon magic castle adventure',
   space: 'space rocket planets stars',
   forest: 'enchanted forest fairy tale',
   ocean: 'ocean dolphins underwater',
@@ -26,6 +26,45 @@ const THEME_PROMPTS: Record<string, string> = {
   fairies: 'fairy elf magical garden',
 };
 
+interface ChildAvatar {
+  gender: 'boy' | 'girl';
+  hair: string;
+  skin: string;
+}
+
+interface PageImage {
+  url: string;
+  loaded: boolean;
+}
+
+function buildImageUrl(
+  theme: string,
+  childName: string,
+  childAvatar: ChildAvatar | undefined,
+  pageIndex: number,
+  pageContent: string,
+  isCover: boolean
+): string {
+  const themePrompt = THEME_PROMPTS[theme] || 'magical story';
+  const avatarDesc = childAvatar
+    ? `${childAvatar.gender === 'girl' ? 'little girl' : 'little boy'} with ${childAvatar.hair} hair and ${childAvatar.skin} skin`
+    : `child named ${childName}`;
+
+  let prompt: string;
+  let size: string;
+
+  if (isCover) {
+    prompt = `beautiful children book cover illustration, ${themePrompt}, ${avatarDesc} as the main hero, magical adventure, watercolor style, soft pastel colors, dreamy, no text, no words, storybook art`;
+    size = 'width=600&height=400';
+  } else {
+    const hint = pageContent.slice(0, 120).replace(/[^\w\s]/g, '').trim();
+    prompt = `children book illustration, ${themePrompt}, ${avatarDesc}, ${hint}, watercolor style, soft pastel colors, cute, warm light, no text, no words`;
+    size = 'width=600&height=360';
+  }
+
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${size}&nologo=true&seed=${pageIndex * 37 + 11}`;
+}
+
 export default function StoryBook({
   title,
   content,
@@ -33,6 +72,7 @@ export default function StoryBook({
   theme,
   themeEmoji,
   language = 'fr',
+  childAvatar,
 }: {
   title: string;
   content: string;
@@ -40,6 +80,7 @@ export default function StoryBook({
   theme: string;
   themeEmoji: string;
   language?: string;
+  childAvatar?: ChildAvatar;
 }) {
   const paragraphs = content.split('\n\n').filter(Boolean);
 
@@ -51,19 +92,28 @@ export default function StoryBook({
 
   const [page, setPage] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [imgLoaded, setImgLoaded] = useState(false);
-  const [showIllustration, setShowIllustration] = useState(false);
+  const [pageImages, setPageImages] = useState<Record<number, PageImage>>({});
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  const themePrompt = THEME_PROMPTS[theme] || 'magical story';
-  const illustrationUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
-    `children book illustration ${themePrompt} for child named ${childName}, watercolor style, soft colors, cute, no text`
-  )}?width=400&height=280&nologo=true&seed=42`;
+  // Auto-generate image for current page + preload next
+  useEffect(() => {
+    [page, page + 1].forEach((p) => {
+      if (p >= totalPages || pageImages[p]) return;
+      const isCover = p === 0;
+      const pageContent = isCover ? '' : contentPages[p - 1]?.join(' ') || '';
+      const url = buildImageUrl(theme, childName, childAvatar, p, pageContent, isCover);
+      setPageImages((prev) => ({ ...prev, [p]: { url, loaded: false } }));
+    });
+  }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const markLoaded = (p: number) => {
+    setPageImages((prev) =>
+      prev[p] ? { ...prev, [p]: { ...prev[p], loaded: true } } : prev
+    );
+  };
 
   useEffect(() => {
-    return () => {
-      window.speechSynthesis?.cancel();
-    };
+    return () => { window.speechSynthesis?.cancel(); };
   }, []);
 
   const handleAudio = () => {
@@ -86,6 +136,8 @@ export default function StoryBook({
   const prev = () => setPage((p) => Math.max(0, p - 1));
   const next = () => setPage((p) => Math.min(totalPages - 1, p + 1));
 
+  const currentImage = pageImages[page];
+
   return (
     <div className="select-none">
       {/* Audio button */}
@@ -106,89 +158,149 @@ export default function StoryBook({
         </button>
       </div>
 
-      {/* Book */}
-      <div className="relative bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden min-h-[420px] flex flex-col">
-        <div className="h-2 gradient-primary flex-shrink-0" />
+      {/* Book container */}
+      <div
+        className="relative rounded-3xl overflow-hidden shadow-2xl"
+        style={{ background: '#fdf8f0' }}
+      >
+        {/* Spine */}
+        <div
+          className="absolute left-0 top-0 bottom-0 w-5 z-10 pointer-events-none"
+          style={{
+            background: 'linear-gradient(to right, #78350f, #b45309, #fcd34d80, #b45309, #78350f)',
+            boxShadow: '2px 0 8px rgba(0,0,0,0.15)',
+          }}
+        />
 
-        <div className="flex-1 flex flex-col p-8 sm:p-12">
-          {page === 0 ? (
-            /* Cover page */
-            <div className="flex-1 flex flex-col items-center justify-center text-center gap-5">
-              {/* Illustration */}
-              {showIllustration ? (
-                <div className="w-full max-w-sm rounded-2xl overflow-hidden shadow-md bg-purple-50 min-h-[160px] flex items-center justify-center">
-                  {!imgLoaded && (
-                    <div className="flex flex-col items-center gap-2 py-8 text-purple-300">
-                      <div className="w-6 h-6 border-2 border-purple-300 border-t-transparent rounded-full animate-spin" />
-                      <span className="text-xs">Génération en cours...</span>
-                    </div>
-                  )}
-                  <img
-                    src={illustrationUrl}
-                    alt={`Illustration pour ${title}`}
-                    className={`w-full h-auto transition-opacity duration-500 ${imgLoaded ? 'opacity-100' : 'opacity-0 h-0'}`}
-                    onLoad={() => setImgLoaded(true)}
-                  />
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-3">
-                  <span className="text-8xl">{themeEmoji}</span>
-                  <button
-                    onClick={() => setShowIllustration(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-purple-200 text-purple-600 text-sm font-medium hover:bg-purple-50 transition-colors"
-                  >
-                    <Image className="w-4 h-4" />
-                    Générer l&apos;illustration IA
-                  </button>
-                </div>
-              )}
+        <div className="ml-5">
+          {/* Illustration */}
+          <div
+            className="relative overflow-hidden bg-gradient-to-b from-purple-100 to-purple-50"
+            style={{ minHeight: '260px' }}
+          >
+            {currentImage ? (
+              <>
+                {!currentImage.loaded && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                    <div
+                      className="w-10 h-10 rounded-full animate-spin"
+                      style={{
+                        border: '3px solid #e9d5ff',
+                        borderTopColor: '#9333ea',
+                      }}
+                    />
+                    <span className="text-sm text-purple-400 font-medium">
+                      Illustration en cours...
+                    </span>
+                  </div>
+                )}
+                <img
+                  key={currentImage.url}
+                  src={currentImage.url}
+                  alt="Illustration"
+                  className={`w-full object-cover transition-opacity duration-700 ${
+                    currentImage.loaded ? 'opacity-100' : 'opacity-0 absolute inset-0'
+                  }`}
+                  style={{ maxHeight: '400px' }}
+                  onLoad={() => markLoaded(page)}
+                />
+              </>
+            ) : (
+              <div
+                className="flex items-center justify-center"
+                style={{ minHeight: '260px' }}
+              >
+                <div
+                  className="w-10 h-10 rounded-full animate-spin"
+                  style={{
+                    border: '3px solid #e9d5ff',
+                    borderTopColor: '#9333ea',
+                  }}
+                />
+              </div>
+            )}
 
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2 leading-tight">
+            {/* Page indicator on illustration */}
+            {page > 0 && (
+              <div className="absolute bottom-2 right-3 px-2.5 py-1 rounded-full text-white text-xs font-semibold backdrop-blur-sm bg-black/30">
+                {page} / {totalPages - 1}
+              </div>
+            )}
+          </div>
+
+          {/* Text area */}
+          <div
+            className="px-8 py-7 sm:px-10 sm:py-8"
+            style={{ background: '#fdf8f0' }}
+          >
+            {page === 0 ? (
+              /* Cover page text */
+              <div className="text-center">
+                <p
+                  className="text-xs font-bold tracking-widest uppercase mb-3"
+                  style={{ color: '#b45309' }}
+                >
+                  {themeEmoji} Une histoire pour
+                </p>
+                <h1
+                  className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2 leading-tight"
+                  style={{ fontFamily: 'Georgia, serif' }}
+                >
                   {title}
                 </h1>
-                <p className="text-purple-500 font-medium">
-                  Une histoire pour {childName} ✨
+                <p
+                  className="text-xl text-gray-500 italic mb-8"
+                  style={{ fontFamily: 'Georgia, serif' }}
+                >
+                  {childName}
                 </p>
+                <button
+                  onClick={next}
+                  className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-white font-bold text-base transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                  style={{ background: 'linear-gradient(135deg, #b45309, #92400e)' }}
+                >
+                  <BookOpen className="w-5 h-5" />
+                  Commencer l&apos;histoire
+                </button>
               </div>
-
-              <button
-                onClick={next}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl gradient-primary text-white font-semibold hover:opacity-90 transition-all shadow-lg"
-              >
-                <BookOpen className="w-4 h-4" />
-                Commencer la lecture
-              </button>
-            </div>
-          ) : (
-            /* Story pages */
-            <div className="flex-1 flex flex-col">
-              <div className="flex-1 space-y-5">
-                {contentPages[page - 1]?.map((para, i) => (
-                  <p key={i} className="text-gray-700 leading-relaxed text-base sm:text-lg">
-                    {para}
-                  </p>
-                ))}
-              </div>
-
-              {page === totalPages - 1 && (
-                <div className="mt-8 text-center">
-                  <span className="inline-flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-purple-50 to-orange-50 rounded-full border border-purple-100 text-sm font-semibold text-purple-700">
-                    ✨ Fin ✨
-                  </span>
+            ) : (
+              /* Story page text */
+              <div>
+                <div className="space-y-5">
+                  {contentPages[page - 1]?.map((para, i) => (
+                    <p
+                      key={i}
+                      className="text-gray-800 leading-relaxed text-base sm:text-lg"
+                      style={{ fontFamily: 'Georgia, serif' }}
+                    >
+                      {para}
+                    </p>
+                  ))}
                 </div>
-              )}
-            </div>
-          )}
+                {page === totalPages - 1 && (
+                  <div className="mt-8 text-center">
+                    <span
+                      className="text-lg font-bold italic"
+                      style={{ color: '#b45309' }}
+                    >
+                      ✨ Fin ✨
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
-        {page > 0 && (
-          <div className="flex-shrink-0 pb-4 text-center">
-            <span className="text-xs text-gray-300 font-medium tracking-widest uppercase">
-              {page} / {totalPages - 1}
-            </span>
-          </div>
-        )}
+        {/* Bottom page shadow lines (book effect) */}
+        <div
+          className="h-1.5"
+          style={{
+            background:
+              'linear-gradient(to bottom, #e5e0d8, #d6d0c8)',
+            boxShadow: '0 -1px 0 #c8c0b0',
+          }}
+        />
       </div>
 
       {/* Navigation */}
@@ -196,7 +308,12 @@ export default function StoryBook({
         <button
           onClick={prev}
           disabled={page === 0}
-          className="flex items-center gap-2 px-5 py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold hover:border-purple-300 hover:text-purple-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 px-5 py-3 rounded-xl border-2 font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+          style={{
+            borderColor: page === 0 ? '#e5e7eb' : '#d97706',
+            color: page === 0 ? '#9ca3af' : '#b45309',
+            background: page === 0 ? 'transparent' : '#fffbeb',
+          }}
         >
           <ChevronLeft className="w-4 h-4" />
           Précédent
@@ -207,9 +324,11 @@ export default function StoryBook({
             <button
               key={i}
               onClick={() => setPage(i)}
-              className={`h-2 rounded-full transition-all ${
-                i === page ? 'bg-purple-500 w-5' : 'w-2 bg-gray-200 hover:bg-gray-300'
-              }`}
+              className="h-2 rounded-full transition-all"
+              style={{
+                width: i === page ? '20px' : '8px',
+                background: i === page ? '#b45309' : '#d1d5db',
+              }}
             />
           ))}
         </div>
@@ -217,7 +336,12 @@ export default function StoryBook({
         <button
           onClick={next}
           disabled={page === totalPages - 1}
-          className="flex items-center gap-2 px-5 py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold hover:border-purple-300 hover:text-purple-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 px-5 py-3 rounded-xl border-2 font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+          style={{
+            borderColor: page === totalPages - 1 ? '#e5e7eb' : '#d97706',
+            color: page === totalPages - 1 ? '#9ca3af' : '#b45309',
+            background: page === totalPages - 1 ? 'transparent' : '#fffbeb',
+          }}
         >
           Suivant
           <ChevronRight className="w-4 h-4" />

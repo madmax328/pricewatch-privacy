@@ -33,6 +33,7 @@ export default async function StoryPage({
     language: string;
     content: string;
     createdAt: Date;
+    childAvatar?: { gender: 'boy' | 'girl'; hair: string; skin: string };
   } | null;
 
   if (!story) notFound();
@@ -76,6 +77,7 @@ export default async function StoryPage({
           theme={story.theme}
           themeEmoji={themeEmoji}
           language={story.language}
+          childAvatar={story.childAvatar}
         />
 
         {/* Actions */}

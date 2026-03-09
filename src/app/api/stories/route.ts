@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { childName, childAge, theme, language } = body;
+    const { childName, childAge, theme, language, childAvatar } = body;
 
     if (!childName || !childAge || !theme || !language) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -88,6 +88,7 @@ export async function POST(req: NextRequest) {
       title: generated.title,
       content: generated.content,
       locale: language,
+      ...(childAvatar && { childAvatar }),
     });
 
     // Increment usage counter

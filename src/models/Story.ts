@@ -1,5 +1,11 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+export interface IChildAvatar {
+  gender: 'boy' | 'girl';
+  hair: string;
+  skin: string;
+}
+
 export interface IStory extends Document {
   userId: mongoose.Types.ObjectId;
   childName: string;
@@ -12,6 +18,7 @@ export interface IStory extends Document {
   audioUrl?: string;
   locale: string;
   printOrdered: boolean;
+  childAvatar?: IChildAvatar;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -29,6 +36,11 @@ const StorySchema = new Schema<IStory>(
     audioUrl: { type: String },
     locale: { type: String, default: 'fr' },
     printOrdered: { type: Boolean, default: false },
+    childAvatar: {
+      gender: { type: String, enum: ['boy', 'girl'] },
+      hair: { type: String },
+      skin: { type: String },
+    },
   },
   { timestamps: true }
 );
