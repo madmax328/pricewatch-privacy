@@ -74,6 +74,7 @@ export default async function StoryPage({
           title={story.title}
           content={story.content}
           childName={story.childName}
+          childAge={story.childAge}
           theme={story.theme}
           themeEmoji={themeEmoji}
           language={story.language}

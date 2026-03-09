@@ -37,38 +37,52 @@ interface PageImage {
   loaded: boolean;
 }
 
+function getAgeStyle(childAge: number): string {
+  if (childAge <= 5) return 'watercolor illustration, soft pastel colors, cute rounded shapes, simple, dreamy, storybook art';
+  if (childAge <= 9) return 'colorful digital illustration, semi-realistic, vibrant, detailed, adventure scene';
+  return 'detailed realistic illustration, cinematic lighting, dramatic, action scene, concept art style, no baby cartoon';
+}
+
+function getCharacterDesc(childAvatar: ChildAvatar | undefined, childAge: number, childName: string): string {
+  const genderWord = childAge >= 10
+    ? (childAvatar?.gender === 'girl' ? 'teenage girl' : 'teenage boy')
+    : (childAvatar?.gender === 'girl' ? 'young girl' : 'young boy');
+  if (childAvatar) {
+    return `${genderWord} with ${childAvatar.hair} hair and ${childAvatar.skin} skin tone`;
+  }
+  return `${genderWord} named ${childName}`;
+}
+
 function buildImageUrl(
   theme: string,
   childName: string,
   childAvatar: ChildAvatar | undefined,
+  childAge: number,
   pageIndex: number,
   pageContent: string,
   isCover: boolean
 ): string {
   const themePrompt = THEME_PROMPTS[theme] || 'magical story';
-  const avatarDesc = childAvatar
-    ? `${childAvatar.gender === 'girl' ? 'little girl' : 'little boy'} with ${childAvatar.hair} hair and ${childAvatar.skin} skin`
-    : `child named ${childName}`;
+  const style = getAgeStyle(childAge);
+  const characterDesc = getCharacterDesc(childAvatar, childAge, childName);
 
   let prompt: string;
-  let size: string;
 
   if (isCover) {
-    prompt = `beautiful children book cover illustration, ${themePrompt}, ${avatarDesc} as the main hero, magical adventure, watercolor style, soft pastel colors, dreamy, no text, no words, storybook art`;
-    size = 'width=600&height=400';
+    prompt = `${themePrompt}, ${characterDesc} as the main hero, ${style}, no text, no words, no watermark`;
   } else {
-    const hint = pageContent.slice(0, 120).replace(/[^\w\s]/g, '').trim();
-    prompt = `children book illustration, ${themePrompt}, ${avatarDesc}, ${hint}, watercolor style, soft pastel colors, cute, warm light, no text, no words`;
-    size = 'width=600&height=360';
+    const hint = pageContent.slice(0, 100).replace(/[^\w\s]/g, '').trim();
+    prompt = `${themePrompt}, ${characterDesc}, ${hint}, ${style}, no text, no words, no watermark`;
   }
 
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${size}&nologo=true&seed=${pageIndex * 37 + 11}`;
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=480&height=320&nologo=true&model=flux&seed=${pageIndex * 37 + 11}`;
 }
 
 export default function StoryBook({
   title,
   content,
   childName,
+  childAge = 6,
   theme,
   themeEmoji,
   language = 'fr',
@@ -77,6 +91,7 @@ export default function StoryBook({
   title: string;
   content: string;
   childName: string;
+  childAge?: number;
   theme: string;
   themeEmoji: string;
   language?: string;
@@ -95,16 +110,17 @@ export default function StoryBook({
   const [pageImages, setPageImages] = useState<Record<number, PageImage>>({});
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // Auto-generate image for current page + preload next
+  // Preload ALL pages immediately on mount
   useEffect(() => {
-    [page, page + 1].forEach((p) => {
-      if (p >= totalPages || pageImages[p]) return;
+    const initial: Record<number, PageImage> = {};
+    for (let p = 0; p < totalPages; p++) {
       const isCover = p === 0;
       const pageContent = isCover ? '' : contentPages[p - 1]?.join(' ') || '';
-      const url = buildImageUrl(theme, childName, childAvatar, p, pageContent, isCover);
-      setPageImages((prev) => ({ ...prev, [p]: { url, loaded: false } }));
-    });
-  }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
+      const url = buildImageUrl(theme, childName, childAvatar, childAge, p, pageContent, isCover);
+      initial[p] = { url, loaded: false };
+    }
+    setPageImages(initial);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const markLoaded = (p: number) => {
     setPageImages((prev) =>
