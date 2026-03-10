@@ -98,7 +98,19 @@
     "createFirst": "Criar minha primeira história",
     "storiesUsed": "histórias usadas este mês",
     "unlimited": "Ilimitado",
-    "upgradePrompt": "Upgrade para Premium para histórias ilimitadas"
+    "upgradePrompt": "Upgrade para Premium para histórias ilimitadas",
+    "hello": "Olá {name} 👋",
+    "newStory": "Nova história",
+    "currentPlan": "Plano atual",
+    "free": "Grátis",
+    "storiesThisMonth": "Histórias este mês",
+    "storiesTotal": "Histórias criadas",
+    "storiesLeftBanner": "Apenas {count} história(s) gratuita(s) restante(s)!",
+    "upgradeCta": "⚡ Upgrade para Premium — €2,99/mês",
+    "loadingError": "Erro ao carregar",
+    "deleteConfirm": "Eliminar esta história?",
+    "deleteSuccess": "História eliminada",
+    "deleteError": "Erro ao eliminar"
   },
   "pricing": {
     "title": "Escolha seu plano",

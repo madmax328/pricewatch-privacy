@@ -98,7 +98,19 @@
     "createFirst": "Create my first story",
     "storiesUsed": "stories used this month",
     "unlimited": "Unlimited",
-    "upgradePrompt": "Upgrade to Premium for unlimited stories"
+    "upgradePrompt": "Upgrade to Premium for unlimited stories",
+    "hello": "Hello {name} 👋",
+    "newStory": "New story",
+    "currentPlan": "Current plan",
+    "free": "Free",
+    "storiesThisMonth": "Stories this month",
+    "storiesTotal": "Stories created",
+    "storiesLeftBanner": "Only {count} free story/stories left!",
+    "upgradeCta": "⚡ Upgrade to Premium — €2.99/month",
+    "loadingError": "Loading error",
+    "deleteConfirm": "Delete this story?",
+    "deleteSuccess": "Story deleted",
+    "deleteError": "Error deleting story"
   },
   "pricing": {
     "title": "Choose your plan",

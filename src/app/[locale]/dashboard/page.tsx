@@ -30,6 +30,7 @@ export default function DashboardPage() {
   const { data: session, status } = useSession();
   const locale = useLocale();
   const t = useTranslations('dashboard');
+  const tc = useTranslations('common');
 
   const [stories, setStories] = useState<Story[]>([]);
   const [user, setUser] = useState<UserData | null>(null);
@@ -56,20 +57,20 @@ export default function DashboardPage() {
       setStories(storiesData.stories || []);
       setUser(userData.user);
     } catch {
-      toast.error('Erreur lors du chargement');
+      toast.error(t('loadingError'));
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Supprimer cette histoire ?')) return;
+    if (!confirm(t('deleteConfirm'))) return;
     try {
       await fetch(`/api/stories/${id}`, { method: 'DELETE' });
       setStories((prev) => prev.filter((s) => s._id !== id));
-      toast.success('Histoire supprimée');
+      toast.success(t('deleteSuccess'));
     } catch {
-      toast.error('Erreur lors de la suppression');
+      toast.error(t('deleteError'));
     }
   };
 
@@ -88,7 +89,7 @@ export default function DashboardPage() {
       <div className="min-h-screen gradient-warm flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 rounded-full gradient-primary animate-spin mx-auto mb-4 border-4 border-purple-200" />
-          <p className="text-gray-500">Chargement...</p>
+          <p className="text-gray-500">{tc('loading')}</p>
         </div>
       </div>
     );
@@ -104,7 +105,7 @@ export default function DashboardPage() {
           <div>
             <h1 className="text-3xl font-extrabold text-gray-900">{t('title')}</h1>
             <p className="text-gray-500 mt-1">
-              Bonjour {user?.name?.split(' ')[0]} 👋
+              {t('hello', { name: user?.name?.split(' ')[0] || '' })}
             </p>
           </div>
           <Link
@@ -112,14 +113,14 @@ export default function DashboardPage() {
             className="inline-flex items-center gap-2 px-5 py-3 rounded-xl gradient-primary text-white font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-purple-200"
           >
             <Plus className="w-4 h-4" />
-            Nouvelle histoire
+            {t('newStory')}
           </Link>
         </div>
 
         {/* Stats bar */}
         <div className="grid sm:grid-cols-3 gap-4 mb-10">
           <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-            <p className="text-sm text-gray-500 mb-1">Plan actuel</p>
+            <p className="text-sm text-gray-500 mb-1">{t('currentPlan')}</p>
             <div className="flex items-center gap-2">
               {user?.plan === 'premium' ? (
                 <>
@@ -129,20 +130,20 @@ export default function DashboardPage() {
               ) : (
                 <>
                   <Sparkles className="w-5 h-5 text-purple-500" />
-                  <span className="font-bold text-gray-900">Gratuit</span>
+                  <span className="font-bold text-gray-900">{t('free')}</span>
                 </>
               )}
             </div>
           </div>
           <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-            <p className="text-sm text-gray-500 mb-1">Histoires ce mois</p>
+            <p className="text-sm text-gray-500 mb-1">{t('storiesThisMonth')}</p>
             <p className="font-bold text-gray-900 text-xl">
               {user?.storiesUsedThisMonth || 0}
               {user?.plan !== 'premium' && <span className="text-gray-400 text-sm font-normal"> / 5</span>}
             </p>
           </div>
           <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-            <p className="text-sm text-gray-500 mb-1">Histoires créées</p>
+            <p className="text-sm text-gray-500 mb-1">{t('storiesTotal')}</p>
             <p className="font-bold text-gray-900 text-xl">{stories.length}</p>
           </div>
         </div>
@@ -151,14 +152,14 @@ export default function DashboardPage() {
         {user?.plan === 'free' && storiesLeft <= 2 && (
           <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
-              <p className="font-bold text-lg">Plus que {storiesLeft} histoire{storiesLeft !== 1 ? 's' : ''} gratuites !</p>
-              <p className="text-purple-100 text-sm mt-1">Passez en Premium pour des histoires illimitées.</p>
+              <p className="font-bold text-lg">{t('storiesLeftBanner', { count: storiesLeft })}</p>
+              <p className="text-purple-100 text-sm mt-1">{t('upgradePrompt')}</p>
             </div>
             <button
               onClick={handleUpgrade}
               className="whitespace-nowrap px-6 py-3 rounded-xl bg-white text-purple-700 font-bold hover:bg-purple-50 transition-colors shadow-lg"
             >
-              ⚡ Passer Premium — 2,99€/mois
+              {t('upgradeCta')}
             </button>
           </div>
         )}

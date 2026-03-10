@@ -76,7 +76,7 @@ function buildImageUrl(
     prompt = `${themePrompt}, ${characterDesc}, ${hint}, ${style}, no text, no words, no watermark`;
   }
 
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=480&height=320&nologo=true&model=turbo&seed=${pageIndex * 37 + 11}`;
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=480&height=320&nologo=true&seed=${pageIndex * 37 + 11}`;
 }
 
 export default function StoryBook({

@@ -98,7 +98,19 @@
     "createFirst": "Crear mi primer cuento",
     "storiesUsed": "cuentos usados este mes",
     "unlimited": "Ilimitado",
-    "upgradePrompt": "Pasa a Premium para cuentos ilimitados"
+    "upgradePrompt": "Pasa a Premium para cuentos ilimitados",
+    "hello": "Hola {name} 👋",
+    "newStory": "Nuevo cuento",
+    "currentPlan": "Plan actual",
+    "free": "Gratis",
+    "storiesThisMonth": "Cuentos este mes",
+    "storiesTotal": "Cuentos creados",
+    "storiesLeftBanner": "¡Solo quedan {count} cuento(s) gratis!",
+    "upgradeCta": "⚡ Pasar a Premium — 2,99€/mes",
+    "loadingError": "Error al cargar",
+    "deleteConfirm": "¿Eliminar este cuento?",
+    "deleteSuccess": "Cuento eliminado",
+    "deleteError": "Error al eliminar"
   },
   "pricing": {
     "title": "Elige tu plan",

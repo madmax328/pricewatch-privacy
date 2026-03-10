@@ -98,7 +98,19 @@
     "createFirst": "Meine erste Geschichte erstellen",
     "storiesUsed": "Geschichten diesen Monat genutzt",
     "unlimited": "Unbegrenzt",
-    "upgradePrompt": "Upgrade auf Premium für unbegrenzte Geschichten"
+    "upgradePrompt": "Upgrade auf Premium für unbegrenzte Geschichten",
+    "hello": "Hallo {name} 👋",
+    "newStory": "Neue Geschichte",
+    "currentPlan": "Aktueller Plan",
+    "free": "Kostenlos",
+    "storiesThisMonth": "Geschichten diesen Monat",
+    "storiesTotal": "Erstellte Geschichten",
+    "storiesLeftBanner": "Nur noch {count} kostenlose Geschichte(n)!",
+    "upgradeCta": "⚡ Auf Premium upgraden — 2,99€/Monat",
+    "loadingError": "Fehler beim Laden",
+    "deleteConfirm": "Diese Geschichte löschen?",
+    "deleteSuccess": "Geschichte gelöscht",
+    "deleteError": "Fehler beim Löschen"
   },
   "pricing": {
     "title": "Wähle deinen Plan",

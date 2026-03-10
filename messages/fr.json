@@ -98,7 +98,19 @@
     "createFirst": "Créer ma première histoire",
     "storiesUsed": "histoires utilisées ce mois",
     "unlimited": "Illimité",
-    "upgradePrompt": "Passez en Premium pour des histoires illimitées"
+    "upgradePrompt": "Passez en Premium pour des histoires illimitées",
+    "hello": "Bonjour {name} 👋",
+    "newStory": "Nouvelle histoire",
+    "currentPlan": "Plan actuel",
+    "free": "Gratuit",
+    "storiesThisMonth": "Histoires ce mois",
+    "storiesTotal": "Histoires créées",
+    "storiesLeftBanner": "Plus que {count} histoire(s) gratuite(s) !",
+    "upgradeCta": "⚡ Passer Premium — 2,99€/mois",
+    "loadingError": "Erreur lors du chargement",
+    "deleteConfirm": "Supprimer cette histoire ?",
+    "deleteSuccess": "Histoire supprimée",
+    "deleteError": "Erreur lors de la suppression"
   },
   "pricing": {
     "title": "Choisissez votre formule",
