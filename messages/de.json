@@ -67,7 +67,14 @@
     "avatarGirl": "Mädchen",
     "avatarHair": "Haarfarbe",
     "avatarSkin": "Hautton",
-    "avatarPreview": "Illustrationen werden mit diesem Charakter erstellt"
+    "avatarPreview": "Illustrationen werden mit diesem Charakter erstellt",
+    "badge": "Geschichten-Generator",
+    "pageTitle": "Erstelle eine",
+    "pageTitleHighlight": "magische Geschichte",
+    "pageSubtitle": "Dein Kind wird der Held eines einzigartigen Abenteuers, in 30 Sekunden von KI generiert.",
+    "example1": "Emma und die Drachen",
+    "example2": "Lucas im Weltall",
+    "example3": "Sofia und die Delfine"
   },
   "story": {
     "readTime": "Min. Lesezeit",
@@ -89,7 +96,8 @@
     "end": "✨ Ende ✨",
     "prev": "Zurück",
     "next": "Weiter",
-    "orderError": "Fehler bei der Bestellung."
+    "orderError": "Fehler bei der Bestellung.",
+    "read": "Lesen"
   },
   "dashboard": {
     "title": "Meine Geschichten",

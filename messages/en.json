@@ -67,7 +67,14 @@
     "avatarGirl": "Girl",
     "avatarHair": "Hair color",
     "avatarSkin": "Skin tone",
-    "avatarPreview": "Illustrations will be generated with this character"
+    "avatarPreview": "Illustrations will be generated with this character",
+    "badge": "Story Generator",
+    "pageTitle": "Create a",
+    "pageTitleHighlight": "magical story",
+    "pageSubtitle": "Your child will be the hero of a unique adventure, generated in 30 seconds by AI.",
+    "example1": "Emma and the Dragons",
+    "example2": "Lucas in Space",
+    "example3": "Sofia and the Dolphins"
   },
   "story": {
     "readTime": "min read",
@@ -89,7 +96,8 @@
     "end": "✨ The End ✨",
     "prev": "Previous",
     "next": "Next",
-    "orderError": "Error placing order."
+    "orderError": "Error placing order.",
+    "read": "Read"
   },
   "dashboard": {
     "title": "My stories",

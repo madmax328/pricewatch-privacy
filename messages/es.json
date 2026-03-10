@@ -67,7 +67,14 @@
     "avatarGirl": "Niña",
     "avatarHair": "Color de cabello",
     "avatarSkin": "Tono de piel",
-    "avatarPreview": "Las ilustraciones se generarán con este personaje"
+    "avatarPreview": "Las ilustraciones se generarán con este personaje",
+    "badge": "Generador de cuentos",
+    "pageTitle": "Crea un cuento",
+    "pageTitleHighlight": "mágico",
+    "pageSubtitle": "Tu hijo/a será el héroe de una aventura única, generada en 30 segundos por la IA.",
+    "example1": "Emma y los Dragones",
+    "example2": "Lucas en el Espacio",
+    "example3": "Sofía y los Delfines"
   },
   "story": {
     "readTime": "min de lectura",
@@ -89,7 +96,8 @@
     "end": "✨ Fin ✨",
     "prev": "Anterior",
     "next": "Siguiente",
-    "orderError": "Error al realizar el pedido."
+    "orderError": "Error al realizar el pedido.",
+    "read": "Leer"
   },
   "dashboard": {
     "title": "Mis cuentos",

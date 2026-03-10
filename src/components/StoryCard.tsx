@@ -74,7 +74,7 @@ export default function StoryCard({ story, onDelete }: StoryCardProps) {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-50 text-purple-700 text-xs font-semibold hover:bg-purple-100 transition-colors"
           >
             <BookOpen className="w-3 h-3" />
-            Lire
+            {t('read')}
           </Link>
         </div>
       </div>

@@ -67,7 +67,14 @@
     "avatarGirl": "Fille",
     "avatarHair": "Couleur des cheveux",
     "avatarSkin": "Teinte de peau",
-    "avatarPreview": "Les illustrations seront générées avec ce personnage"
+    "avatarPreview": "Les illustrations seront générées avec ce personnage",
+    "badge": "Générateur d'histoires",
+    "pageTitle": "Crée une histoire",
+    "pageTitleHighlight": "magique",
+    "pageSubtitle": "Ton enfant sera le héros d'une aventure unique, générée en 30 secondes par l'IA.",
+    "example1": "Emma et les Dragons",
+    "example2": "Lucas dans l'Espace",
+    "example3": "Sofia et les Dauphins"
   },
   "story": {
     "readTime": "min de lecture",
@@ -89,7 +96,8 @@
     "end": "✨ Fin ✨",
     "prev": "Précédent",
     "next": "Suivant",
-    "orderError": "Erreur lors de la commande."
+    "orderError": "Erreur lors de la commande.",
+    "read": "Lire"
   },
   "dashboard": {
     "title": "Mes histoires",
