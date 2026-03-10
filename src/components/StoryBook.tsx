@@ -35,7 +35,7 @@ interface ChildAvatar {
 
 interface PageImage {
   url: string;
-  loaded: boolean;
+  status: 'loading' | 'loaded' | 'error';
 }
 
 function getAgeStyle(childAge: number): string {
@@ -113,21 +113,32 @@ export default function StoryBook({
   const [pageImages, setPageImages] = useState<Record<number, PageImage>>({});
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // Preload ALL pages immediately on mount
-  useEffect(() => {
-    const initial: Record<number, PageImage> = {};
-    for (let p = 0; p < totalPages; p++) {
+  // Load image for a specific page
+  const loadPageImage = (p: number) => {
+    setPageImages((prev) => {
+      if (prev[p]) return prev; // already loading/loaded
       const isCover = p === 0;
       const pageContent = isCover ? '' : contentPages[p - 1]?.join(' ') || '';
       const url = buildImageUrl(theme, childName, childAvatar, childAge, p, pageContent, isCover);
-      initial[p] = { url, loaded: false };
-    }
-    setPageImages(initial);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+      return { ...prev, [p]: { url, status: 'loading' } };
+    });
+  };
+
+  // Load current page + next page on mount and on page change
+  useEffect(() => {
+    loadPageImage(page);
+    if (page + 1 < totalPages) loadPageImage(page + 1);
+  }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const markLoaded = (p: number) => {
     setPageImages((prev) =>
-      prev[p] ? { ...prev, [p]: { ...prev[p], loaded: true } } : prev
+      prev[p] ? { ...prev, [p]: { ...prev[p], status: 'loaded' } } : prev
+    );
+  };
+
+  const markError = (p: number) => {
+    setPageImages((prev) =>
+      prev[p] ? { ...prev, [p]: { ...prev[p], status: 'error' } } : prev
     );
   };
 
@@ -197,45 +208,45 @@ export default function StoryBook({
             className="relative overflow-hidden bg-gradient-to-b from-purple-100 to-purple-50"
             style={{ minHeight: '260px' }}
           >
-            {currentImage ? (
-              <>
-                {!currentImage.loaded && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                    <div
-                      className="w-10 h-10 rounded-full animate-spin"
-                      style={{
-                        border: '3px solid #e9d5ff',
-                        borderTopColor: '#9333ea',
-                      }}
-                    />
-                    <span className="text-sm text-purple-400 font-medium">
-                      {t('illustrationLoading')}
-                    </span>
-                  </div>
-                )}
-                <img
-                  key={currentImage.url}
-                  src={currentImage.url}
-                  alt="Illustration"
-                  className={`w-full object-cover transition-opacity duration-700 ${
-                    currentImage.loaded ? 'opacity-100' : 'opacity-0 absolute inset-0'
-                  }`}
-                  style={{ maxHeight: '400px' }}
-                  onLoad={() => markLoaded(page)}
-                />
-              </>
+            {currentImage?.status === 'loaded' ? (
+              <img
+                key={currentImage.url}
+                src={currentImage.url}
+                alt="Illustration"
+                className="w-full object-cover"
+                style={{ maxHeight: '400px', display: 'block' }}
+              />
+            ) : currentImage?.status === 'error' ? (
+              <div
+                className="flex flex-col items-center justify-center gap-2 text-purple-300"
+                style={{ minHeight: '260px' }}
+              >
+                <span className="text-4xl">🎨</span>
+                <span className="text-sm">Illustration indisponible</span>
+              </div>
             ) : (
               <div
-                className="flex items-center justify-center"
+                className="flex flex-col items-center justify-center gap-3"
                 style={{ minHeight: '260px' }}
               >
                 <div
                   className="w-10 h-10 rounded-full animate-spin"
-                  style={{
-                    border: '3px solid #e9d5ff',
-                    borderTopColor: '#9333ea',
-                  }}
+                  style={{ border: '3px solid #e9d5ff', borderTopColor: '#9333ea' }}
                 />
+                <span className="text-sm text-purple-400 font-medium">
+                  {t('illustrationLoading')}
+                </span>
+                {/* Hidden img to trigger load */}
+                {currentImage && (
+                  <img
+                    key={currentImage.url}
+                    src={currentImage.url}
+                    alt=""
+                    style={{ display: 'none' }}
+                    onLoad={() => markLoaded(page)}
+                    onError={() => markError(page)}
+                  />
+                )}
               </div>
             )}
 
