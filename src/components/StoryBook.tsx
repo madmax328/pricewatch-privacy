@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, BookOpen, Volume2, VolumeX } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 const PARAGRAPHS_PER_PAGE = 2;
 
@@ -75,7 +76,7 @@ function buildImageUrl(
     prompt = `${themePrompt}, ${characterDesc}, ${hint}, ${style}, no text, no words, no watermark`;
   }
 
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=480&height=320&nologo=true&model=flux&seed=${pageIndex * 37 + 11}`;
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=480&height=320&nologo=true&model=turbo&seed=${pageIndex * 37 + 11}`;
 }
 
 export default function StoryBook({
@@ -104,6 +105,8 @@ export default function StoryBook({
     contentPages.push(paragraphs.slice(i, i + PARAGRAPHS_PER_PAGE));
   }
   const totalPages = contentPages.length + 1; // +1 for cover
+
+  const t = useTranslations('story');
 
   const [page, setPage] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -167,9 +170,9 @@ export default function StoryBook({
           }`}
         >
           {isPlaying ? (
-            <><VolumeX className="w-4 h-4" /> Arrêter la lecture</>
+            <><VolumeX className="w-4 h-4" /> {t('stopListening')}</>
           ) : (
-            <><Volume2 className="w-4 h-4" /> Écouter l&apos;histoire</>
+            <><Volume2 className="w-4 h-4" /> {t('listen')}</>
           )}
         </button>
       </div>
@@ -206,7 +209,7 @@ export default function StoryBook({
                       }}
                     />
                     <span className="text-sm text-purple-400 font-medium">
-                      Illustration en cours...
+                      {t('illustrationLoading')}
                     </span>
                   </div>
                 )}
@@ -256,7 +259,7 @@ export default function StoryBook({
                   className="text-xs font-bold tracking-widest uppercase mb-3"
                   style={{ color: '#b45309' }}
                 >
-                  {themeEmoji} Une histoire pour
+                  {themeEmoji} {t('storyFor')}
                 </p>
                 <h1
                   className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2 leading-tight"
@@ -276,7 +279,7 @@ export default function StoryBook({
                   style={{ background: 'linear-gradient(135deg, #b45309, #92400e)' }}
                 >
                   <BookOpen className="w-5 h-5" />
-                  Commencer l&apos;histoire
+                  {t('startReading')}
                 </button>
               </div>
             ) : (
@@ -299,7 +302,7 @@ export default function StoryBook({
                       className="text-lg font-bold italic"
                       style={{ color: '#b45309' }}
                     >
-                      ✨ Fin ✨
+                      {t('end')}
                     </span>
                   </div>
                 )}
@@ -332,7 +335,7 @@ export default function StoryBook({
           }}
         >
           <ChevronLeft className="w-4 h-4" />
-          Précédent
+          {t('prev')}
         </button>
 
         <div className="flex gap-1.5">
@@ -359,7 +362,7 @@ export default function StoryBook({
             background: page === totalPages - 1 ? 'transparent' : '#fffbeb',
           }}
         >
-          Suivant
+          {t('next')}
           <ChevronRight className="w-4 h-4" />
         </button>
       </div>

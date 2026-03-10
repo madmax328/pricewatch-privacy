@@ -60,7 +60,14 @@
     "generating": "Création de la magie...",
     "freeLeft": "histoires gratuites restantes ce mois",
     "loginRequired": "Connecte-toi pour générer des histoires",
-    "limitReached": "Limite mensuelle atteinte — Passe en Premium"
+    "limitReached": "Limite mensuelle atteinte — Passe en Premium",
+    "avatarTitle": "Personnaliser le héros de l'histoire",
+    "avatarGender": "Genre",
+    "avatarBoy": "Garçon",
+    "avatarGirl": "Fille",
+    "avatarHair": "Couleur des cheveux",
+    "avatarSkin": "Teinte de peau",
+    "avatarPreview": "Les illustrations seront générées avec ce personnage"
   },
   "story": {
     "readTime": "min de lecture",
@@ -70,7 +77,19 @@
     "newStory": "Créer une nouvelle histoire",
     "for": "pour",
     "age": "ans",
-    "theme": "Thème"
+    "theme": "Thème",
+    "back": "Retour à mes histoires",
+    "readingTipTitle": "Conseil lecture",
+    "readingTipBody": "Lisez cette histoire à voix haute avec votre enfant. Laissez-le continuer certaines phrases ou inventer la suite ! C'est encore plus magique ensemble. 🌟",
+    "listen": "Écouter l'histoire",
+    "stopListening": "Arrêter la lecture",
+    "illustrationLoading": "Illustration en cours...",
+    "storyFor": "Une histoire pour",
+    "startReading": "Commencer l'histoire",
+    "end": "✨ Fin ✨",
+    "prev": "Précédent",
+    "next": "Suivant",
+    "orderError": "Erreur lors de la commande."
   },
   "dashboard": {
     "title": "Mes histoires",

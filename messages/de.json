@@ -60,7 +60,14 @@
     "generating": "Magie wird erschaffen...",
     "freeLeft": "kostenlose Geschichten diesen Monat übrig",
     "loginRequired": "Melde dich an, um Geschichten zu erstellen",
-    "limitReached": "Monatslimit erreicht — Upgrade auf Premium"
+    "limitReached": "Monatslimit erreicht — Upgrade auf Premium",
+    "avatarTitle": "Helden der Geschichte anpassen",
+    "avatarGender": "Geschlecht",
+    "avatarBoy": "Junge",
+    "avatarGirl": "Mädchen",
+    "avatarHair": "Haarfarbe",
+    "avatarSkin": "Hautton",
+    "avatarPreview": "Illustrationen werden mit diesem Charakter erstellt"
   },
   "story": {
     "readTime": "Min. Lesezeit",
@@ -70,7 +77,19 @@
     "newStory": "Neue Geschichte erstellen",
     "for": "für",
     "age": "Jahre",
-    "theme": "Thema"
+    "theme": "Thema",
+    "back": "Zurück zu meinen Geschichten",
+    "readingTipTitle": "Lesetipp",
+    "readingTipBody": "Lese diese Geschichte laut mit deinem Kind vor. Lass es einige Sätze fortführen oder sich das Ende ausdenken! Gemeinsam ist es noch magischer. 🌟",
+    "listen": "Geschichte anhören",
+    "stopListening": "Vorlesen stoppen",
+    "illustrationLoading": "Illustration wird geladen...",
+    "storyFor": "Eine Geschichte für",
+    "startReading": "Geschichte beginnen",
+    "end": "✨ Ende ✨",
+    "prev": "Zurück",
+    "next": "Weiter",
+    "orderError": "Fehler bei der Bestellung."
   },
   "dashboard": {
     "title": "Meine Geschichten",

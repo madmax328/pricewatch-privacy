@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { ArrowLeft, BookOpen, Clock, Globe } from 'lucide-react';
 import StoryActions from '@/components/StoryActions';
 import StoryBook from '@/components/StoryBook';
+import { getTranslations } from 'next-intl/server';
 
 const THEME_EMOJIS: Record<string, string> = {
   dragons: '🐉', space: '🚀', forest: '🌲', ocean: '🌊',
@@ -38,6 +39,9 @@ export default async function StoryPage({
 
   if (!story) notFound();
 
+  const t = await getTranslations({ locale, namespace: 'story' });
+  const tc = await getTranslations({ locale, namespace: 'common' });
+
   const wordCount = story.content.split(' ').length;
   const readingTime = Math.ceil(wordCount / 150);
   const themeEmoji = THEME_EMOJIS[story.theme] || '📖';
@@ -51,13 +55,13 @@ export default async function StoryPage({
           className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-purple-600 transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4" />
-          Retour à mes histoires
+          {t('back')}
         </Link>
 
         {/* Meta badges */}
         <div className="flex flex-wrap gap-2 mb-6">
           <span className="px-3 py-1 bg-white border border-purple-100 text-purple-700 rounded-full text-xs font-semibold shadow-sm">
-            {themeEmoji} {story.childName} · {story.childAge} ans
+            {themeEmoji} {story.childName} · {story.childAge} {t('age')}
           </span>
           <span className="px-3 py-1 bg-white border border-orange-100 text-orange-700 rounded-full text-xs font-semibold shadow-sm flex items-center gap-1">
             <Globe className="w-3 h-3" />
@@ -65,7 +69,7 @@ export default async function StoryPage({
           </span>
           <span className="px-3 py-1 bg-white border border-gray-100 text-gray-500 rounded-full text-xs font-medium shadow-sm flex items-center gap-1">
             <Clock className="w-3 h-3" />
-            {readingTime} min
+            {readingTime} {t('readTime')}
           </span>
         </div>
 
@@ -82,17 +86,15 @@ export default async function StoryPage({
         />
 
         {/* Actions */}
-        <StoryActions locale={locale} storyId={story._id.toString()} />
+        <StoryActions storyId={story._id.toString()} />
 
         {/* Reading tips */}
         <div className="mt-8 bg-blue-50 border border-blue-100 rounded-2xl p-6">
           <div className="flex items-start gap-3">
             <BookOpen className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="font-semibold text-blue-900 text-sm mb-1">Conseil lecture</p>
-              <p className="text-blue-700 text-sm">
-                Lisez cette histoire à voix haute avec votre enfant. Laissez-le continuer certaines phrases ou inventer la suite ! C&apos;est encore plus magique ensemble. 🌟
-              </p>
+              <p className="font-semibold text-blue-900 text-sm mb-1">{t('readingTipTitle')}</p>
+              <p className="text-blue-700 text-sm">{t('readingTipBody')}</p>
             </div>
           </div>
         </div>

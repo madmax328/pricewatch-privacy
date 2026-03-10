@@ -1,18 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Sparkles, Printer } from 'lucide-react';
+import { useTranslations, useLocale } from 'next-intl';
 import toast from 'react-hot-toast';
 
 export default function StoryActions({
-  locale,
   storyId,
 }: {
-  locale: string;
+  locale?: string;
   storyId: string;
 }) {
-  const router = useRouter();
+  const t = useTranslations('story');
+  const locale = useLocale();
 
   const handleOrderBook = async () => {
     const res = await fetch('/api/stripe/checkout', {
@@ -24,7 +24,7 @@ export default function StoryActions({
     if (data.url) {
       window.location.href = data.url;
     } else {
-      toast.error(data.error || 'Erreur lors de la commande.');
+      toast.error(data.error || t('orderError'));
     }
   };
 
@@ -35,14 +35,14 @@ export default function StoryActions({
         className="flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-purple-200 text-purple-700 font-semibold hover:bg-purple-50 transition-colors"
       >
         <Sparkles className="w-5 h-5" />
-        Créer une nouvelle histoire
+        {t('newStory')}
       </Link>
       <button
         onClick={handleOrderBook}
         className="flex items-center justify-center gap-2 py-4 rounded-xl gradient-primary text-white font-semibold hover:opacity-90 transition-opacity"
       >
         <Printer className="w-5 h-5" />
-        Commander le livre (14,99€)
+        {t('orderBook')}
       </button>
     </div>
   );

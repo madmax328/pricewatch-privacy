@@ -60,7 +60,14 @@
     "generating": "Creating the magic...",
     "freeLeft": "free stories left this month",
     "loginRequired": "Sign in to generate stories",
-    "limitReached": "Monthly limit reached — Upgrade to Premium"
+    "limitReached": "Monthly limit reached — Upgrade to Premium",
+    "avatarTitle": "Customize the story hero",
+    "avatarGender": "Gender",
+    "avatarBoy": "Boy",
+    "avatarGirl": "Girl",
+    "avatarHair": "Hair color",
+    "avatarSkin": "Skin tone",
+    "avatarPreview": "Illustrations will be generated with this character"
   },
   "story": {
     "readTime": "min read",
@@ -70,7 +77,19 @@
     "newStory": "Create a new story",
     "for": "for",
     "age": "years old",
-    "theme": "Theme"
+    "theme": "Theme",
+    "back": "Back to my stories",
+    "readingTipTitle": "Reading tip",
+    "readingTipBody": "Read this story aloud with your child. Let them continue some sentences or make up what comes next! It's even more magical together. 🌟",
+    "listen": "Listen to story",
+    "stopListening": "Stop reading",
+    "illustrationLoading": "Loading illustration...",
+    "storyFor": "A story for",
+    "startReading": "Start the story",
+    "end": "✨ The End ✨",
+    "prev": "Previous",
+    "next": "Next",
+    "orderError": "Error placing order."
   },
   "dashboard": {
     "title": "My stories",

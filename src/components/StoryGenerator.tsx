@@ -191,11 +191,11 @@ export default function StoryGenerator({
 
         {/* Avatar section */}
         <div className="border border-purple-100 rounded-xl p-4 bg-purple-50/40 space-y-4">
-          <p className="text-sm font-semibold text-purple-800">🧒 Personnaliser le héros de l&apos;histoire</p>
+          <p className="text-sm font-semibold text-purple-800">🧒 {t('avatarTitle')}</p>
 
           {/* Gender */}
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-2">Genre</label>
+            <label className="block text-xs font-medium text-gray-600 mb-2">{t('avatarGender')}</label>
             <div className="flex gap-3">
               <button
                 type="button"
@@ -206,7 +206,7 @@ export default function StoryGenerator({
                     : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'
                 }`}
               >
-                👦 Garçon
+                👦 {t('avatarBoy')}
               </button>
               <button
                 type="button"
@@ -217,14 +217,14 @@ export default function StoryGenerator({
                     : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'
                 }`}
               >
-                👧 Fille
+                👧 {t('avatarGirl')}
               </button>
             </div>
           </div>
 
           {/* Hair color */}
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-2">Couleur des cheveux</label>
+            <label className="block text-xs font-medium text-gray-600 mb-2">{t('avatarHair')}</label>
             <div className="flex gap-2 flex-wrap">
               {HAIR_OPTIONS.map((opt) => (
                 <button
@@ -246,7 +246,7 @@ export default function StoryGenerator({
 
           {/* Skin tone */}
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-2">Teinte de peau</label>
+            <label className="block text-xs font-medium text-gray-600 mb-2">{t('avatarSkin')}</label>
             <div className="flex gap-2 flex-wrap">
               {SKIN_OPTIONS.map((opt) => (
                 <button
@@ -268,7 +268,7 @@ export default function StoryGenerator({
 
           {/* Avatar preview text */}
           <p className="text-xs text-purple-600 italic">
-            ✨ Les illustrations seront générées avec ce personnage
+            ✨ {t('avatarPreview')}
           </p>
         </div>
 

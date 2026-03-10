@@ -32,18 +32,46 @@ export async function generateStory({
 }: GenerateStoryParams): Promise<GeneratedStory> {
   const langName = LANGUAGE_NAMES[language] || 'French';
 
-  const prompt = `You are a talented children's book author. Write a magical, engaging bedtime story entirely in ${langName}.
+  // Age-based writing style
+  let ageGuidelines: string;
+  if (childAge <= 5) {
+    ageGuidelines = `- Very short, simple sentences (5-8 words max)
+- Extremely basic vocabulary, no difficult words
+- Lots of repetition and rhythm (like "he ran and ran and ran")
+- Onomatopoeia and sound effects ("BOOM!", "splash!", "whoosh!")
+- Simple, concrete emotions (happy, scared, surprised)
+- Very clear and direct moral lesson
+- Gentle, soothing ending to help sleep`;
+  } else if (childAge <= 9) {
+    ageGuidelines = `- Medium-length sentences with some variety
+- Age-appropriate vocabulary with occasional new words in context
+- Include dialogue between characters
+- Build suspense and a small challenge the hero must overcome
+- Describe the setting vividly but not too complexly
+- Clear moral lesson but naturally woven into the story
+- Exciting adventure with a satisfying happy ending`;
+  } else {
+    ageGuidelines = `- Longer, more complex sentences with varied structure
+- Rich vocabulary, metaphors, and descriptive language
+- Multi-dimensional characters with real motivations
+- Meaningful emotional conflict or moral dilemma
+- Subplots and plot twists are welcome
+- Deeper, nuanced moral lesson (friendship, courage, identity, responsibility)
+- Avoid anything "babyish" — treat the reader as a young adult
+- Engaging, page-turner style with real tension and satisfying resolution`;
+  }
+
+  const prompt = `You are a talented children's book author. Write a ${childAge <= 9 ? 'magical bedtime' : 'captivating'} story entirely in ${langName}, perfectly calibrated for a ${childAge}-year-old reader.
 
 Story requirements:
 - The main hero/heroine is a child named "${childName}", aged ${childAge} years old
 - Theme: ${theme}
 - Language: ${langName} (VERY IMPORTANT: the entire story must be written in ${langName})
-- Length: 400-600 words
-- Tone: warm, magical, age-appropriate for a ${childAge}-year-old
-- Structure: beginning (introduce hero and setting), middle (exciting adventure/challenge), end (happy resolution with a gentle moral lesson)
-- The child "${childName}" must be the central hero who solves the problem
-- Include vivid, imaginative descriptions
-- End with a peaceful, sleep-inducing conclusion
+- Length: ${childAge <= 5 ? '250-350' : childAge <= 9 ? '400-500' : '500-700'} words
+- Writing style for age ${childAge}:
+${ageGuidelines}
+- Structure: beginning (introduce hero and setting), middle (exciting adventure/challenge), end (happy resolution with a ${childAge >= 10 ? 'meaningful' : 'gentle'} moral lesson)
+- "${childName}" must be the central hero who solves the problem through their own initiative
 
 Respond ONLY with a valid JSON object in this exact format (no markdown, no extra text):
 {
