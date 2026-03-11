@@ -30,20 +30,28 @@ function strHash(s: string): number {
   return h;
 }
 
-function buildPagePrompt(
+const ILLUS_STYLE =
+  "children's book illustration, watercolor style, soft warm colors, cute, dreamy, magical, no text, no words";
+
+function buildIllustrationUrl(
   theme: string,
   title: string,
   childName: string,
   childAvatar: ChildAvatar | undefined,
   pageContent: string,
-  isCover: boolean
+  isCover: boolean,
+  seed: number
 ): string {
   const gender = childAvatar?.gender === 'girl' ? 'little girl' : 'little boy';
   const character = `${gender} named ${childName}`;
   const scene = isCover
     ? `${theme} adventure, ${character} as the hero, magical landscape`
-    : pageContent.slice(0, 120).replace(/[^\w\s,.'àâéèêëîïôùûü]/gi, '').trim() || `${theme} scene`;
-  return `${character}, ${scene}, ${title}`;
+    : pageContent.slice(0, 100).replace(/[^\w\s,.'àâéèêëîïôùûü]/gi, '').trim() || `${theme} scene`;
+  const prompt = `${ILLUS_STYLE}, ${character}, ${scene}`;
+  return (
+    `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}` +
+    `?width=512&height=384&seed=${seed}&nologo=true&model=flux&enhance=false`
+  );
 }
 
 export default function StoryBook({
@@ -85,9 +93,8 @@ export default function StoryBook({
     return Array.from({ length: totalPages }, (_, p) => {
       const isCover = p === 0;
       const pageContent = isCover ? '' : contentPages[p - 1]?.join(' ') || '';
-      const prompt = buildPagePrompt(theme, title, childName, childAvatar, pageContent, isCover);
       const seed = (titleHash + p * 1009) >>> 0;
-      return `/api/illustration?theme=${encodeURIComponent(theme)}&prompt=${encodeURIComponent(prompt)}&seed=${seed}`;
+      return buildIllustrationUrl(theme, title, childName, childAvatar, pageContent, isCover, seed);
     });
   }, [title, childName, theme]); // eslint-disable-line react-hooks/exhaustive-deps
 
