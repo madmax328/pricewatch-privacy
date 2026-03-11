@@ -1,37 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Edge runtime : timeout 30s sur Vercel Hobby (vs 10s serverless)
 export const runtime = 'edge';
 
-const ILLUS_STYLE =
-  "children's book illustration, watercolor style, soft warm colors, cute, dreamy, magical, no text, no words";
+const STYLE = "children's book illustration, watercolor, soft colors, cute, magical, no text";
 
 export async function GET(req: NextRequest) {
   const theme = req.nextUrl.searchParams.get('theme') || 'magic';
   const storyPrompt = req.nextUrl.searchParams.get('prompt') || theme;
-  const seed = req.nextUrl.searchParams.get('seed') || '1';
+  const seed = parseInt(req.nextUrl.searchParams.get('seed') || '1', 10);
+  const token = process.env.HUGGINGFACE_API_TOKEN;
 
-  const prompt = `${ILLUS_STYLE}, ${storyPrompt}`;
+  if (!token) {
+    return NextResponse.redirect(
+      new URL(`/api/illustration/svg?theme=${encodeURIComponent(theme)}&seed=${seed}`, req.url)
+    );
+  }
 
-  const url =
-    `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}` +
-    `?width=512&height=384&seed=${seed}&nologo=true&model=flux&enhance=false`;
+  const prompt = `${STYLE}, ${storyPrompt}`;
+  const body = JSON.stringify({ inputs: prompt, parameters: { seed, width: 512, height: 384 } });
+  const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
 
-  try {
-    const res = await fetch(url, { signal: AbortSignal.timeout(25000) });
+  // 1er essai
+  let res = await fetch('https://api-inference.huggingface.co/models/stabilityai/sdxl-turbo', {
+    method: 'POST', headers, body, signal: AbortSignal.timeout(20000),
+  });
 
-    const contentType = res.headers.get('content-type') || '';
-    if (res.ok && contentType.startsWith('image/')) {
+  // Cold start : on attend et on réessaie une fois
+  if (res.status === 503) {
+    const json = await res.json().catch(() => ({})) as { estimated_time?: number };
+    await new Promise(r => setTimeout(r, Math.min((json.estimated_time ?? 10) * 1000, 15000)));
+    res = await fetch('https://api-inference.huggingface.co/models/stabilityai/sdxl-turbo', {
+      method: 'POST', headers, body, signal: AbortSignal.timeout(20000),
+    });
+  }
+
+  if (res.ok) {
+    const ct = res.headers.get('content-type') || 'image/jpeg';
+    if (ct.startsWith('image/')) {
       const buffer = await res.arrayBuffer();
-      return new NextResponse(buffer, {
-        headers: {
-          'Content-Type': contentType,
-          'Cache-Control': 'public, max-age=86400',
-        },
-      });
+      if (buffer.byteLength > 1000) {
+        return new NextResponse(buffer, {
+          headers: { 'Content-Type': ct, 'Cache-Control': 'public, max-age=86400' },
+        });
+      }
     }
-  } catch {
-    // timeout ou erreur → fallback SVG
   }
 
   return NextResponse.redirect(
