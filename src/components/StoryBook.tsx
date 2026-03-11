@@ -76,7 +76,7 @@ function buildImageUrl(
     prompt = `${themePrompt}, ${characterDesc}, ${hint}, ${style}, no text, no words, no watermark`;
   }
 
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=480&height=320&nologo=true&seed=${pageIndex * 37 + 11}`;
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=512&height=384&nologo=1&seed=${pageIndex * 37 + 11}`;
 }
 
 export default function StoryBook({
@@ -113,23 +113,6 @@ export default function StoryBook({
   const [pageImages, setPageImages] = useState<Record<number, PageImage>>({});
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // Load image for a specific page
-  const loadPageImage = (p: number) => {
-    setPageImages((prev) => {
-      if (prev[p]) return prev; // already loading/loaded
-      const isCover = p === 0;
-      const pageContent = isCover ? '' : contentPages[p - 1]?.join(' ') || '';
-      const url = buildImageUrl(theme, childName, childAvatar, childAge, p, pageContent, isCover);
-      return { ...prev, [p]: { url, status: 'loading' } };
-    });
-  };
-
-  // Load current page + next page on mount and on page change
-  useEffect(() => {
-    loadPageImage(page);
-    if (page + 1 < totalPages) loadPageImage(page + 1);
-  }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const markLoaded = (p: number) => {
     setPageImages((prev) =>
       prev[p] ? { ...prev, [p]: { ...prev[p], status: 'loaded' } } : prev
@@ -141,6 +124,37 @@ export default function StoryBook({
       prev[p] ? { ...prev, [p]: { ...prev[p], status: 'error' } } : prev
     );
   };
+
+  // Load image for a specific page using JS Image() constructor
+  const loadPageImage = (p: number) => {
+    setPageImages((prev) => {
+      if (prev[p]) return prev; // already queued/loaded
+      const isCover = p === 0;
+      const pageContent = isCover ? '' : contentPages[p - 1]?.join(' ') || '';
+      const url = buildImageUrl(theme, childName, childAvatar, childAge, p, pageContent, isCover);
+      // Fire-and-forget: JS Image() loads the image and updates state
+      const tryLoad = (attempt: number) => {
+        const img = new Image();
+        img.onload = () => markLoaded(p);
+        img.onerror = () => {
+          if (attempt < 3) {
+            setTimeout(() => tryLoad(attempt + 1), attempt * 2000 + 2000);
+          } else {
+            markError(p);
+          }
+        };
+        img.src = url;
+      };
+      tryLoad(0);
+      return { ...prev, [p]: { url, status: 'loading' } };
+    });
+  };
+
+  // Load current page on mount and on page change
+  useEffect(() => {
+    loadPageImage(page);
+    if (page + 1 < totalPages) loadPageImage(page + 1);
+  }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     return () => { window.speechSynthesis?.cancel(); };
@@ -236,17 +250,6 @@ export default function StoryBook({
                 <span className="text-sm text-purple-400 font-medium">
                   {t('illustrationLoading')}
                 </span>
-                {/* Hidden img to trigger load */}
-                {currentImage && (
-                  <img
-                    key={currentImage.url}
-                    src={currentImage.url}
-                    alt=""
-                    style={{ display: 'none' }}
-                    onLoad={() => markLoaded(page)}
-                    onError={() => markError(page)}
-                  />
-                )}
               </div>
             )}
 
