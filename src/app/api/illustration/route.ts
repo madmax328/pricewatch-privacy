@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Extend Vercel function timeout to 60s (requires Pro plan; Hobby = 10s max)
+export const maxDuration = 60;
+
 const STYLE =
   "children's book illustration, watercolor style, soft warm colors, cute, dreamy, magical, high quality";
 const NO_TEXT = 'no text, no words, no letters, no watermark, centered composition';
@@ -8,71 +11,81 @@ function buildPrompt(theme: string, storyPrompt: string): string {
   return `${STYLE}, ${storyPrompt || theme} scene, ${NO_TEXT}`;
 }
 
-async function callHuggingFace(
+async function tryModel(
   token: string,
   model: string,
   prompt: string,
-  seed: number
+  seed: number,
+  timeoutMs: number
 ): Promise<ArrayBuffer | null> {
+  const body = JSON.stringify({
+    inputs: prompt,
+    parameters: { seed, width: 512, height: 384 },
+  });
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+  };
+
   const res = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      inputs: prompt,
-      parameters: { seed, width: 512, height: 384 },
-    }),
-    signal: AbortSignal.timeout(60000),
+    headers,
+    body,
+    signal: AbortSignal.timeout(timeoutMs),
   });
 
-  // Model is loading (cold start) — wait and retry once
+  // Cold start — wait then retry once
   if (res.status === 503) {
     const json = await res.json().catch(() => ({}));
-    const wait = Math.min((json.estimated_time ?? 20) * 1000, 30000);
+    const wait = Math.min((json.estimated_time ?? 15) * 1000, 20000);
     await new Promise((r) => setTimeout(r, wait));
-
     const retry = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        inputs: prompt,
-        parameters: { seed, width: 512, height: 384 },
-      }),
-      signal: AbortSignal.timeout(60000),
+      headers,
+      body,
+      signal: AbortSignal.timeout(timeoutMs),
     });
-
     if (!retry.ok) return null;
-    return retry.arrayBuffer();
+    const buf = await retry.arrayBuffer();
+    return buf.byteLength > 1000 ? buf : null;
   }
 
   if (!res.ok) return null;
-  return res.arrayBuffer();
+  const buf = await res.arrayBuffer();
+  return buf.byteLength > 1000 ? buf : null;
 }
 
 export async function GET(req: NextRequest) {
   const theme = req.nextUrl.searchParams.get('theme') || 'magic';
   const storyPrompt = req.nextUrl.searchParams.get('prompt') || '';
   const seed = parseInt(req.nextUrl.searchParams.get('seed') || '1', 10);
-
   const hfToken = process.env.HUGGINGFACE_API_TOKEN;
 
   if (hfToken) {
     try {
       const prompt = buildPrompt(theme, storyPrompt);
-      // SDXL is public (no terms acceptance needed), high quality
-      const buffer = await callHuggingFace(
+
+      // 1st try: sdxl-turbo (2-4 seconds, good quality)
+      let buffer = await tryModel(
         hfToken,
-        'stabilityai/stable-diffusion-xl-base-1.0',
+        'stabilityai/sdxl-turbo',
         prompt,
-        seed
+        seed,
+        15000
       );
 
-      if (buffer && buffer.byteLength > 1000) {
+      // 2nd try: SDXL base if turbo failed
+      if (!buffer) {
+        buffer = await tryModel(
+          hfToken,
+          'stabilityai/stable-diffusion-xl-base-1.0',
+          prompt,
+          seed,
+          45000
+        );
+      }
+
+      if (buffer) {
         return new NextResponse(buffer, {
           headers: {
             'Content-Type': 'image/jpeg',
@@ -85,7 +98,7 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // Fallback: SVG
+  // Fallback: SVG thématique
   return NextResponse.redirect(
     new URL(`/api/illustration/svg?theme=${encodeURIComponent(theme)}&seed=${seed}`, req.url)
   );
