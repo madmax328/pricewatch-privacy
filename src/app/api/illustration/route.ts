@@ -1,36 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Children's storybook illustration style optimized for AI
+function buildStoryPrompt(theme: string, storyPrompt: string): string {
+  const stylePrefix = 'children\'s book illustration, watercolor style, warm soft colors, cute, dreamy, magical, high quality, detailed';
+  const styleSuffix = 'no text, no words, no letters, no watermark, centered composition';
+  return `${stylePrefix}, ${storyPrompt || theme}, ${styleSuffix}`;
+}
+
 export async function GET(req: NextRequest) {
-  const prompt = req.nextUrl.searchParams.get('prompt');
-  const seed = req.nextUrl.searchParams.get('seed') || '1';
+  const theme = req.nextUrl.searchParams.get('theme') || 'magic';
+  const storyPrompt = req.nextUrl.searchParams.get('prompt') || '';
+  const seed = parseInt(req.nextUrl.searchParams.get('seed') || '1', 10);
 
-  if (!prompt) {
-    return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
-  }
+  const hfToken = process.env.HUGGINGFACE_API_TOKEN;
 
-  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=512&height=384&nologo=1&seed=${seed}`;
+  // Try Hugging Face FLUX.1-schnell (free, fast, high quality)
+  if (hfToken) {
+    try {
+      const fullPrompt = buildStoryPrompt(theme, storyPrompt);
+      const res = await fetch(
+        'https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${hfToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            inputs: fullPrompt,
+            parameters: {
+              seed,
+              num_inference_steps: 4,
+              width: 512,
+              height: 384,
+            },
+          }),
+          signal: AbortSignal.timeout(45000),
+        }
+      );
 
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 30000);
-
-    const res = await fetch(url, { signal: controller.signal });
-    clearTimeout(timeout);
-
-    if (!res.ok) {
-      return NextResponse.json({ error: 'Image generation failed' }, { status: 502 });
+      if (res.ok) {
+        const buffer = await res.arrayBuffer();
+        return new NextResponse(buffer, {
+          headers: {
+            'Content-Type': 'image/jpeg',
+            'Cache-Control': 'public, max-age=86400, stale-while-revalidate=3600',
+          },
+        });
+      }
+    } catch {
+      // Fall through to SVG fallback
     }
-
-    const contentType = res.headers.get('content-type') || 'image/jpeg';
-    const buffer = await res.arrayBuffer();
-
-    return new NextResponse(buffer, {
-      headers: {
-        'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=86400',
-      },
-    });
-  } catch {
-    return NextResponse.json({ error: 'Image generation timeout' }, { status: 504 });
   }
+
+  // Fallback: redirect to SVG endpoint
+  return NextResponse.redirect(
+    new URL(`/api/illustration/svg?theme=${encodeURIComponent(theme)}&seed=${seed}`, req.url)
+  );
 }

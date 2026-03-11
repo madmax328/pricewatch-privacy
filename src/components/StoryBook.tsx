@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, BookOpen, Volume2, VolumeX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { generateIllustrationSvg } from '@/lib/illustrations';
 
 const PARAGRAPHS_PER_PAGE = 2;
 
@@ -19,6 +18,32 @@ interface ChildAvatar {
   gender: 'boy' | 'girl';
   hair: string;
   skin: string;
+}
+
+// Stable hash from a string (for consistent but story-unique seeds)
+function strHash(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = (h * 16777619) >>> 0;
+  }
+  return h;
+}
+
+function buildPagePrompt(
+  theme: string,
+  title: string,
+  childName: string,
+  childAvatar: ChildAvatar | undefined,
+  pageContent: string,
+  isCover: boolean
+): string {
+  const gender = childAvatar?.gender === 'girl' ? 'little girl' : 'little boy';
+  const character = `${gender} named ${childName}`;
+  const scene = isCover
+    ? `${theme} adventure, ${character} as the hero, magical landscape`
+    : pageContent.slice(0, 120).replace(/[^\w\s,.'àâéèêëîïôùûü]/gi, '').trim() || `${theme} scene`;
+  return `${character}, ${scene}, ${title}`;
 }
 
 export default function StoryBook({
@@ -54,8 +79,19 @@ export default function StoryBook({
   const [isPlaying, setIsPlaying] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // SVG illustrations generated locally — instant, no external API
-  const illustrationUrl = generateIllustrationSvg(theme, page);
+  // Build per-page illustration URLs — unique per story (title-based seed)
+  const illustrationUrls = useMemo(() => {
+    const titleHash = strHash(title + childName);
+    return Array.from({ length: totalPages }, (_, p) => {
+      const isCover = p === 0;
+      const pageContent = isCover ? '' : contentPages[p - 1]?.join(' ') || '';
+      const prompt = buildPagePrompt(theme, title, childName, childAvatar, pageContent, isCover);
+      const seed = (titleHash + p * 1009) >>> 0;
+      return `/api/illustration?theme=${encodeURIComponent(theme)}&prompt=${encodeURIComponent(prompt)}&seed=${seed}`;
+    });
+  }, [title, childName, theme]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const illustrationUrl = illustrationUrls[page];
 
   useEffect(() => {
     return () => { window.speechSynthesis?.cancel(); };
@@ -78,8 +114,8 @@ export default function StoryBook({
     setIsPlaying(true);
   };
 
-  const prev = () => setPage((p) => Math.max(0, p - 1));
-  const next = () => setPage((p) => Math.min(totalPages - 1, p + 1));
+  const prev = () => setPage((p: number) => Math.max(0, p - 1));
+  const next = () => setPage((p: number) => Math.min(totalPages - 1, p + 1));
 
   return (
     <div className="select-none">
