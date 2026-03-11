@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, BookOpen, Volume2, VolumeX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { generateIllustrationSvg } from '@/lib/illustrations';
 
 const PARAGRAPHS_PER_PAGE = 2;
 
@@ -14,70 +15,10 @@ const LANGUAGE_CODES: Record<string, string> = {
   de: 'de-DE',
 };
 
-const THEME_PROMPTS: Record<string, string> = {
-  dragons: 'dragon magic castle adventure',
-  space: 'space rocket planets stars',
-  forest: 'enchanted forest fairy tale',
-  ocean: 'ocean dolphins underwater',
-  princess: 'princess castle fairy tale',
-  dinosaurs: 'cute dinosaur prehistoric',
-  superheroes: 'superhero colorful comic',
-  animals: 'magical animals forest',
-  pirates: 'pirate ship treasure island',
-  fairies: 'fairy elf magical garden',
-};
-
 interface ChildAvatar {
   gender: 'boy' | 'girl';
   hair: string;
   skin: string;
-}
-
-interface PageImage {
-  url: string;
-  status: 'loading' | 'loaded' | 'error';
-}
-
-function getAgeStyle(childAge: number): string {
-  if (childAge <= 5) return 'watercolor illustration, soft pastel colors, cute rounded shapes, simple, dreamy, storybook art';
-  if (childAge <= 9) return 'colorful digital illustration, semi-realistic, vibrant, detailed, adventure scene';
-  return 'detailed realistic illustration, cinematic lighting, dramatic, action scene, concept art style, no baby cartoon';
-}
-
-function getCharacterDesc(childAvatar: ChildAvatar | undefined, childAge: number, childName: string): string {
-  const genderWord = childAge >= 10
-    ? (childAvatar?.gender === 'girl' ? 'teenage girl' : 'teenage boy')
-    : (childAvatar?.gender === 'girl' ? 'young girl' : 'young boy');
-  if (childAvatar) {
-    return `${genderWord} with ${childAvatar.hair} hair and ${childAvatar.skin} skin tone`;
-  }
-  return `${genderWord} named ${childName}`;
-}
-
-function buildImageUrl(
-  theme: string,
-  childName: string,
-  childAvatar: ChildAvatar | undefined,
-  childAge: number,
-  pageIndex: number,
-  pageContent: string,
-  isCover: boolean
-): string {
-  const themePrompt = THEME_PROMPTS[theme] || 'magical story';
-  const style = getAgeStyle(childAge);
-  const characterDesc = getCharacterDesc(childAvatar, childAge, childName);
-
-  let prompt: string;
-
-  if (isCover) {
-    prompt = `${themePrompt}, ${characterDesc} as the main hero, ${style}, no text, no words, no watermark`;
-  } else {
-    const hint = pageContent.slice(0, 100).replace(/[^\w\s]/g, '').trim();
-    prompt = `${themePrompt}, ${characterDesc}, ${hint}, ${style}, no text, no words, no watermark`;
-  }
-
-  const seed = pageIndex * 37 + 11;
-  return `/api/illustration?prompt=${encodeURIComponent(prompt)}&seed=${seed}`;
 }
 
 export default function StoryBook({
@@ -111,58 +52,10 @@ export default function StoryBook({
 
   const [page, setPage] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [pageImages, setPageImages] = useState<Record<number, PageImage>>({});
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-  const loadedPages = useRef<Set<number>>(new Set());
 
-  const markLoaded = (p: number) => {
-    setPageImages((prev) =>
-      prev[p] ? { ...prev, [p]: { ...prev[p], status: 'loaded' } } : prev
-    );
-  };
-
-  const markError = (p: number) => {
-    setPageImages((prev) =>
-      prev[p] ? { ...prev, [p]: { ...prev[p], status: 'error' } } : prev
-    );
-  };
-
-  // Load current page image when page changes
-  useEffect(() => {
-    if (loadedPages.current.has(page)) return;
-    loadedPages.current.add(page);
-
-    const isCover = page === 0;
-    const pageContent = isCover ? '' : contentPages[page - 1]?.join(' ') || '';
-    const url = buildImageUrl(theme, childName, childAvatar, childAge, page, pageContent, isCover);
-
-    setPageImages((prev) => ({ ...prev, [page]: { url, status: 'loading' } }));
-
-    let cancelled = false;
-    const timeouts: ReturnType<typeof setTimeout>[] = [];
-
-    const tryLoad = (attempt: number) => {
-      const img = new Image();
-      img.onload = () => { if (!cancelled) markLoaded(page); };
-      img.onerror = () => {
-        if (cancelled) return;
-        if (attempt < 3) {
-          const t = setTimeout(() => tryLoad(attempt + 1), (attempt + 1) * 3000);
-          timeouts.push(t);
-        } else {
-          markError(page);
-        }
-      };
-      img.src = url;
-    };
-
-    tryLoad(0);
-
-    return () => {
-      cancelled = true;
-      timeouts.forEach(clearTimeout);
-    };
-  }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
+  // SVG illustrations generated locally — instant, no external API
+  const illustrationUrl = generateIllustrationSvg(theme, page);
 
   useEffect(() => {
     return () => { window.speechSynthesis?.cancel(); };
@@ -187,8 +80,6 @@ export default function StoryBook({
 
   const prev = () => setPage((p) => Math.max(0, p - 1));
   const next = () => setPage((p) => Math.min(totalPages - 1, p + 1));
-
-  const currentImage = pageImages[page];
 
   return (
     <div className="select-none">
@@ -230,36 +121,13 @@ export default function StoryBook({
             className="relative overflow-hidden bg-gradient-to-b from-purple-100 to-purple-50"
             style={{ minHeight: '260px' }}
           >
-            {currentImage?.status === 'loaded' ? (
-              <img
-                key={currentImage.url}
-                src={currentImage.url}
-                alt="Illustration"
-                className="w-full object-cover"
-                style={{ maxHeight: '400px', display: 'block' }}
-              />
-            ) : currentImage?.status === 'error' ? (
-              <div
-                className="flex flex-col items-center justify-center gap-2 text-purple-300"
-                style={{ minHeight: '260px' }}
-              >
-                <span className="text-4xl">🎨</span>
-                <span className="text-sm">Illustration indisponible</span>
-              </div>
-            ) : (
-              <div
-                className="flex flex-col items-center justify-center gap-3"
-                style={{ minHeight: '260px' }}
-              >
-                <div
-                  className="w-10 h-10 rounded-full animate-spin"
-                  style={{ border: '3px solid #e9d5ff', borderTopColor: '#9333ea' }}
-                />
-                <span className="text-sm text-purple-400 font-medium">
-                  {t('illustrationLoading')}
-                </span>
-              </div>
-            )}
+            <img
+              key={illustrationUrl}
+              src={illustrationUrl}
+              alt="Illustration"
+              className="w-full object-cover"
+              style={{ maxHeight: '400px', display: 'block' }}
+            />
 
             {/* Page indicator on illustration */}
             {page > 0 && (
