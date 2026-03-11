@@ -112,6 +112,7 @@ export default function StoryBook({
   const [isPlaying, setIsPlaying] = useState(false);
   const [pageImages, setPageImages] = useState<Record<number, PageImage>>({});
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const loadedPages = useRef<Set<number>>(new Set());
 
   const markLoaded = (p: number) => {
     setPageImages((prev) =>
@@ -125,35 +126,41 @@ export default function StoryBook({
     );
   };
 
-  // Load image for a specific page using JS Image() constructor
-  const loadPageImage = (p: number) => {
-    setPageImages((prev) => {
-      if (prev[p]) return prev; // already queued/loaded
-      const isCover = p === 0;
-      const pageContent = isCover ? '' : contentPages[p - 1]?.join(' ') || '';
-      const url = buildImageUrl(theme, childName, childAvatar, childAge, p, pageContent, isCover);
-      // Fire-and-forget: JS Image() loads the image and updates state
-      const tryLoad = (attempt: number) => {
-        const img = new Image();
-        img.onload = () => markLoaded(p);
-        img.onerror = () => {
-          if (attempt < 3) {
-            setTimeout(() => tryLoad(attempt + 1), attempt * 2000 + 2000);
-          } else {
-            markError(p);
-          }
-        };
-        img.src = url;
-      };
-      tryLoad(0);
-      return { ...prev, [p]: { url, status: 'loading' } };
-    });
-  };
-
-  // Load current page on mount and on page change
+  // Load current page image when page changes
   useEffect(() => {
-    loadPageImage(page);
-    if (page + 1 < totalPages) loadPageImage(page + 1);
+    if (loadedPages.current.has(page)) return;
+    loadedPages.current.add(page);
+
+    const isCover = page === 0;
+    const pageContent = isCover ? '' : contentPages[page - 1]?.join(' ') || '';
+    const url = buildImageUrl(theme, childName, childAvatar, childAge, page, pageContent, isCover);
+
+    setPageImages((prev) => ({ ...prev, [page]: { url, status: 'loading' } }));
+
+    let cancelled = false;
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+
+    const tryLoad = (attempt: number) => {
+      const img = new Image();
+      img.onload = () => { if (!cancelled) markLoaded(page); };
+      img.onerror = () => {
+        if (cancelled) return;
+        if (attempt < 3) {
+          const t = setTimeout(() => tryLoad(attempt + 1), (attempt + 1) * 3000);
+          timeouts.push(t);
+        } else {
+          markError(page);
+        }
+      };
+      img.src = url;
+    };
+
+    tryLoad(0);
+
+    return () => {
+      cancelled = true;
+      timeouts.forEach(clearTimeout);
+    };
   }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
