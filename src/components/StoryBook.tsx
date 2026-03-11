@@ -33,28 +33,14 @@ function strHash(s: string): number {
 function IllustrationImage({ src }: { src: string }) {
   const [status, setStatus] = useState<'loading' | 'loaded' | 'error'>('loading');
 
-  useEffect(() => {
-    setStatus('loading');
-    const img = new Image();
-    img.onload = () => setStatus('loaded');
-    img.onerror = () => setStatus('error');
-    img.src = src;
-    return () => { img.onload = null; img.onerror = null; };
-  }, [src]);
-
-  if (status === 'error') {
-    return (
-      <div className="flex flex-col items-center justify-center w-full text-purple-300" style={{ minHeight: '260px' }}>
-        <span className="text-4xl mb-2">🎨</span>
-        <span className="text-sm">Illustration indisponible</span>
-      </div>
-    );
-  }
+  // Reset when src changes (page turn)
+  useEffect(() => { setStatus('loading'); }, [src]);
 
   return (
-    <>
+    <div className="relative w-full" style={{ minHeight: '260px' }}>
+      {/* Spinner overlay — visible while loading */}
       {status === 'loading' && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-purple-400">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-purple-400 z-10">
           <svg className="animate-spin w-8 h-8" viewBox="0 0 24 24" fill="none">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
@@ -62,13 +48,25 @@ function IllustrationImage({ src }: { src: string }) {
           <span className="text-sm font-medium">Illustration en cours...</span>
         </div>
       )}
+
+      {/* Error state */}
+      {status === 'error' && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-purple-300">
+          <span className="text-4xl">🎨</span>
+          <span className="text-sm">Illustration indisponible</span>
+        </div>
+      )}
+
+      {/* Image — always in DOM so browser fetches it; hidden until loaded */}
       <img
         src={src}
         alt="Illustration"
         className="w-full object-cover"
-        style={{ maxHeight: '400px', display: status === 'loaded' ? 'block' : 'none' }}
+        style={{ maxHeight: '400px', display: 'block', opacity: status === 'loaded' ? 1 : 0 }}
+        onLoad={() => setStatus('loaded')}
+        onError={() => setStatus('error')}
       />
-    </>
+    </div>
   );
 }
 
