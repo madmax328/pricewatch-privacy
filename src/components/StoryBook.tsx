@@ -70,9 +70,6 @@ function IllustrationImage({ src }: { src: string }) {
   );
 }
 
-const ILLUS_STYLE =
-  "children's book illustration, watercolor style, soft warm colors, cute, dreamy, magical, no text, no words";
-
 function buildIllustrationUrl(
   theme: string,
   title: string,
@@ -87,11 +84,8 @@ function buildIllustrationUrl(
   const scene = isCover
     ? `${theme} adventure, ${character} as the hero, magical landscape`
     : pageContent.slice(0, 100).replace(/[^\w\s,.'àâéèêëîïôùûü]/gi, '').trim() || `${theme} scene`;
-  const prompt = `${ILLUS_STYLE}, ${character}, ${scene}`;
-  return (
-    `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}` +
-    `?width=512&height=384&seed=${seed}&nologo=true&model=flux&enhance=false`
-  );
+  const prompt = `${character}, ${scene}`;
+  return `/api/illustration?theme=${encodeURIComponent(theme)}&prompt=${encodeURIComponent(prompt)}&seed=${seed}`;
 }
 
 export default function StoryBook({
