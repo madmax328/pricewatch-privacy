@@ -30,7 +30,6 @@ export async function GET(req: NextRequest) {
         height: 384,
         steps: 4,
         seed: parseInt(seed),
-        response_format: 'url',
         n: 1,
       }),
       signal: AbortSignal.timeout(25000),
@@ -39,15 +38,27 @@ export async function GET(req: NextRequest) {
 
   if (!res.ok) {
     const err = await res.text();
-    return new NextResponse(`Together AI error ${res.status}: ${err}`, { status: 502 });
+    return new NextResponse(`Together AI ${res.status}: ${err}`, { status: 502 });
   }
 
   const json = await res.json();
-  const url = json?.data?.[0]?.url;
+  const b64 = json?.data?.[0]?.b64_json;
 
-  if (!url) {
-    return new NextResponse('Pas d\'URL dans la réponse Together AI', { status: 502 });
+  if (!b64) {
+    return new NextResponse(`Réponse inattendue: ${JSON.stringify(json)}`, { status: 502 });
   }
 
-  return NextResponse.redirect(url);
+  // Edge runtime n'a pas Buffer — décodage manuel base64
+  const binaryStr = atob(b64);
+  const bytes = new Uint8Array(binaryStr.length);
+  for (let i = 0; i < binaryStr.length; i++) {
+    bytes[i] = binaryStr.charCodeAt(i);
+  }
+
+  return new NextResponse(bytes, {
+    headers: {
+      'Content-Type': 'image/png',
+      'Cache-Control': 'public, max-age=86400',
+    },
+  });
 }
