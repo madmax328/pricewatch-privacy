@@ -84,8 +84,8 @@ function buildIllustrationUrl(
   const scene = isCover
     ? `${theme} adventure, ${character} as the hero, magical landscape`
     : pageContent.slice(0, 100).replace(/[^\w\s,.'àâéèêëîïôùûü]/gi, '').trim() || `${theme} scene`;
-  const prompt = `${character}, ${scene}`;
-  return `/api/illustration?theme=${encodeURIComponent(theme)}&prompt=${encodeURIComponent(prompt)}&seed=${seed}`;
+  const fullPrompt = `children's book illustration, watercolor, soft colors, cute, magical, no text, ${character}, ${scene}`;
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=800&height=600&nologo=true&seed=${seed}`;
 }
 
 export default function StoryBook({
