@@ -78,7 +78,9 @@ function buildIllustrationUrl(
   pageContent: string,
   isCover: boolean,
   seed: number,
-  childAge: number
+  childAge: number,
+  storyId?: string,
+  pageIndex?: number
 ): string {
   const gender = childAvatar?.gender === 'girl' ? 'little girl' : 'little boy';
   const skinMap: Record<string, string> = {
@@ -109,7 +111,8 @@ function buildIllustrationUrl(
   const prompt = traits
     ? `${character}, ${scene}, consistent ${skinDesc}, consistent ${hairDesc}`
     : `${character}, ${scene}`;
-  return `/api/illustration?prompt=${encodeURIComponent(prompt)}&seed=${seed}&age=${childAge}`;
+  const base = `/api/illustration?prompt=${encodeURIComponent(prompt)}&seed=${seed}&age=${childAge}`;
+  return storyId ? `${base}&storyId=${storyId}&page=${pageIndex}` : base;
 }
 
 export default function StoryBook({
@@ -121,6 +124,8 @@ export default function StoryBook({
   themeEmoji,
   language = 'fr',
   childAvatar,
+  storyId,
+  storedUrls = {},
 }: {
   title: string;
   content: string;
@@ -130,6 +135,8 @@ export default function StoryBook({
   themeEmoji: string;
   language?: string;
   childAvatar?: ChildAvatar;
+  storyId?: string;
+  storedUrls?: Record<string, string>;
 }) {
   const paragraphs = content.split('\n\n').filter(Boolean);
 
@@ -145,14 +152,16 @@ export default function StoryBook({
   const [isPlaying, setIsPlaying] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // Build per-page illustration URLs — unique per story (title-based seed)
+  // Build per-page illustration URLs — use stored Blob URLs when available
   const illustrationUrls = useMemo(() => {
     const titleHash = strHash(title + childName);
     return Array.from({ length: totalPages }, (_, p) => {
+      // Stored URL from Vercel Blob → use directly (no API call)
+      if (storedUrls[String(p)]) return storedUrls[String(p)];
       const isCover = p === 0;
       const pageContent = isCover ? '' : contentPages[p - 1]?.join(' ') || '';
       const seed = (titleHash + p * 1009) >>> 0;
-      return buildIllustrationUrl(theme, title, childName, childAvatar, pageContent, isCover, seed, childAge);
+      return buildIllustrationUrl(theme, title, childName, childAvatar, pageContent, isCover, seed, childAge, storyId, p);
     });
   }, [title, childName, theme]); // eslint-disable-line react-hooks/exhaustive-deps
 

@@ -16,6 +16,7 @@ export interface IStory extends Document {
   content: string;
   imageUrl?: string;
   audioUrl?: string;
+  illustrationUrls?: Map<string, string>;
   locale: string;
   printOrdered: boolean;
   childAvatar?: IChildAvatar;
@@ -34,6 +35,7 @@ const StorySchema = new Schema<IStory>(
     content: { type: String, required: true },
     imageUrl: { type: String },
     audioUrl: { type: String },
+    illustrationUrls: { type: Map, of: String, default: {} },
     locale: { type: String, default: 'fr' },
     printOrdered: { type: Boolean, default: false },
     childAvatar: {

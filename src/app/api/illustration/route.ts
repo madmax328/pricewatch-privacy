@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { put, head } from '@vercel/blob';
+import { connectToDatabase } from '@/lib/mongodb';
+import Story from '@/models/Story';
 
-export const runtime = 'edge';
+// Node.js runtime — needed for MongoDB + Vercel Blob
+export const runtime = 'nodejs';
+export const maxDuration = 60;
 
 const HF_URL = 'https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell';
-
 const NO_TEXT = 'no text, no words, no letters, no watermark';
 
 function styleForAge(age: number): string {
@@ -32,28 +36,52 @@ async function fetchHF(prompt: string, seed: number, token: string, timeoutMs: n
 
 export async function GET(req: NextRequest) {
   const token = process.env.HUGGINGFACE_API_TOKEN;
-  if (!token) {
-    return new NextResponse('HUGGINGFACE_API_TOKEN manquante', { status: 500 });
+  if (!token) return new NextResponse('HUGGINGFACE_API_TOKEN manquante', { status: 500 });
+
+  const { searchParams } = req.nextUrl;
+  const storyId = searchParams.get('storyId');
+  const pageIndex = searchParams.get('page') ?? '0';
+  const prompt = searchParams.get('prompt') || 'magic adventure';
+  const seed = parseInt(searchParams.get('seed') || '1');
+  const age = parseInt(searchParams.get('age') || '8');
+
+  // --- 1. If storyId provided: check Blob cache first ---
+  if (storyId) {
+    const blobPath = `illustrations/${storyId}/${pageIndex}.jpg`;
+
+    // Check if already stored in Blob
+    try {
+      const existing = await head(blobPath);
+      if (existing?.url) {
+        // Already cached — update DB if needed then redirect
+        await connectToDatabase();
+        await Story.updateOne(
+          { _id: storyId, [`illustrationUrls.${pageIndex}`]: { $exists: false } },
+          { $set: { [`illustrationUrls.${pageIndex}`]: existing.url } }
+        );
+        return NextResponse.redirect(existing.url, { status: 302 });
+      }
+    } catch {
+      // Not found in Blob → generate below
+    }
   }
 
-  const storyPrompt = req.nextUrl.searchParams.get('prompt') || 'magic adventure';
-  const seed = parseInt(req.nextUrl.searchParams.get('seed') || '1');
-  const age = parseInt(req.nextUrl.searchParams.get('age') || '8');
+  // --- 2. Generate from HuggingFace ---
   const style = styleForAge(age);
+  const fullPrompt = `${style}, ${prompt}`;
 
   try {
-    let res = await fetchHF(`${style}, ${storyPrompt}`, seed, token, 15000);
+    let res = await fetchHF(fullPrompt, seed, token, 20000);
 
-    // Modèle froid (503) → attendre et réessayer
     if (res.status === 503) {
       const json = await res.json().catch(() => ({})) as { estimated_time?: number };
       const wait = Math.min((json.estimated_time ?? 10) * 1000, 12000);
       await new Promise(r => setTimeout(r, wait));
-      res = await fetchHF(storyPrompt, seed, token, 15000);
+      res = await fetchHF(fullPrompt, seed, token, 20000);
     }
 
     if (!res.ok) {
-      const err = await res.text().catch(() => '(pas de détail)');
+      const err = await res.text().catch(() => '');
       return new NextResponse(`HF ${res.status}: ${err}`, { status: 502 });
     }
 
@@ -64,6 +92,27 @@ export async function GET(req: NextRequest) {
     }
 
     const buffer = await res.arrayBuffer();
+
+    // --- 3. Store in Vercel Blob + update DB ---
+    if (storyId && process.env.BLOB_READ_WRITE_TOKEN) {
+      try {
+        const blobPath = `illustrations/${storyId}/${pageIndex}.jpg`;
+        const blob = await put(blobPath, buffer, {
+          access: 'public',
+          contentType: 'image/jpeg',
+          addRandomSuffix: false,
+        });
+        await connectToDatabase();
+        await Story.updateOne(
+          { _id: storyId },
+          { $set: { [`illustrationUrls.${pageIndex}`]: blob.url } }
+        );
+      } catch (e) {
+        console.error('Blob storage failed:', e);
+        // Non-fatal: still return the image
+      }
+    }
+
     return new NextResponse(buffer, {
       headers: { 'Content-Type': ct, 'Cache-Control': 'public, max-age=86400' },
     });
