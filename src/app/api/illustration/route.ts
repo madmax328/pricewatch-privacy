@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export const runtime = 'edge';
 
 const STYLE = "children's book illustration, watercolor, soft colors, cute, magical, no text, no words";
-const HF_URL = 'https://router.huggingface.co/hf-inference/models/runwayml/stable-diffusion-v1-5';
+const HF_URL = 'https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell';
 
 async function fetchHF(prompt: string, seed: number, token: string, timeoutMs: number) {
   const controller = new AbortController();
