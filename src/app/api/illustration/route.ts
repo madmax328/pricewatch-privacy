@@ -21,7 +21,7 @@ async function fetchHF(prompt: string, seed: number, token: string, timeoutMs: n
     const res = await fetch(HF_URL, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ inputs: `${STYLE}, ${prompt}`, parameters: { seed } }),
+      body: JSON.stringify({ inputs: prompt, parameters: { seed } }),
       signal: controller.signal,
     });
     return res;
