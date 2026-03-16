@@ -77,7 +77,8 @@ function buildIllustrationUrl(
   childAvatar: ChildAvatar | undefined,
   pageContent: string,
   isCover: boolean,
-  seed: number
+  seed: number,
+  childAge: number
 ): string {
   const gender = childAvatar?.gender === 'girl' ? 'little girl' : 'little boy';
   const character = `${gender} named ${childName}`;
@@ -85,7 +86,7 @@ function buildIllustrationUrl(
     ? `${theme} adventure, ${character} as the hero, magical landscape`
     : pageContent.slice(0, 100).replace(/[^\w\s,.'àâéèêëîïôùûü]/gi, '').trim() || `${theme} scene`;
   const prompt = `${character}, ${scene}`;
-  return `/api/illustration?theme=${encodeURIComponent(theme)}&prompt=${encodeURIComponent(prompt)}&seed=${seed}`;
+  return `/api/illustration?prompt=${encodeURIComponent(prompt)}&seed=${seed}&age=${childAge}`;
 }
 
 export default function StoryBook({
@@ -128,7 +129,7 @@ export default function StoryBook({
       const isCover = p === 0;
       const pageContent = isCover ? '' : contentPages[p - 1]?.join(' ') || '';
       const seed = (titleHash + p * 1009) >>> 0;
-      return buildIllustrationUrl(theme, title, childName, childAvatar, pageContent, isCover, seed);
+      return buildIllustrationUrl(theme, title, childName, childAvatar, pageContent, isCover, seed, childAge);
     });
   }, [title, childName, theme]); // eslint-disable-line react-hooks/exhaustive-deps
 

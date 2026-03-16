@@ -2,8 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'edge';
 
-const STYLE = "children's book illustration, watercolor, soft colors, cute, magical, no text, no words";
 const HF_URL = 'https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell';
+
+const NO_TEXT = 'no text, no words, no letters, no watermark';
+
+function styleForAge(age: number): string {
+  if (age <= 4)  return `children's picture book illustration, watercolor, soft pastel colors, very cute, simple shapes, ${NO_TEXT}`;
+  if (age <= 7)  return `children's book illustration, colorful watercolor, whimsical, friendly characters, ${NO_TEXT}`;
+  if (age <= 10) return `illustrated storybook, digital painting, vibrant colors, adventurous, detailed, ${NO_TEXT}`;
+  if (age <= 13) return `young adult graphic novel style, dynamic composition, cinematic lighting, detailed illustration, ${NO_TEXT}`;
+  return `young adult illustration, semi-realistic digital art, dramatic lighting, detailed, cinematic, ${NO_TEXT}`;
+}
 
 async function fetchHF(prompt: string, seed: number, token: string, timeoutMs: number) {
   const controller = new AbortController();
@@ -27,12 +36,13 @@ export async function GET(req: NextRequest) {
     return new NextResponse('HUGGINGFACE_API_TOKEN manquante', { status: 500 });
   }
 
-  const theme = req.nextUrl.searchParams.get('theme') || 'magic';
-  const storyPrompt = req.nextUrl.searchParams.get('prompt') || theme;
+  const storyPrompt = req.nextUrl.searchParams.get('prompt') || 'magic adventure';
   const seed = parseInt(req.nextUrl.searchParams.get('seed') || '1');
+  const age = parseInt(req.nextUrl.searchParams.get('age') || '8');
+  const style = styleForAge(age);
 
   try {
-    let res = await fetchHF(storyPrompt, seed, token, 15000);
+    let res = await fetchHF(`${style}, ${storyPrompt}`, seed, token, 15000);
 
     // Modèle froid (503) → attendre et réessayer
     if (res.status === 503) {
