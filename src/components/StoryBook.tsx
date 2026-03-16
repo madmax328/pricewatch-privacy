@@ -81,11 +81,34 @@ function buildIllustrationUrl(
   childAge: number
 ): string {
   const gender = childAvatar?.gender === 'girl' ? 'little girl' : 'little boy';
-  const character = `${gender} named ${childName}`;
+  const skinMap: Record<string, string> = {
+    fair: 'very fair pale skin',
+    light: 'light skin',
+    medium: 'medium brown skin',
+    tan: 'dark tan skin',
+    dark: 'very dark brown skin, dark complexion',
+  };
+  const hairMap: Record<string, string> = {
+    blonde: 'blonde hair',
+    brown: 'brown hair',
+    black: 'black hair',
+    red: 'red hair',
+    white: 'white hair',
+  };
+  const skinDesc = childAvatar ? (skinMap[childAvatar.skin] ?? `${childAvatar.skin} skin`) : '';
+  const hairDesc = childAvatar ? (hairMap[childAvatar.hair] ?? `${childAvatar.hair} hair`) : '';
+  const traits = skinDesc && hairDesc ? `${skinDesc}, ${hairDesc}` : '';
+  // Put physical traits first so FLUX prioritizes them
+  const character = traits
+    ? `${gender} with ${traits}, named ${childName}`
+    : `${gender} named ${childName}`;
   const scene = isCover
-    ? `${theme} adventure, ${character} as the hero, magical landscape`
-    : pageContent.slice(0, 100).replace(/[^\w\s,.'àâéèêëîïôùûü]/gi, '').trim() || `${theme} scene`;
-  const prompt = `${character}, ${scene}`;
+    ? `${theme} adventure, magical landscape`
+    : pageContent.slice(0, 80).replace(/[^\w\s,.'àâéèêëîïôùûü]/gi, '').trim() || `${theme} scene`;
+  // character first → FLUX prioritizes first tokens
+  const prompt = traits
+    ? `${character}, ${scene}, consistent ${skinDesc}, consistent ${hairDesc}`
+    : `${character}, ${scene}`;
   return `/api/illustration?prompt=${encodeURIComponent(prompt)}&seed=${seed}&age=${childAge}`;
 }
 
