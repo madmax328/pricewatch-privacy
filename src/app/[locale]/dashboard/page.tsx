@@ -75,7 +75,7 @@ export default function DashboardPage() {
   };
 
   const handleUpgrade = async () => {
-    const res = await fetch('/api/payment/checkout', {
+    const res = await fetch('/api/stripe/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'subscription' }),
