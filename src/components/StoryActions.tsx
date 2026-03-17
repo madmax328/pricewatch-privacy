@@ -15,7 +15,7 @@ export default function StoryActions({
   const locale = useLocale();
 
   const handleOrderBook = async () => {
-    const res = await fetch('/api/stripe/checkout', {
+    const res = await fetch('/api/payment/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'book', storyId }),

@@ -25,7 +25,14 @@ async function fetchHF(prompt: string, seed: number, token: string, timeoutMs: n
     const res = await fetch(HF_URL, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ inputs: prompt, parameters: { seed } }),
+      body: JSON.stringify({
+        inputs: prompt,
+        parameters: {
+          seed,
+          negative_prompt:
+            'text, words, letters, alphabet, numbers, watermark, label, caption, title, signature, logo, subtitle, writing, font, typography, inscription',
+        },
+      }),
       signal: controller.signal,
     });
     return res;

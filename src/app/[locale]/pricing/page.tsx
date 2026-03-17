@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Check, Sparkles, Crown, BookOpen, Zap } from 'lucide-react';
-import { PLANS } from '@/lib/stripe';
+import { PLANS } from '@/lib/lemonsqueezy';
 import { cn } from '@/lib/utils';
 
 export default function PricingPage() {
@@ -22,7 +22,7 @@ export default function PricingPage() {
       window.location.href = `/${locale}/auth/signin?next=pricing`;
       return;
     }
-    const res = await fetch('/api/stripe/checkout', {
+    const res = await fetch('/api/payment/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'subscription' }),
@@ -36,7 +36,7 @@ export default function PricingPage() {
       window.location.href = `/${locale}/auth/signin?next=pricing`;
       return;
     }
-    const res = await fetch('/api/stripe/checkout', {
+    const res = await fetch('/api/payment/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'book' }),

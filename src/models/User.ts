@@ -9,8 +9,9 @@ export interface IUser extends Document {
   plan: 'free' | 'premium';
   storiesUsedThisMonth: number;
   storiesResetDate: Date;
-  stripeCustomerId?: string;
-  stripeSubscriptionId?: string;
+  // Lemon Squeezy (replaces Stripe)
+  lsCustomerId?: string;
+  lsSubscriptionId?: string;
   locale: string;
   createdAt: Date;
   updatedAt: Date;
@@ -26,8 +27,8 @@ const UserSchema = new Schema<IUser>(
     plan: { type: String, enum: ['free', 'premium'], default: 'free' },
     storiesUsedThisMonth: { type: Number, default: 0 },
     storiesResetDate: { type: Date, default: () => new Date() },
-    stripeCustomerId: { type: String },
-    stripeSubscriptionId: { type: String },
+    lsCustomerId: { type: String },
+    lsSubscriptionId: { type: String },
     locale: { type: String, default: 'fr' },
   },
   { timestamps: true }
