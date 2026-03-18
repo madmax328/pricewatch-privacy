@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { connectToDatabase } from '@/lib/mongodb';
 import User from '@/models/User';
+import BookOrder from '@/models/BookOrder';
+import Story from '@/models/Story';
+import PromoCode from '@/models/PromoCode';
 import Stripe from 'stripe';
 
 export async function POST(req: NextRequest) {
@@ -35,6 +38,61 @@ export async function POST(req: NextRequest) {
           plan,
           stripeSubscriptionId: session.subscription as string,
         });
+        // Increment promo code usage if any
+        const promoCode = session.metadata?.promoCode;
+        if (promoCode) {
+          await PromoCode.findOneAndUpdate({ code: promoCode }, { $inc: { usedCount: 1 } });
+        }
+      }
+
+      if (session.mode === 'payment' && session.metadata?.type === 'book') {
+        const storyId = session.metadata?.storyId;
+        const promoCode = session.metadata?.promoCode;
+        const discountAmount = parseInt(session.metadata?.discountAmount || '0');
+
+        if (!storyId) break;
+
+        const [user, story] = await Promise.all([
+          User.findById(userId),
+          Story.findById(storyId),
+        ]);
+
+        if (!user || !story) break;
+
+        const addr = user.deliveryAddress;
+        if (!addr) break;
+
+        // Create BookOrder
+        await BookOrder.create({
+          userId,
+          storyId,
+          storyTitle: story.title,
+          childName: story.childName,
+          deliveryAddress: {
+            firstName: addr.firstName || '',
+            lastName: addr.lastName || '',
+            address: addr.address || '',
+            city: addr.city || '',
+            postalCode: addr.postalCode || '',
+            country: addr.country || '',
+          },
+          amountPaid: session.amount_total || 1699,
+          currency: session.currency || 'eur',
+          promoCode: promoCode || undefined,
+          discountAmount: discountAmount || 0,
+          stripeSessionId: session.id,
+          stripePaymentIntentId: session.payment_intent as string | undefined,
+          status: 'paid',
+          paidAt: new Date(),
+        });
+
+        // Mark story as having a print order
+        await Story.findByIdAndUpdate(storyId, { printOrdered: true });
+
+        // Increment promo usage
+        if (promoCode) {
+          await PromoCode.findOneAndUpdate({ code: promoCode }, { $inc: { usedCount: 1 } });
+        }
       }
       break;
     }
@@ -44,7 +102,6 @@ export async function POST(req: NextRequest) {
       const isActive = subscription.status === 'active';
       const periodEnd = new Date(subscription.current_period_end * 1000);
 
-      // Determine plan from price ID
       const priceId = subscription.items.data[0]?.price.id;
       let plan: 'free' | 'premium' | 'superpremium' = 'free';
       if (isActive) {

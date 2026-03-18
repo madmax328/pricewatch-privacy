@@ -15,6 +15,7 @@ export interface IUser extends Document {
   password?: string;
   image?: string;
   emailVerified?: Date;
+  role: 'user' | 'admin' | 'disabled';
   plan: 'free' | 'premium' | 'superpremium';
   // Monthly counter (free plan)
   storiesUsedThisMonth: number;
@@ -52,6 +53,7 @@ const UserSchema = new Schema<IUser>(
     password: { type: String, select: false },
     image: { type: String },
     emailVerified: { type: Date },
+    role: { type: String, enum: ['user', 'admin', 'disabled'], default: 'user' },
     plan: { type: String, enum: ['free', 'premium', 'superpremium'], default: 'free' },
     // Monthly counter (free)
     storiesUsedThisMonth: { type: Number, default: 0 },

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { Crown, Sparkles, Zap, User, MapPin, CreditCard, AlertTriangle, Check, ArrowLeft } from 'lucide-react';
+import { Crown, Sparkles, Zap, User, MapPin, CreditCard, AlertTriangle, ArrowLeft, Package, ExternalLink } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface DeliveryAddress {
@@ -26,6 +26,28 @@ interface UserData {
   createdAt: string;
 }
 
+interface BookOrder {
+  _id: string;
+  storyTitle: string;
+  childName: string;
+  status: string;
+  amountPaid: number;
+  trackingUrl?: string;
+  trackingNumber?: string;
+  carrier?: string;
+  createdAt: string;
+}
+
+const ORDER_STATUS_LABELS: Record<string, { label: string; color: string }> = {
+  pending_payment: { label: 'En attente de paiement', color: 'text-yellow-600' },
+  paid: { label: 'Payé — en attente production', color: 'text-blue-600' },
+  in_production: { label: 'En cours d\'impression', color: 'text-purple-600' },
+  shipped: { label: 'Expédié', color: 'text-green-600' },
+  delivered: { label: 'Livré', color: 'text-gray-600' },
+  cancelled: { label: 'Annulé', color: 'text-red-600' },
+  error: { label: 'Erreur', color: 'text-red-700' },
+};
+
 const PLAN_LABELS: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
   free: { label: 'Gratuit', icon: <Sparkles className="w-5 h-5 text-purple-500" />, color: 'text-gray-700' },
   premium: { label: 'Premium', icon: <Crown className="w-5 h-5 text-yellow-500" />, color: 'text-yellow-600' },
@@ -39,6 +61,7 @@ export default function AccountPage() {
   const tc = useTranslations('common');
 
   const [user, setUser] = useState<UserData | null>(null);
+  const [orders, setOrders] = useState<BookOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Profile form
@@ -59,12 +82,12 @@ export default function AccountPage() {
       return;
     }
     if (status === 'authenticated') {
-      fetch('/api/user')
-        .then((r) => r.json())
-        .then(({ user }) => {
-          setUser(user);
-          setName(user.name || '');
-          setAddress(user.deliveryAddress || {});
+      Promise.all([fetch('/api/user').then((r) => r.json()), fetch('/api/orders').then((r) => r.json())])
+        .then(([userData, ordersData]) => {
+          setUser(userData.user);
+          setName(userData.user.name || '');
+          setAddress(userData.user.deliveryAddress || {});
+          setOrders(ordersData.orders || []);
         })
         .catch(() => toast.error(tc('error')))
         .finally(() => setLoading(false));
@@ -291,6 +314,47 @@ export default function AccountPage() {
               {savingAddress ? tc('loading') : t('saveAddress')}
             </button>
           </section>
+
+          {/* Book orders */}
+          {orders.length > 0 && (
+            <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Package className="w-5 h-5 text-gray-400" />
+                <h2 className="font-bold text-gray-900">Mes commandes de livres</h2>
+              </div>
+              <div className="space-y-4">
+                {orders.map((order) => {
+                  const statusInfo = ORDER_STATUS_LABELS[order.status] || { label: order.status, color: 'text-gray-600' };
+                  return (
+                    <div key={order._id} className="border border-gray-100 rounded-xl p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-semibold text-gray-800">{order.storyTitle}</p>
+                          <p className="text-sm text-gray-500">Pour {order.childName}</p>
+                          <p className={`text-sm font-medium mt-1 ${statusInfo.color}`}>{statusInfo.label}</p>
+                          {order.trackingNumber && (
+                            <p className="text-xs text-gray-400 mt-0.5">
+                              {order.carrier && `${order.carrier} — `}
+                              {order.trackingNumber}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="font-bold text-gray-800">€{(order.amountPaid / 100).toFixed(2)}</p>
+                          <p className="text-xs text-gray-400">{new Date(order.createdAt).toLocaleDateString(locale, { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                          {order.trackingUrl && (
+                            <a href={order.trackingUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-purple-600 hover:underline mt-1">
+                              Suivre <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
 
           {/* Cancel subscription */}
           {user?.plan !== 'free' && (

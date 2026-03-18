@@ -69,6 +69,14 @@ export default function Navbar({ locale }: { locale: string }) {
                 >
                   {t('account')}
                 </Link>
+                {(session.user as { role?: string })?.role === 'admin' && (
+                  <Link
+                    href={`/${locale}/admin`}
+                    className="text-sm font-semibold text-purple-600 hover:text-purple-800 transition-colors"
+                  >
+                    Admin
+                  </Link>
+                )}
               </>
             )}
           </div>
@@ -158,6 +166,11 @@ export default function Navbar({ locale }: { locale: string }) {
               <Link href={`/${locale}/account`} className="block py-2 text-sm font-medium" onClick={() => setMobileOpen(false)}>
                 {t('account')}
               </Link>
+              {(session.user as { role?: string })?.role === 'admin' && (
+                <Link href={`/${locale}/admin`} className="block py-2 text-sm font-semibold text-purple-600" onClick={() => setMobileOpen(false)}>
+                  Admin
+                </Link>
+              )}
             </>
           )}
           <hr className="border-gray-100" />

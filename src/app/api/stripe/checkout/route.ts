@@ -4,6 +4,10 @@ import { authOptions } from '@/lib/auth';
 import { stripe } from '@/lib/stripe';
 import { connectToDatabase } from '@/lib/mongodb';
 import User from '@/models/User';
+import PromoCode from '@/models/PromoCode';
+import Story from '@/models/Story';
+
+const BOOK_PRICE_CENTS = 1699; // €16.99
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -11,7 +15,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { type } = await req.json(); // 'premium' | 'superpremium' | 'book'
+  const { type, storyId, promoCode } = await req.json();
   const userId = (session.user as { id: string; email: string }).id;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
@@ -21,7 +25,6 @@ export async function POST(req: NextRequest) {
 
   let stripeCustomerId = user.stripeCustomerId;
 
-  // Create or retrieve Stripe customer
   if (!stripeCustomerId) {
     const customer = await stripe.customers.create({
       email: user.email,
@@ -39,9 +42,10 @@ export async function POST(req: NextRequest) {
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [{ price: process.env.STRIPE_PREMIUM_PRICE_ID!, quantity: 1 }],
+      ...(promoCode ? { discounts: [{ coupon: await getOrCreateStripeCoupon(promoCode, 'subscription') }] } : { allow_promotion_codes: true }),
       success_url: `${appUrl}/fr/dashboard?upgraded=true`,
       cancel_url: `${appUrl}/fr/pricing`,
-      metadata: { userId: userId.toString(), plan: 'premium' },
+      metadata: { userId: userId.toString(), plan: 'premium', promoCode: promoCode || '' },
     });
     return NextResponse.json({ url: checkoutSession.url });
   }
@@ -52,14 +56,47 @@ export async function POST(req: NextRequest) {
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [{ price: process.env.STRIPE_SUPERPREMIUM_PRICE_ID!, quantity: 1 }],
+      ...(promoCode ? { discounts: [{ coupon: await getOrCreateStripeCoupon(promoCode, 'subscription') }] } : { allow_promotion_codes: true }),
       success_url: `${appUrl}/fr/dashboard?upgraded=true`,
       cancel_url: `${appUrl}/fr/pricing`,
-      metadata: { userId: userId.toString(), plan: 'superpremium' },
+      metadata: { userId: userId.toString(), plan: 'superpremium', promoCode: promoCode || '' },
     });
     return NextResponse.json({ url: checkoutSession.url });
   }
 
   if (type === 'book') {
+    if (!storyId) {
+      return NextResponse.json({ error: 'storyId required' }, { status: 400 });
+    }
+
+    // Fetch story to embed info in order
+    const story = await Story.findOne({ _id: storyId, userId });
+    if (!story) return NextResponse.json({ error: 'Story not found' }, { status: 404 });
+
+    // Validate delivery address
+    const addr = user.deliveryAddress;
+    if (!addr?.firstName || !addr?.address || !addr?.city || !addr?.country) {
+      return NextResponse.json({ error: 'delivery_address_missing' }, { status: 400 });
+    }
+
+    // Calculate discount
+    let finalAmount = BOOK_PRICE_CENTS;
+    let validatedPromo: { discountType: string; discountValue: number } | null = null;
+
+    if (promoCode) {
+      const promo = await PromoCode.findOne({ code: promoCode.toUpperCase().trim(), active: true });
+      if (promo && (!promo.expiresAt || new Date() < promo.expiresAt) &&
+          (promo.maxUses == null || promo.usedCount < promo.maxUses) &&
+          (promo.appliesTo === 'all' || promo.appliesTo === 'book')) {
+        validatedPromo = { discountType: promo.discountType, discountValue: promo.discountValue };
+        if (promo.discountType === 'percent') {
+          finalAmount = Math.round(BOOK_PRICE_CENTS * (1 - promo.discountValue / 100));
+        } else {
+          finalAmount = Math.max(0, BOOK_PRICE_CENTS - promo.discountValue);
+        }
+      }
+    }
+
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
       mode: 'payment',
@@ -69,21 +106,51 @@ export async function POST(req: NextRequest) {
           price_data: {
             currency: 'eur',
             product_data: {
-              name: 'Kidshade — Livre personnalisé',
-              description: 'Votre histoire imprimée et reliée, livrée chez vous',
-              images: [],
+              name: `Kidshade — "${story.title}"`,
+              description: `Livre personnalisé pour ${story.childName}, imprimé et livré chez vous`,
             },
-            unit_amount: 1499,
+            unit_amount: finalAmount,
           },
           quantity: 1,
         },
       ],
-      success_url: `${appUrl}/fr/dashboard?book=ordered`,
-      cancel_url: `${appUrl}/fr/dashboard`,
-      metadata: { userId: userId.toString(), type: 'book' },
+      success_url: `${appUrl}/fr/account?book=ordered`,
+      cancel_url: `${appUrl}/fr/story/${storyId}`,
+      metadata: {
+        userId: userId.toString(),
+        type: 'book',
+        storyId: storyId.toString(),
+        promoCode: promoCode || '',
+        discountAmount: String(BOOK_PRICE_CENTS - finalAmount),
+      },
     });
+
     return NextResponse.json({ url: checkoutSession.url });
   }
 
   return NextResponse.json({ error: 'Invalid type' }, { status: 400 });
+}
+
+// Helper: get or create a Stripe coupon from our PromoCode
+async function getOrCreateStripeCoupon(code: string, appliesTo: 'book' | 'subscription'): Promise<string> {
+  const promo = await PromoCode.findOne({ code: code.toUpperCase().trim(), active: true });
+  if (!promo) throw new Error('Invalid promo code');
+  if (promo.appliesTo !== 'all' && promo.appliesTo !== appliesTo) throw new Error('Promo not applicable');
+
+  // Try to find existing Stripe coupon with same ID
+  const couponId = `KIDSHADE_${promo.code}`;
+  try {
+    await stripe.coupons.retrieve(couponId);
+    return couponId;
+  } catch {
+    // Create it
+    await stripe.coupons.create({
+      id: couponId,
+      ...(promo.discountType === 'percent'
+        ? { percent_off: promo.discountValue }
+        : { amount_off: promo.discountValue, currency: 'eur' }),
+      duration: 'once',
+    });
+    return couponId;
+  }
 }

@@ -33,6 +33,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           image: user.image,
           plan: user.plan,
+          role: user.role || 'user',
         };
       },
     }),
@@ -42,13 +43,15 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.plan = (user as { plan?: string }).plan || 'free';
+        token.role = (user as { role?: string }).role || 'user';
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as { id?: string; plan?: string }).id = token.id as string;
-        (session.user as { id?: string; plan?: string }).plan = token.plan as string;
+        (session.user as { id?: string; plan?: string; role?: string }).id = token.id as string;
+        (session.user as { id?: string; plan?: string; role?: string }).plan = token.plan as string;
+        (session.user as { id?: string; plan?: string; role?: string }).role = token.role as string;
       }
       return session;
     },
