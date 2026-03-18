@@ -197,8 +197,8 @@ export default function DashboardPage() {
         {plan === 'premium' && storiesTodayLeft === 0 && (
           <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-yellow-500 to-orange-500 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
-              <p className="font-bold text-lg">Limite journalière atteinte</p>
-              <p className="text-yellow-100 text-sm mt-1">Passez Super Premium pour des histoires illimitées !</p>
+              <p className="font-bold text-lg">{t('dailyLimitTitle')}</p>
+              <p className="text-yellow-100 text-sm mt-1">{t('dailyLimitPrompt')}</p>
             </div>
             <button
               onClick={handleUpgrade}

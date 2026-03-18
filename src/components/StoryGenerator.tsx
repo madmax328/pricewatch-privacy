@@ -150,7 +150,7 @@ export default function StoryGenerator({
               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-900"
             >
               {AGES.map((age) => (
-                <option key={age} value={age}>{age} ans</option>
+                <option key={age} value={age}>{age} {t('years')}</option>
               ))}
             </select>
           </div>

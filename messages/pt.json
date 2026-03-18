@@ -59,6 +59,7 @@
     "submit": "✨ Gerar história",
     "generating": "Criando a magia...",
     "freeLeft": "histórias gratuitas restantes este mês",
+    "years": "anos",
     "loginRequired": "Entre para gerar histórias",
     "limitReached": "Limite mensal atingido — Upgrade para Premium",
     "avatarTitle": "Personalizar o herói da história",
@@ -120,7 +121,9 @@
     "deleteConfirm": "Eliminar esta história?",
     "deleteSuccess": "História eliminada",
     "deleteError": "Erro ao eliminar",
-    "account": "Minha conta"
+    "account": "Minha conta",
+    "dailyLimitTitle": "Limite diário atingido",
+    "dailyLimitPrompt": "Upgrade para Super Premium para histórias ilimitadas!"
   },
   "account": {
     "title": "Minha conta",

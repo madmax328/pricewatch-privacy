@@ -59,6 +59,7 @@
     "submit": "✨ Generate story",
     "generating": "Creating the magic...",
     "freeLeft": "free stories left this month",
+    "years": "years old",
     "loginRequired": "Sign in to generate stories",
     "limitReached": "Monthly limit reached — Upgrade to Premium",
     "avatarTitle": "Customize the story hero",
@@ -120,7 +121,9 @@
     "deleteConfirm": "Delete this story?",
     "deleteSuccess": "Story deleted",
     "deleteError": "Error deleting story",
-    "account": "My account"
+    "account": "My account",
+    "dailyLimitTitle": "Daily limit reached",
+    "dailyLimitPrompt": "Upgrade to Super Premium for unlimited stories!"
   },
   "pricing": {
     "title": "Choose your plan",

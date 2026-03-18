@@ -59,6 +59,7 @@
     "submit": "✨ Générer l'histoire",
     "generating": "Création de la magie...",
     "freeLeft": "histoires gratuites restantes ce mois",
+    "years": "ans",
     "loginRequired": "Connecte-toi pour générer des histoires",
     "limitReached": "Limite mensuelle atteinte — Passe en Premium",
     "avatarTitle": "Personnaliser le héros de l'histoire",
@@ -120,7 +121,9 @@
     "deleteConfirm": "Supprimer cette histoire ?",
     "deleteSuccess": "Histoire supprimée",
     "deleteError": "Erreur lors de la suppression",
-    "account": "Mon compte"
+    "account": "Mon compte",
+    "dailyLimitTitle": "Limite journalière atteinte",
+    "dailyLimitPrompt": "Passez Super Premium pour des histoires illimitées !"
   },
   "pricing": {
     "title": "Choisissez votre formule",
