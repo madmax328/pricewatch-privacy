@@ -6,7 +6,8 @@ import { generateStory } from '@/lib/anthropic';
 import Story from '@/models/Story';
 import User from '@/models/User';
 
-const FREE_STORY_LIMIT = 5;
+const FREE_STORY_LIMIT = 3;    // per month
+const PREMIUM_STORY_LIMIT = 1; // per day
 
 // GET /api/stories — fetch user's stories
 export async function GET(req: NextRequest) {
@@ -45,21 +46,45 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Utilisateur introuvable en base de données.' }, { status: 404 });
     }
 
-    // Reset monthly counter if needed
     const now = new Date();
-    const resetDate = new Date(user.storiesResetDate);
-    if (now.getMonth() !== resetDate.getMonth() || now.getFullYear() !== resetDate.getFullYear()) {
-      user.storiesUsedThisMonth = 0;
-      user.storiesResetDate = now;
+
+    // --- Free plan: monthly limit ---
+    if (user.plan === 'free') {
+      const resetDate = new Date(user.storiesResetDate);
+      if (now.getMonth() !== resetDate.getMonth() || now.getFullYear() !== resetDate.getFullYear()) {
+        user.storiesUsedThisMonth = 0;
+        user.storiesResetDate = now;
+      }
+      if (user.storiesUsedThisMonth >= FREE_STORY_LIMIT) {
+        return NextResponse.json(
+          { error: 'Monthly limit reached', code: 'LIMIT_REACHED' },
+          { status: 403 }
+        );
+      }
     }
 
-    // Check story limit for free users
-    if (user.plan === 'free' && user.storiesUsedThisMonth >= FREE_STORY_LIMIT) {
-      return NextResponse.json(
-        { error: 'Monthly limit reached', code: 'LIMIT_REACHED' },
-        { status: 403 }
-      );
+    // --- Premium plan: daily limit ---
+    if (user.plan === 'premium') {
+      const dailyReset = new Date(user.storiesDailyResetDate);
+      const sameDay =
+        now.getDate() === dailyReset.getDate() &&
+        now.getMonth() === dailyReset.getMonth() &&
+        now.getFullYear() === dailyReset.getFullYear();
+
+      if (!sameDay) {
+        user.storiesCreatedToday = 0;
+        user.storiesDailyResetDate = now;
+      }
+
+      if (user.storiesCreatedToday >= PREMIUM_STORY_LIMIT) {
+        return NextResponse.json(
+          { error: 'Daily limit reached', code: 'DAILY_LIMIT_REACHED' },
+          { status: 403 }
+        );
+      }
     }
+
+    // superpremium: no limit check needed
 
     const body = await req.json();
     const { childName, childAge, theme, language, childAvatar } = body;
@@ -91,8 +116,12 @@ export async function POST(req: NextRequest) {
       ...(childAvatar && { childAvatar }),
     });
 
-    // Increment usage counter
-    user.storiesUsedThisMonth += 1;
+    // Increment appropriate counter
+    if (user.plan === 'free') {
+      user.storiesUsedThisMonth += 1;
+    } else if (user.plan === 'premium') {
+      user.storiesCreatedToday += 1;
+    }
     await user.save();
 
     return NextResponse.json({ story }, { status: 201 });

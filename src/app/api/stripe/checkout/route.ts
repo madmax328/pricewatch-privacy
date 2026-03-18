@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { type } = await req.json(); // 'subscription' or 'book'
+  const { type } = await req.json(); // 'premium' | 'superpremium' | 'book'
   const userId = (session.user as { id: string; email: string }).id;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
@@ -33,22 +33,29 @@ export async function POST(req: NextRequest) {
     await user.save();
   }
 
-  if (type === 'subscription') {
+  if (type === 'premium') {
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
       mode: 'subscription',
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price: process.env.STRIPE_PREMIUM_PRICE_ID!,
-          quantity: 1,
-        },
-      ],
+      line_items: [{ price: process.env.STRIPE_PREMIUM_PRICE_ID!, quantity: 1 }],
       success_url: `${appUrl}/fr/dashboard?upgraded=true`,
       cancel_url: `${appUrl}/fr/pricing`,
-      metadata: { userId: userId.toString() },
+      metadata: { userId: userId.toString(), plan: 'premium' },
     });
+    return NextResponse.json({ url: checkoutSession.url });
+  }
 
+  if (type === 'superpremium') {
+    const checkoutSession = await stripe.checkout.sessions.create({
+      customer: stripeCustomerId,
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: [{ price: process.env.STRIPE_SUPERPREMIUM_PRICE_ID!, quantity: 1 }],
+      success_url: `${appUrl}/fr/dashboard?upgraded=true`,
+      cancel_url: `${appUrl}/fr/pricing`,
+      metadata: { userId: userId.toString(), plan: 'superpremium' },
+    });
     return NextResponse.json({ url: checkoutSession.url });
   }
 
@@ -66,7 +73,7 @@ export async function POST(req: NextRequest) {
               description: 'Votre histoire imprimée et reliée, livrée chez vous',
               images: [],
             },
-            unit_amount: 1499, // 14.99€ in cents
+            unit_amount: 1499,
           },
           quantity: 1,
         },
@@ -75,7 +82,6 @@ export async function POST(req: NextRequest) {
       cancel_url: `${appUrl}/fr/dashboard`,
       metadata: { userId: userId.toString(), type: 'book' },
     });
-
     return NextResponse.json({ url: checkoutSession.url });
   }
 

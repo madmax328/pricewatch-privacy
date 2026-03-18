@@ -56,12 +56,20 @@ export default function Navbar({ locale }: { locale: string }) {
               {t('pricing')}
             </Link>
             {session && (
-              <Link
-                href={`/${locale}/dashboard`}
-                className="text-sm font-medium text-gray-600 hover:text-purple-600 transition-colors"
-              >
-                {t('dashboard')}
-              </Link>
+              <>
+                <Link
+                  href={`/${locale}/dashboard`}
+                  className="text-sm font-medium text-gray-600 hover:text-purple-600 transition-colors"
+                >
+                  {t('dashboard')}
+                </Link>
+                <Link
+                  href={`/${locale}/account`}
+                  className="text-sm font-medium text-gray-600 hover:text-purple-600 transition-colors"
+                >
+                  {t('account')}
+                </Link>
+              </>
             )}
           </div>
 
@@ -143,9 +151,14 @@ export default function Navbar({ locale }: { locale: string }) {
             {t('pricing')}
           </Link>
           {session && (
-            <Link href={`/${locale}/dashboard`} className="block py-2 text-sm font-medium" onClick={() => setMobileOpen(false)}>
-              {t('dashboard')}
-            </Link>
+            <>
+              <Link href={`/${locale}/dashboard`} className="block py-2 text-sm font-medium" onClick={() => setMobileOpen(false)}>
+                {t('dashboard')}
+              </Link>
+              <Link href={`/${locale}/account`} className="block py-2 text-sm font-medium" onClick={() => setMobileOpen(false)}>
+                {t('account')}
+              </Link>
+            </>
           )}
           <hr className="border-gray-100" />
           <div className="flex gap-2 flex-wrap">
