@@ -81,7 +81,7 @@
     "readTime": "min de lectura",
     "share": "Compartir",
     "download": "Descargar",
-    "orderBook": "Pedir el libro físico (14,99€)",
+    "orderBook": "Pedir el libro físico (16,99€)",
     "newStory": "Crear un nuevo cuento",
     "for": "para",
     "age": "años",
@@ -165,7 +165,7 @@
     "premium": { "name": "Premium", "price": "2,99€", "cta": "Suscribirse ahora" },
     "superpremium": { "name": "Super Premium", "price": "5,99€", "cta": "Suscribirse ahora", "popular": "El más popular" },
     "book": {
-      "name": "Libro Físico", "price": "14,99€", "cta": "Pedir un libro", "desc": "Por libro impreso",
+      "name": "Libro Físico", "price": "16,99€", "cta": "Pedir un libro", "desc": "Por libro impreso",
       "f1": "Cuento ilustrado impreso",
       "f2": "Entrega en 7 días",
       "f3": "Tapa dura",

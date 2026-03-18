@@ -81,7 +81,7 @@
     "readTime": "min de leitura",
     "share": "Compartilhar",
     "download": "Baixar",
-    "orderBook": "Pedir livro físico (€14,99)",
+    "orderBook": "Pedir livro físico (€16,99)",
     "newStory": "Criar nova história",
     "for": "para",
     "age": "anos",
@@ -165,7 +165,7 @@
     "premium": { "name": "Premium", "price": "€2,99", "cta": "Assinar agora" },
     "superpremium": { "name": "Super Premium", "price": "€5,99", "cta": "Assinar agora", "popular": "Mais popular" },
     "book": {
-      "name": "Livro Físico", "price": "€14,99", "cta": "Pedir livro", "desc": "Por livro impresso",
+      "name": "Livro Físico", "price": "€16,99", "cta": "Pedir livro", "desc": "Por livro impresso",
       "f1": "História ilustrada impressa",
       "f2": "Entrega em 7 dias",
       "f3": "Capa dura",
