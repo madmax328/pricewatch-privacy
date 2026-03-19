@@ -81,7 +81,7 @@
     "readTime": "min read",
     "share": "Share",
     "download": "Download",
-    "orderBook": "Order physical book (€16.99)",
+    "orderBook": "Order physical book (€29.99)",
     "newStory": "Create a new story",
     "for": "for",
     "age": "years old",
@@ -134,7 +134,7 @@
     "premium": { "name": "Premium", "price": "€2.99", "cta": "Subscribe now" },
     "superpremium": { "name": "Super Premium", "price": "€5.99", "cta": "Subscribe now", "popular": "Most popular" },
     "book": {
-      "name": "Physical Book", "price": "€16.99", "cta": "Order a book", "desc": "Per printed book",
+      "name": "Physical Book", "price": "€29.99", "cta": "Order a book", "desc": "Per printed book",
       "f1": "Illustrated printed story",
       "f2": "Delivered in 7 days",
       "f3": "Hardcover",

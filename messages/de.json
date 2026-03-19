@@ -81,7 +81,7 @@
     "readTime": "Min. Lesezeit",
     "share": "Teilen",
     "download": "Herunterladen",
-    "orderBook": "Physisches Buch bestellen (16,99€)",
+    "orderBook": "Physisches Buch bestellen (29,99€)",
     "newStory": "Neue Geschichte erstellen",
     "for": "für",
     "age": "Jahre",
@@ -165,7 +165,7 @@
     "premium": { "name": "Premium", "price": "2,99€", "cta": "Jetzt abonnieren" },
     "superpremium": { "name": "Super Premium", "price": "5,99€", "cta": "Jetzt abonnieren", "popular": "Am beliebtesten" },
     "book": {
-      "name": "Physisches Buch", "price": "16,99€", "cta": "Buch bestellen", "desc": "Pro gedrucktem Buch",
+      "name": "Physisches Buch", "price": "29,99€", "cta": "Buch bestellen", "desc": "Pro gedrucktem Buch",
       "f1": "Illustrierte gedruckte Geschichte",
       "f2": "Lieferung in 7 Tagen",
       "f3": "Hardcover",

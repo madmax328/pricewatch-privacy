@@ -81,7 +81,7 @@
     "readTime": "min de lecture",
     "share": "Partager",
     "download": "Télécharger",
-    "orderBook": "Commander le livre physique (16,99€)",
+    "orderBook": "Commander le livre physique (29,99€)",
     "newStory": "Créer une nouvelle histoire",
     "for": "pour",
     "age": "ans",
@@ -134,7 +134,7 @@
     "premium": { "name": "Premium", "price": "2,99€", "cta": "S'abonner maintenant" },
     "superpremium": { "name": "Super Premium", "price": "5,99€", "cta": "S'abonner maintenant", "popular": "Le plus populaire" },
     "book": {
-      "name": "Livre Physique", "price": "16,99€", "cta": "Commander un livre", "desc": "Par livre imprimé",
+      "name": "Livre Physique", "price": "29,99€", "cta": "Commander un livre", "desc": "Par livre imprimé",
       "f1": "Histoire illustrée imprimée",
       "f2": "Livraison sous 7 jours",
       "f3": "Couverture rigide",
