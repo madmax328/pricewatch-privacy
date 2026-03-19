@@ -67,7 +67,7 @@ Story requirements:
 - The main hero/heroine is a child named "${childName}", aged ${childAge} years old
 - Theme: ${theme}
 - Language: ${langName} (VERY IMPORTANT: the entire story must be written in ${langName})
-- Length: ${childAge <= 5 ? '250-350' : childAge <= 9 ? '400-500' : '500-700'} words
+- Length: ${childAge <= 5 ? '450-600' : childAge <= 9 ? '700-900' : '900-1200'} words
 - Writing style for age ${childAge}:
 ${ageGuidelines}
 - Structure: beginning (introduce hero and setting), middle (exciting adventure/challenge), end (happy resolution with a ${childAge >= 10 ? 'meaningful' : 'gentle'} moral lesson)
@@ -81,7 +81,7 @@ Respond ONLY with a valid JSON object in this exact format (no markdown, no extr
 
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 1500,
+    max_tokens: 2500,
     messages: [{ role: 'user', content: prompt }],
   });
 

@@ -7,7 +7,7 @@ import User from '@/models/User';
 import PromoCode from '@/models/PromoCode';
 import Story from '@/models/Story';
 
-const BOOK_PRICE_CENTS = 1699; // €16.99
+const BOOK_PRICE_CENTS = 2999; // €29.99
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);

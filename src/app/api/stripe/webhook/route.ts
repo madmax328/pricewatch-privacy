@@ -6,6 +6,9 @@ import BookOrder from '@/models/BookOrder';
 import Story from '@/models/Story';
 import PromoCode from '@/models/PromoCode';
 import Stripe from 'stripe';
+import { generateInteriorPdf, generateCoverPdf } from '@/lib/pdf-generator';
+import { createLuluPrintJob } from '@/lib/lulu';
+import { put } from '@vercel/blob';
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -62,21 +65,23 @@ export async function POST(req: NextRequest) {
         const addr = user.deliveryAddress;
         if (!addr) break;
 
+        const deliveryAddress = {
+          firstName: addr.firstName || '',
+          lastName: addr.lastName || '',
+          address: addr.address || '',
+          city: addr.city || '',
+          postalCode: addr.postalCode || '',
+          country: addr.country || '',
+        };
+
         // Create BookOrder
-        await BookOrder.create({
+        const bookOrder = await BookOrder.create({
           userId,
           storyId,
           storyTitle: story.title,
           childName: story.childName,
-          deliveryAddress: {
-            firstName: addr.firstName || '',
-            lastName: addr.lastName || '',
-            address: addr.address || '',
-            city: addr.city || '',
-            postalCode: addr.postalCode || '',
-            country: addr.country || '',
-          },
-          amountPaid: session.amount_total || 1699,
+          deliveryAddress,
+          amountPaid: session.amount_total || 2999,
           currency: session.currency || 'eur',
           promoCode: promoCode || undefined,
           discountAmount: discountAmount || 0,
@@ -93,6 +98,17 @@ export async function POST(req: NextRequest) {
         if (promoCode) {
           await PromoCode.findOneAndUpdate({ code: promoCode }, { $inc: { usedCount: 1 } });
         }
+
+        // Submit to Lulu (async, non-blocking — errors are logged but don't affect Stripe response)
+        submitToLulu({
+          orderId: String(bookOrder._id),
+          userEmail: user.email,
+          storyTitle: story.title,
+          childName: story.childName,
+          storyContent: story.content,
+          theme: story.theme || 'space',
+          address: deliveryAddress,
+        }).catch((err) => console.error('[Lulu] submission failed:', err));
       }
       break;
     }
@@ -152,4 +168,55 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ received: true });
+}
+
+// ── Lulu print job submission ─────────────────────────────────────────────────
+async function submitToLulu(params: {
+  orderId: string;
+  userEmail: string;
+  storyTitle: string;
+  childName: string;
+  storyContent: string;
+  theme: string;
+  address: {
+    firstName: string;
+    lastName: string;
+    address: string;
+    city: string;
+    postalCode: string;
+    country: string;
+  };
+}) {
+  const { orderId, userEmail, storyTitle, childName, storyContent, theme, address } = params;
+
+  // Generate PDFs
+  const [interiorBytes, coverBytes] = await Promise.all([
+    generateInteriorPdf({ childName, storyTitle, storyContent, theme }),
+    generateCoverPdf({ childName, storyTitle, theme }),
+  ]);
+
+  // Upload to Vercel Blob (publicly accessible for Lulu to fetch)
+  const [interiorBlob, coverBlob] = await Promise.all([
+    put(`lulu/${orderId}/interior.pdf`, interiorBytes, { access: 'public', contentType: 'application/pdf' }),
+    put(`lulu/${orderId}/cover.pdf`, coverBytes, { access: 'public', contentType: 'application/pdf' }),
+  ]);
+
+  // Create Lulu print job
+  const { luluJobId, luluOrderId } = await createLuluPrintJob({
+    orderId,
+    userEmail,
+    storyTitle,
+    coverUrl: coverBlob.url,
+    interiorUrl: interiorBlob.url,
+    address,
+  });
+
+  // Update BookOrder with Lulu IDs and status
+  await BookOrder.findByIdAndUpdate(orderId, {
+    luluJobId,
+    luluOrderId,
+    status: 'in_production',
+  });
+
+  console.log(`[Lulu] Print job created: jobId=${luluJobId} orderId=${luluOrderId}`);
 }
