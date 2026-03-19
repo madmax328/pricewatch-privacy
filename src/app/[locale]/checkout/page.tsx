@@ -11,10 +11,20 @@ import { BookOpen, Crown, Zap, ArrowLeft, Tag, X } from 'lucide-react';
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const PLAN_META = {
-  premium: { label: 'Premium', icon: Crown, color: 'text-yellow-500', price: '2,99€/mois', type: 'subscription' },
-  superpremium: { label: 'Super Premium', icon: Zap, color: 'text-purple-600', price: '5,99€/mois', type: 'subscription' },
-  book: { label: 'Livre Physique', icon: BookOpen, color: 'text-orange-500', price: '29,99€', type: 'book' },
+  premium: { label: 'Premium', icon: Crown, color: 'text-yellow-500', price: '2,99€/mois', baseCents: 299, isSubscription: true },
+  superpremium: { label: 'Super Premium', icon: Zap, color: 'text-purple-600', price: '5,99€/mois', baseCents: 599, isSubscription: true },
+  book: { label: 'Livre Physique', icon: BookOpen, color: 'text-orange-500', price: '29,99€', baseCents: 2999, isSubscription: false },
 };
+
+function formatPrice(cents: number, isSubscription: boolean) {
+  return (cents / 100).toFixed(2).replace('.', ',') + '€' + (isSubscription ? '/mois' : '');
+}
+
+function calcTotal(baseCents: number, discountType: string | null, discountValue: number) {
+  if (!discountType) return baseCents;
+  if (discountType === 'percent') return Math.round(baseCents * (1 - discountValue / 100));
+  return Math.max(0, baseCents - discountValue);
+}
 
 function CheckoutContent() {
   const searchParams = useSearchParams();
@@ -31,6 +41,8 @@ function CheckoutContent() {
   const [promoInput, setPromoInput] = useState(initialPromo);
   const [appliedPromo, setAppliedPromo] = useState(initialPromo);
   const [promoDiscount, setPromoDiscount] = useState<string | null>(null);
+  const [promoDiscountType, setPromoDiscountType] = useState<string | null>(null);
+  const [promoDiscountValue, setPromoDiscountValue] = useState<number>(0);
   const [promoError, setPromoError] = useState<string | null>(null);
   const [promoLoading, setPromoLoading] = useState(false);
 
@@ -86,12 +98,16 @@ function CheckoutContent() {
 
     setAppliedPromo(code);
     setPromoDiscount(data.discountText);
+    setPromoDiscountType(data.discountType);
+    setPromoDiscountValue(data.discountValue);
     await fetchClientSecret(code);
   };
 
   const handleRemovePromo = async () => {
     setAppliedPromo('');
     setPromoDiscount(null);
+    setPromoDiscountType(null);
+    setPromoDiscountValue(0);
     setPromoInput('');
     setPromoError(null);
     await fetchClientSecret('');
@@ -108,6 +124,8 @@ function CheckoutContent() {
 
   const meta = PLAN_META[type];
   const Icon = meta.icon;
+  const totalCents = calcTotal(meta.baseCents, promoDiscountType, promoDiscountValue);
+  const totalLabel = formatPrice(totalCents, meta.isSubscription);
 
   return (
     <div className="min-h-screen gradient-warm">
@@ -148,7 +166,7 @@ function CheckoutContent() {
               )}
               <div className="flex justify-between font-bold text-gray-900 pt-2 border-t border-gray-100">
                 <span>Total</span>
-                <span>{meta.price}</span>
+                <span className={promoDiscountType ? 'text-green-600' : ''}>{totalLabel}</span>
               </div>
             </div>
 
