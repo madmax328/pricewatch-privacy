@@ -6,14 +6,14 @@ import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
-import { BookOpen, Crown, Zap, ArrowLeft } from 'lucide-react';
+import { BookOpen, Crown, Zap, ArrowLeft, Tag, X } from 'lucide-react';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const PLAN_META = {
-  premium: { label: 'Premium', icon: Crown, color: 'text-yellow-500', price: '2,99€/mois' },
-  superpremium: { label: 'Super Premium', icon: Zap, color: 'text-purple-600', price: '5,99€/mois' },
-  book: { label: 'Livre Physique', icon: BookOpen, color: 'text-orange-500', price: '29,99€' },
+  premium: { label: 'Premium', icon: Crown, color: 'text-yellow-500', price: '2,99€/mois', type: 'subscription' },
+  superpremium: { label: 'Super Premium', icon: Zap, color: 'text-purple-600', price: '5,99€/mois', type: 'subscription' },
+  book: { label: 'Livre Physique', icon: BookOpen, color: 'text-orange-500', price: '29,99€', type: 'book' },
 };
 
 function CheckoutContent() {
@@ -23,18 +23,26 @@ function CheckoutContent() {
 
   const type = searchParams.get('type') as 'premium' | 'superpremium' | 'book' | null;
   const storyId = searchParams.get('storyId');
-  const promoCode = searchParams.get('promoCode');
+  const initialPromo = searchParams.get('promoCode') || '';
 
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchClientSecret = useCallback(async () => {
+  const [promoInput, setPromoInput] = useState(initialPromo);
+  const [appliedPromo, setAppliedPromo] = useState(initialPromo);
+  const [promoDiscount, setPromoDiscount] = useState<string | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [promoLoading, setPromoLoading] = useState(false);
+
+  const fetchClientSecret = useCallback(async (promo: string) => {
     if (!type) return;
+    setClientSecret(null);
+    setError(null);
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type, storyId, promoCode, embedded: true, locale }),
+        body: JSON.stringify({ type, storyId, promoCode: promo || undefined, embedded: true, locale }),
       });
       const data = await res.json();
       if (data.error) {
@@ -49,11 +57,45 @@ function CheckoutContent() {
     } catch {
       setError('Une erreur est survenue. Veuillez réessayer.');
     }
-  }, [type, storyId, promoCode, locale, router]);
+  }, [type, storyId, locale, router]);
 
   useEffect(() => {
-    fetchClientSecret();
-  }, [fetchClientSecret]);
+    fetchClientSecret(appliedPromo);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleApplyPromo = async () => {
+    const code = promoInput.trim().toUpperCase();
+    if (!code) return;
+    setPromoLoading(true);
+    setPromoError(null);
+
+    const promoType = type === 'book' ? 'book' : 'subscription';
+    const res = await fetch('/api/promo/validate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, type: promoType }),
+    });
+    const data = await res.json();
+    setPromoLoading(false);
+
+    if (!data.valid) {
+      setPromoError(data.error || 'Code invalide');
+      return;
+    }
+
+    setAppliedPromo(code);
+    setPromoDiscount(data.discountText);
+    await fetchClientSecret(code);
+  };
+
+  const handleRemovePromo = async () => {
+    setAppliedPromo('');
+    setPromoDiscount(null);
+    setPromoInput('');
+    setPromoError(null);
+    await fetchClientSecret('');
+  };
 
   if (!type || !(type in PLAN_META)) {
     return (
@@ -84,7 +126,7 @@ function CheckoutContent() {
           <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-7">
             <h2 className="text-lg font-bold text-gray-900 mb-6">Récapitulatif</h2>
             <div className="flex items-center gap-3 mb-6">
-              <div className={`p-2 rounded-xl bg-gray-50`}>
+              <div className="p-2 rounded-xl bg-gray-50">
                 <Icon className={`w-6 h-6 ${meta.color}`} />
               </div>
               <div>
@@ -92,15 +134,16 @@ function CheckoutContent() {
                 <p className="text-2xl font-extrabold text-gray-900">{meta.price}</p>
               </div>
             </div>
-            <div className="border-t border-gray-100 pt-4 space-y-2">
+
+            <div className="border-t border-gray-100 pt-4 space-y-2 mb-5">
               <div className="flex justify-between text-sm text-gray-600">
                 <span>Sous-total</span>
                 <span>{meta.price}</span>
               </div>
-              {promoCode && (
-                <div className="flex justify-between text-sm text-green-600">
-                  <span>Code promo ({promoCode})</span>
-                  <span>appliqué</span>
+              {promoDiscount && (
+                <div className="flex justify-between text-sm text-green-600 font-medium">
+                  <span>Code promo ({appliedPromo})</span>
+                  <span>{promoDiscount}</span>
                 </div>
               )}
               <div className="flex justify-between font-bold text-gray-900 pt-2 border-t border-gray-100">
@@ -108,6 +151,41 @@ function CheckoutContent() {
                 <span>{meta.price}</span>
               </div>
             </div>
+
+            {/* Promo code input */}
+            {appliedPromo && promoDiscount ? (
+              <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-xl px-3 py-2">
+                <div className="flex items-center gap-2 text-sm text-green-700 font-medium">
+                  <Tag className="w-4 h-4" />
+                  {appliedPromo}
+                </div>
+                <button onClick={handleRemovePromo} className="text-green-600 hover:text-green-800">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={promoInput}
+                    onChange={(e) => { setPromoInput(e.target.value.toUpperCase()); setPromoError(null); }}
+                    onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
+                    placeholder="Code promo"
+                    className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  />
+                  <button
+                    onClick={handleApplyPromo}
+                    disabled={!promoInput.trim() || promoLoading}
+                    className="px-3 py-2 text-sm font-semibold bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {promoLoading ? '…' : 'Appliquer'}
+                  </button>
+                </div>
+                {promoError && <p className="text-xs text-red-500">{promoError}</p>}
+              </div>
+            )}
+
             <p className="text-xs text-gray-400 mt-4 text-center">
               Paiement sécurisé par Stripe 🔒
             </p>
@@ -119,7 +197,7 @@ function CheckoutContent() {
               <div className="p-8 text-center">
                 <p className="text-red-500 mb-4">{error}</p>
                 <button
-                  onClick={fetchClientSecret}
+                  onClick={() => fetchClientSecret(appliedPromo)}
                   className="px-4 py-2 rounded-xl gradient-primary text-white text-sm font-semibold"
                 >
                   Réessayer

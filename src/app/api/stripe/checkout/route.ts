@@ -54,9 +54,16 @@ export async function POST(req: NextRequest) {
       ? process.env.STRIPE_PREMIUM_PRICE_ID!
       : process.env.STRIPE_SUPERPREMIUM_PRICE_ID!;
 
-    const promoParams = promoCode
-      ? { discounts: [{ coupon: await getOrCreateStripeCoupon(promoCode, 'subscription') }] as Stripe.Checkout.SessionCreateParams.Discount[] }
-      : { allow_promotion_codes: true };
+    let promoParams: { discounts: Stripe.Checkout.SessionCreateParams.Discount[] } | Record<string, never> = {};
+    if (promoCode) {
+      try {
+        const couponId = await getOrCreateStripeCoupon(promoCode, 'subscription');
+        promoParams = { discounts: [{ coupon: couponId }] as Stripe.Checkout.SessionCreateParams.Discount[] };
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : 'Promo invalide';
+        return NextResponse.json({ error: msg }, { status: 400 });
+      }
+    }
 
     let checkoutSession: Stripe.Checkout.Session;
     if (embedded) {
