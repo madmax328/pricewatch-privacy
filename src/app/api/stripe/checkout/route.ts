@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { type, storyId, promoCode } = await req.json();
+  const { type, storyId, promoCode, embedded, locale: reqLocale } = await req.json();
   const userId = (session.user as { id: string; email: string }).id;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
@@ -36,32 +36,42 @@ export async function POST(req: NextRequest) {
     await user.save();
   }
 
+  const lang = reqLocale || 'fr';
+
   if (type === 'premium') {
-    const checkoutSession = await stripe.checkout.sessions.create({
+    const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
       customer: stripeCustomerId,
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [{ price: process.env.STRIPE_PREMIUM_PRICE_ID!, quantity: 1 }],
       ...(promoCode ? { discounts: [{ coupon: await getOrCreateStripeCoupon(promoCode, 'subscription') }] } : { allow_promotion_codes: true }),
-      success_url: `${appUrl}/fr/dashboard?upgraded=true`,
-      cancel_url: `${appUrl}/fr/pricing`,
       metadata: { userId: userId.toString(), plan: 'premium', promoCode: promoCode || '' },
-    });
-    return NextResponse.json({ url: checkoutSession.url });
+      ...(embedded
+        ? { ui_mode: 'embedded', return_url: `${appUrl}/${lang}/checkout/return?session_id={CHECKOUT_SESSION_ID}` }
+        : { success_url: `${appUrl}/${lang}/dashboard?upgraded=true`, cancel_url: `${appUrl}/${lang}/pricing` }),
+    };
+    const checkoutSession = await stripe.checkout.sessions.create(sessionParams);
+    return embedded
+      ? NextResponse.json({ clientSecret: checkoutSession.client_secret })
+      : NextResponse.json({ url: checkoutSession.url });
   }
 
   if (type === 'superpremium') {
-    const checkoutSession = await stripe.checkout.sessions.create({
+    const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
       customer: stripeCustomerId,
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [{ price: process.env.STRIPE_SUPERPREMIUM_PRICE_ID!, quantity: 1 }],
       ...(promoCode ? { discounts: [{ coupon: await getOrCreateStripeCoupon(promoCode, 'subscription') }] } : { allow_promotion_codes: true }),
-      success_url: `${appUrl}/fr/dashboard?upgraded=true`,
-      cancel_url: `${appUrl}/fr/pricing`,
       metadata: { userId: userId.toString(), plan: 'superpremium', promoCode: promoCode || '' },
-    });
-    return NextResponse.json({ url: checkoutSession.url });
+      ...(embedded
+        ? { ui_mode: 'embedded', return_url: `${appUrl}/${lang}/checkout/return?session_id={CHECKOUT_SESSION_ID}` }
+        : { success_url: `${appUrl}/${lang}/dashboard?upgraded=true`, cancel_url: `${appUrl}/${lang}/pricing` }),
+    };
+    const checkoutSession = await stripe.checkout.sessions.create(sessionParams);
+    return embedded
+      ? NextResponse.json({ clientSecret: checkoutSession.client_secret })
+      : NextResponse.json({ url: checkoutSession.url });
   }
 
   if (type === 'book') {
@@ -97,7 +107,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const checkoutSession = await stripe.checkout.sessions.create({
+    const bookSessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
       customer: stripeCustomerId,
       mode: 'payment',
       payment_method_types: ['card'],
@@ -114,8 +124,6 @@ export async function POST(req: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${appUrl}/fr/account?book=ordered`,
-      cancel_url: `${appUrl}/fr/story/${storyId}`,
       metadata: {
         userId: userId.toString(),
         type: 'book',
@@ -123,9 +131,15 @@ export async function POST(req: NextRequest) {
         promoCode: promoCode || '',
         discountAmount: String(BOOK_PRICE_CENTS - finalAmount),
       },
-    });
+      ...(embedded
+        ? { ui_mode: 'embedded', return_url: `${appUrl}/${lang}/checkout/return?session_id={CHECKOUT_SESSION_ID}` }
+        : { success_url: `${appUrl}/${lang}/account?book=ordered`, cancel_url: `${appUrl}/${lang}/story/${storyId}` }),
+    };
 
-    return NextResponse.json({ url: checkoutSession.url });
+    const checkoutSession = await stripe.checkout.sessions.create(bookSessionParams);
+    return embedded
+      ? NextResponse.json({ clientSecret: checkoutSession.client_secret })
+      : NextResponse.json({ url: checkoutSession.url });
   }
 
   return NextResponse.json({ error: 'Invalid type' }, { status: 400 });

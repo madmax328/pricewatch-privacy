@@ -16,32 +16,12 @@ export default function PricingPage() {
     return features[locale] || features.fr;
   };
 
-  const handleSubscribe = async (type: 'premium' | 'superpremium') => {
+  const handleSubscribe = (type: 'premium' | 'superpremium') => {
     if (!session) {
-      window.location.href = `/${locale}/auth/signin?next=pricing`;
+      window.location.href = `/${locale}/auth/signin?next=${encodeURIComponent(`/${locale}/checkout?type=${type}`)}`;
       return;
     }
-    const res = await fetch('/api/stripe/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type }),
-    });
-    const data = await res.json();
-    if (data.url) window.location.href = data.url;
-  };
-
-  const handleBookOrder = async () => {
-    if (!session) {
-      window.location.href = `/${locale}/auth/signin?next=pricing`;
-      return;
-    }
-    const res = await fetch('/api/stripe/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'book' }),
-    });
-    const data = await res.json();
-    if (data.url) window.location.href = data.url;
+    window.location.href = `/${locale}/checkout?type=${type}`;
   };
 
   return (
@@ -178,12 +158,7 @@ export default function PricingPage() {
                 </li>
               ))}
             </ul>
-            <button
-              onClick={handleBookOrder}
-              className="w-full py-2.5 rounded-xl text-sm font-semibold text-white bg-orange-500 hover:bg-orange-600 transition-colors shadow-lg shadow-orange-100"
-            >
-              {t('book.cta')}
-            </button>
+            <p className="text-xs text-center text-gray-400">{t('book.orderFromStory')}</p>
           </div>
         </div>
 

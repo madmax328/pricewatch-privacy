@@ -139,7 +139,8 @@
       "f2": "Delivered in 7 days",
       "f3": "Hardcover",
       "f4": "Perfect gift",
-      "f5": "Personalized with child's name"
+      "f5": "Personalized with child's name",
+      "orderFromStory": "Order from your story"
     },
     "faqTitle": "Frequently asked questions",
     "faq1q": "Can I cancel at any time?",

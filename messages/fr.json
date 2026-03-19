@@ -139,7 +139,8 @@
       "f2": "Livraison sous 7 jours",
       "f3": "Couverture rigide",
       "f4": "Cadeau parfait",
-      "f5": "Personnalisé avec le prénom"
+      "f5": "Personnalisé avec le prénom",
+      "orderFromStory": "Commander depuis votre histoire"
     },
     "faqTitle": "Questions fréquentes",
     "faq1q": "Puis-je annuler à tout moment ?",
