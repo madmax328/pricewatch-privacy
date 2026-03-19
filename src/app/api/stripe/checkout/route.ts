@@ -6,6 +6,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import User from '@/models/User';
 import PromoCode from '@/models/PromoCode';
 import Story from '@/models/Story';
+import Stripe from 'stripe';
 
 const BOOK_PRICE_CENTS = 2999; // €29.99
 
@@ -38,40 +39,41 @@ export async function POST(req: NextRequest) {
 
   const lang = reqLocale || 'fr';
 
-  if (type === 'premium') {
-    const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
-      customer: stripeCustomerId,
-      mode: 'subscription',
-      payment_method_types: ['card'],
-      line_items: [{ price: process.env.STRIPE_PREMIUM_PRICE_ID!, quantity: 1 }],
-      ...(promoCode ? { discounts: [{ coupon: await getOrCreateStripeCoupon(promoCode, 'subscription') }] } : { allow_promotion_codes: true }),
-      metadata: { userId: userId.toString(), plan: 'premium', promoCode: promoCode || '' },
-      ...(embedded
-        ? { ui_mode: 'embedded', return_url: `${appUrl}/${lang}/checkout/return?session_id={CHECKOUT_SESSION_ID}` }
-        : { success_url: `${appUrl}/${lang}/dashboard?upgraded=true`, cancel_url: `${appUrl}/${lang}/pricing` }),
-    };
-    const checkoutSession = await stripe.checkout.sessions.create(sessionParams);
-    return embedded
-      ? NextResponse.json({ clientSecret: checkoutSession.client_secret })
-      : NextResponse.json({ url: checkoutSession.url });
-  }
+  if (type === 'premium' || type === 'superpremium') {
+    const priceId = type === 'premium'
+      ? process.env.STRIPE_PREMIUM_PRICE_ID!
+      : process.env.STRIPE_SUPERPREMIUM_PRICE_ID!;
 
-  if (type === 'superpremium') {
-    const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
-      customer: stripeCustomerId,
-      mode: 'subscription',
-      payment_method_types: ['card'],
-      line_items: [{ price: process.env.STRIPE_SUPERPREMIUM_PRICE_ID!, quantity: 1 }],
-      ...(promoCode ? { discounts: [{ coupon: await getOrCreateStripeCoupon(promoCode, 'subscription') }] } : { allow_promotion_codes: true }),
-      metadata: { userId: userId.toString(), plan: 'superpremium', promoCode: promoCode || '' },
-      ...(embedded
-        ? { ui_mode: 'embedded', return_url: `${appUrl}/${lang}/checkout/return?session_id={CHECKOUT_SESSION_ID}` }
-        : { success_url: `${appUrl}/${lang}/dashboard?upgraded=true`, cancel_url: `${appUrl}/${lang}/pricing` }),
-    };
-    const checkoutSession = await stripe.checkout.sessions.create(sessionParams);
-    return embedded
-      ? NextResponse.json({ clientSecret: checkoutSession.client_secret })
-      : NextResponse.json({ url: checkoutSession.url });
+    const promoParams = promoCode
+      ? { discounts: [{ coupon: await getOrCreateStripeCoupon(promoCode, 'subscription') }] as Stripe.Checkout.SessionCreateParams.Discount[] }
+      : { allow_promotion_codes: true };
+
+    let checkoutSession: Stripe.Checkout.Session;
+    if (embedded) {
+      checkoutSession = await stripe.checkout.sessions.create({
+        customer: stripeCustomerId,
+        mode: 'subscription',
+        payment_method_types: ['card'],
+        line_items: [{ price: priceId, quantity: 1 }],
+        ...promoParams,
+        metadata: { userId: userId.toString(), plan: type, promoCode: promoCode || '' },
+        ui_mode: 'embedded',
+        return_url: `${appUrl}/${lang}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+      });
+      return NextResponse.json({ clientSecret: checkoutSession.client_secret });
+    } else {
+      checkoutSession = await stripe.checkout.sessions.create({
+        customer: stripeCustomerId,
+        mode: 'subscription',
+        payment_method_types: ['card'],
+        line_items: [{ price: priceId, quantity: 1 }],
+        ...promoParams,
+        metadata: { userId: userId.toString(), plan: type, promoCode: promoCode || '' },
+        success_url: `${appUrl}/${lang}/dashboard?upgraded=true`,
+        cancel_url: `${appUrl}/${lang}/pricing`,
+      });
+      return NextResponse.json({ url: checkoutSession.url });
+    }
   }
 
   if (type === 'book') {
@@ -91,6 +93,7 @@ export async function POST(req: NextRequest) {
 
     // Calculate discount
     let finalAmount = BOOK_PRICE_CENTS;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let validatedPromo: { discountType: string; discountValue: number } | null = null;
 
     if (promoCode) {
@@ -107,39 +110,52 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const bookSessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
-      customer: stripeCustomerId,
-      mode: 'payment',
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'eur',
-            product_data: {
-              name: `Kidshade — "${story.title}"`,
-              description: `Livre personnalisé pour ${story.childName}, imprimé et livré chez vous`,
-            },
-            unit_amount: finalAmount,
+    const bookLineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
+      {
+        price_data: {
+          currency: 'eur',
+          product_data: {
+            name: `Kidshade — "${story.title}"`,
+            description: `Livre personnalisé pour ${story.childName}, imprimé et livré chez vous`,
           },
-          quantity: 1,
+          unit_amount: finalAmount,
         },
-      ],
-      metadata: {
-        userId: userId.toString(),
-        type: 'book',
-        storyId: storyId.toString(),
-        promoCode: promoCode || '',
-        discountAmount: String(BOOK_PRICE_CENTS - finalAmount),
+        quantity: 1,
       },
-      ...(embedded
-        ? { ui_mode: 'embedded', return_url: `${appUrl}/${lang}/checkout/return?session_id={CHECKOUT_SESSION_ID}` }
-        : { success_url: `${appUrl}/${lang}/account?book=ordered`, cancel_url: `${appUrl}/${lang}/story/${storyId}` }),
+    ];
+
+    const bookMeta = {
+      userId: userId.toString(),
+      type: 'book',
+      storyId: storyId.toString(),
+      promoCode: promoCode || '',
+      discountAmount: String(BOOK_PRICE_CENTS - finalAmount),
     };
 
-    const checkoutSession = await stripe.checkout.sessions.create(bookSessionParams);
-    return embedded
-      ? NextResponse.json({ clientSecret: checkoutSession.client_secret })
-      : NextResponse.json({ url: checkoutSession.url });
+    let checkoutSession: Stripe.Checkout.Session;
+    if (embedded) {
+      checkoutSession = await stripe.checkout.sessions.create({
+        customer: stripeCustomerId,
+        mode: 'payment',
+        payment_method_types: ['card'],
+        line_items: bookLineItems,
+        metadata: bookMeta,
+        ui_mode: 'embedded',
+        return_url: `${appUrl}/${lang}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+      });
+      return NextResponse.json({ clientSecret: checkoutSession.client_secret });
+    } else {
+      checkoutSession = await stripe.checkout.sessions.create({
+        customer: stripeCustomerId,
+        mode: 'payment',
+        payment_method_types: ['card'],
+        line_items: bookLineItems,
+        metadata: bookMeta,
+        success_url: `${appUrl}/${lang}/account?book=ordered`,
+        cancel_url: `${appUrl}/${lang}/story/${storyId}`,
+      });
+      return NextResponse.json({ url: checkoutSession.url });
+    }
   }
 
   return NextResponse.json({ error: 'Invalid type' }, { status: 400 });
