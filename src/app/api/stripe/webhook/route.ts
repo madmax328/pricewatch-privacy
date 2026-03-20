@@ -99,6 +99,32 @@ export async function POST(req: NextRequest) {
           await PromoCode.findOneAndUpdate({ code: promoCode }, { $inc: { usedCount: 1 } });
         }
 
+        // Generate a unique loyalty promo code for this customer
+        const loyaltyCode = generateLoyaltyCode();
+        try {
+          await PromoCode.create({
+            code: loyaltyCode,
+            discountType: 'percent',
+            discountValue: 5,
+            appliesTo: 'book',
+            maxUses: 1,
+            active: true,
+          });
+          await BookOrder.findByIdAndUpdate(bookOrder._id, { loyaltyPromoCode: loyaltyCode });
+        } catch (err) {
+          console.error('[Loyalty] Failed to create promo code:', err);
+          // Non-fatal: continue without loyalty code
+        }
+
+        // Convert illustrationUrls Map to plain object
+        const illustrationUrlsObj: Record<number, string> = {};
+        if (story.illustrationUrls) {
+          story.illustrationUrls.forEach((url: string, key: string) => {
+            const idx = parseInt(key);
+            if (!isNaN(idx)) illustrationUrlsObj[idx] = url;
+          });
+        }
+
         // Submit to Lulu (async, non-blocking — errors are logged but don't affect Stripe response)
         submitToLulu({
           orderId: String(bookOrder._id),
@@ -108,6 +134,8 @@ export async function POST(req: NextRequest) {
           storyContent: story.content,
           theme: story.theme || 'space',
           address: deliveryAddress,
+          illustrationUrls: illustrationUrlsObj,
+          loyaltyPromoCode: loyaltyCode,
         }).catch((err) => console.error('[Lulu] submission failed:', err));
       }
       break;
@@ -170,6 +198,14 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ received: true });
 }
 
+// ── Loyalty promo code generator ──────────────────────────────────────────────
+function generateLoyaltyCode(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no ambiguous I/O/0/1
+  let suffix = '';
+  for (let i = 0; i < 6; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
+  return `KIDSHADE-${suffix}`;
+}
+
 // ── Lulu print job submission ─────────────────────────────────────────────────
 async function submitToLulu(params: {
   orderId: string;
@@ -186,13 +222,18 @@ async function submitToLulu(params: {
     postalCode: string;
     country: string;
   };
+  illustrationUrls?: Record<number, string>;
+  loyaltyPromoCode?: string;
 }) {
-  const { orderId, userEmail, storyTitle, childName, storyContent, theme, address } = params;
+  const { orderId, userEmail, storyTitle, childName, storyContent, theme, address, illustrationUrls, loyaltyPromoCode } = params;
+
+  // Cover illustration: use page 0 if available
+  const coverIllustrationUrl = illustrationUrls?.[0];
 
   // Generate PDFs
   const [interiorBytes, coverBytes] = await Promise.all([
-    generateInteriorPdf({ childName, storyTitle, storyContent, theme }),
-    generateCoverPdf({ childName, storyTitle, theme }),
+    generateInteriorPdf({ childName, storyTitle, storyContent, theme, illustrationUrls, loyaltyPromoCode }),
+    generateCoverPdf({ childName, storyTitle, theme, coverIllustrationUrl }),
   ]);
 
   // Upload to Vercel Blob (publicly accessible for Lulu to fetch)

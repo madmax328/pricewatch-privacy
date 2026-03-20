@@ -19,6 +19,7 @@ export interface IBookOrder extends Document {
   currency: string;
   promoCode?: string;
   discountAmount?: number; // in cents
+  loyaltyPromoCode?: string; // auto-generated after purchase, printed in book
   // Payment
   stripeSessionId?: string;
   stripePaymentIntentId?: string;
@@ -55,6 +56,7 @@ const BookOrderSchema = new Schema<IBookOrder>(
     currency: { type: String, default: 'eur' },
     promoCode: { type: String },
     discountAmount: { type: Number, default: 0 },
+    loyaltyPromoCode: { type: String },
     stripeSessionId: { type: String },
     stripePaymentIntentId: { type: String },
     luluJobId: { type: String },

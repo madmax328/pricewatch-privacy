@@ -24,6 +24,7 @@ const SAMPLE = {
   childAge: 7,
   storyTitle: 'Emma et le Dragon des Étoiles',
   theme: 'dragons',
+  loyaltyPromoCode: 'KIDSHADE-A3X7K2', // exemple de code fidélité
   storyContent: `Il était une fois une petite fille courageuse prénommée Emma, qui vivait dans un village niché au pied de montagnes majestueuses. Chaque nuit, elle levait les yeux vers le ciel étoilé et rêvait d'aventures lointaines.
 
 Un soir, alors qu'elle observait les étoiles depuis sa fenêtre, Emma remarqua une lumière étrange qui descendait du ciel en spirale. C'était un dragon aux écailles dorées, dont les ailes brillaient comme mille diamants.
@@ -236,50 +237,73 @@ async function generateInterior() {
     drawCentered(p, '___________________________', regular, 11, 72, rgb(0.7, 0.7, 0.7));
   }
 
-  // Page 31: FIN + Code promo fidélité (à venir)
+  // Page 31: Mot de la fin
   {
     const p = doc.addPage([PAGE_W, PAGE_H]);
     p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: bgColor });
-    p.drawCircle({ x: PAGE_W / 2, y: PAGE_H * 0.58, size: 110, color: accentColor, opacity: 0.12 });
-    p.drawCircle({ x: PAGE_W / 2, y: PAGE_H * 0.58, size: 70, color: accentColor, opacity: 0.10 });
+    p.drawCircle({ x: PAGE_W / 2, y: PAGE_H * 0.55, size: 130, color: accentColor, opacity: 0.08 });
+    p.drawCircle({ x: PAGE_W / 2, y: PAGE_H * 0.55, size: 80, color: accentColor, opacity: 0.08 });
+    p.drawCircle({ x: PAGE_W - 40, y: PAGE_H - 40, size: 50, color: accentColor, opacity: 0.10 });
+    p.drawCircle({ x: 40, y: 60, size: 35, color: accentColor, opacity: 0.10 });
 
-    drawCentered(p, 'FIN', bold, 42, PAGE_H * 0.68, accentColor);
-    drawCentered(p, `Bravo ${childName} !`, bold, 18, PAGE_H * 0.54, white, PAGE_W, 0, 0.90);
-    drawCentered(p, 'Tu as vécu une belle aventure.', regular, 14, PAGE_H * 0.46, white, PAGE_W, 0, 0.75);
+    drawCentered(p, 'FIN', bold, 48, PAGE_H * 0.70, accentColor);
+    drawCentered(p, `Bravo ${childName} !`, bold, 20, PAGE_H * 0.58, white, PAGE_W, 0, 0.92);
 
-    // Promo block (placeholder for now)
-    p.drawRectangle({ x: MARGIN + 20, y: PAGE_H * 0.20, width: PAGE_W - (MARGIN + 20) * 2, height: 80, borderColor: accentColor, borderWidth: 1, borderOpacity: 0.40, color: accentColor, opacity: 0.07 });
-    drawCentered(p, 'Merci de votre confiance !', bold, 11, PAGE_H * 0.32, white, PAGE_W, 0, 0.80);
-    drawCentered(p, '5% sur votre prochain livre avec le code :', regular, 10, PAGE_H * 0.27, white, PAGE_W, 0, 0.65);
-    drawCentered(p, 'KIDSHADE-XXXX', bold, 14, PAGE_H * 0.23, accentColor);
-    drawCentered(p, 'Code valable 1 fois sur kidshade.com', regular, 9, PAGE_H * 0.20, white, PAGE_W, 0, 0.50);
-
-    drawCentered(p, 'Kidshade', bold, 12, 28, accentColor, PAGE_W, 0, 0.60);
+    const closingLines = [
+      'Tu as vécu une grande aventure.',
+      'Chaque histoire que tu lis',
+      't\'ouvre une porte vers un',
+      'nouveau monde magique.',
+    ];
+    let cy = PAGE_H * 0.46;
+    for (const line of closingLines) {
+      drawCentered(p, line, regular, 13, cy, white, PAGE_W, 0, 0.70);
+      cy -= 22;
+    }
+    drawCentered(p, '* * *', regular, 14, PAGE_H * 0.25, accentColor, PAGE_W, 0, 0.55);
+    drawCentered(p, 'La prochaine aventure t\'attend...', regular, 12, PAGE_H * 0.19, white, PAGE_W, 0, 0.50);
+    drawCentered(p, 'Kidshade', bold, 11, 26, accentColor, PAGE_W, 0, 0.55);
   }
 
-  // Page 32: À propos
+  // Page 32: À propos + Code fidélité
   {
+    const { loyaltyPromoCode } = SAMPLE;
     const p = doc.addPage([PAGE_W, PAGE_H]);
     p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: cream });
     p.drawRectangle({ x: 0, y: PAGE_H - 30, width: PAGE_W, height: 30, color: bgColor });
-    drawCentered(p, 'À propos de Kidshade', bold, 17, PAGE_H - 68, rgb(ar * 0.7, ag * 0.7, ab * 0.7));
-    const lines = [
+    drawCentered(p, 'À propos de Kidshade', bold, 16, PAGE_H - 66, rgb(ar * 0.7, ag * 0.7, ab * 0.7));
+
+    const aboutLines = [
       'Kidshade crée des histoires personnalisées',
-      `pour chaque enfant unique.`,
+      'pour chaque enfant unique.',
       '',
-      `Chaque aventure met en scène`,
-      `votre enfant comme héros principal,`,
-      `imprimée et livrée avec soin.`,
+      'Votre enfant est le héros de sa propre aventure,',
+      'imprimée et livrée avec soin.',
       '',
-      'kidshade.com',
+      'kidshade.net',
     ];
-    let ay = PAGE_H - 105;
-    for (const line of lines) {
-      if (!line) { ay -= 12; continue; }
-      const isUrl = line === 'kidshade.com';
-      drawCentered(p, line, isUrl ? bold : regular, isUrl ? 14 : 13, ay, isUrl ? accentColor : dark);
-      ay -= 22;
+    let ay = PAGE_H - 100;
+    for (const line of aboutLines) {
+      if (!line) { ay -= 10; continue; }
+      const isUrl = line === 'kidshade.net';
+      drawCentered(p, line, isUrl ? bold : regular, isUrl ? 13 : 12, ay, isUrl ? accentColor : dark);
+      ay -= 20;
     }
+
+    // Loyalty promo code block
+    const BOX_Y = 70;
+    const BOX_H = 115;
+    const BOX_X = MARGIN + 10;
+    const BOX_W = PAGE_W - (MARGIN + 10) * 2;
+    p.drawRectangle({ x: BOX_X, y: BOX_Y, width: BOX_W, height: BOX_H, color: bgColor, opacity: 0.07, borderColor: accentColor, borderWidth: 1.2, borderOpacity: 0.45 });
+    for (const [cx2, cy2] of [[BOX_X, BOX_Y],[BOX_X, BOX_Y+BOX_H],[BOX_X+BOX_W, BOX_Y],[BOX_X+BOX_W, BOX_Y+BOX_H]]) {
+      p.drawCircle({ x: cx2, y: cy2, size: 3.5, color: accentColor, opacity: 0.55 });
+    }
+    drawCentered(p, 'Merci de votre confiance !', bold, 12, BOX_Y + BOX_H - 22, dark);
+    drawCentered(p, 'Profitez de 5% de réduction sur votre', regular, 10, BOX_Y + BOX_H - 42, dark, PAGE_W, 0, 0.80);
+    drawCentered(p, 'prochain livre avec le code :', regular, 10, BOX_Y + BOX_H - 56, dark, PAGE_W, 0, 0.80);
+    drawCentered(p, loyaltyPromoCode, bold, 18, BOX_Y + 42, accentColor);
+    drawCentered(p, 'Valable 1 fois · kidshade.net', regular, 9, BOX_Y + 24, dark, PAGE_W, 0, 0.55);
   }
 
   return doc.save();
@@ -310,7 +334,7 @@ async function generateCover() {
     { text: 'rien que pour', size: 15, isBold: false },
     { text: childName, size: 24, isBold: true },
     { text: '', size: 12, isBold: false },
-    { text: 'kidshade.com', size: 13, isBold: true },
+    { text: 'kidshade.net', size: 13, isBold: true },
   ];
   let bY = BLEED + PAGE_H * 0.60;
   for (const item of backTexts) {
