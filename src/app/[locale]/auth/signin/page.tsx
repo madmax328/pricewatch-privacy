@@ -94,6 +94,7 @@ export default function SignInPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('email')}</label>
               <input
                 type="email"
+                name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -108,6 +109,7 @@ export default function SignInPage() {
               <div className="relative">
                 <input
                   type={showPw ? 'text' : 'password'}
+                  name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required

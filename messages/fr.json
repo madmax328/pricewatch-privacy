@@ -123,7 +123,12 @@
     "deleteError": "Erreur lors de la suppression",
     "account": "Mon compte",
     "dailyLimitTitle": "Limite journalière atteinte",
-    "dailyLimitPrompt": "Passez Super Premium pour des histoires illimitées !"
+    "dailyLimitPrompt": "Passez Super Premium pour des histoires illimitées !",
+    "renewsOn": "Renouvellement le",
+    "noAddressAlert": "Ajoutez votre adresse de livraison pour commander un livre physique.",
+    "fillAddress": "Remplir mon adresse",
+    "myOrders": "Mes commandes",
+    "seeAll": "Tout voir"
   },
   "pricing": {
     "title": "Choisissez votre formule",
@@ -313,6 +318,7 @@
     "postalCode": "Code postal",
     "city": "Ville",
     "country": "Pays",
+    "phone": "Téléphone",
     "saveAddress": "Enregistrer l'adresse",
     "addressSaved": "Adresse mise à jour",
     "cancelSection": "Résilier l'abonnement",

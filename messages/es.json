@@ -123,7 +123,12 @@
     "deleteError": "Error al eliminar",
     "account": "Mi cuenta",
     "dailyLimitTitle": "Límite diario alcanzado",
-    "dailyLimitPrompt": "¡Pasa a Super Premium para cuentos ilimitados!"
+    "dailyLimitPrompt": "¡Pasa a Super Premium para cuentos ilimitados!",
+    "renewsOn": "Renovación el",
+    "noAddressAlert": "Añade tu dirección de entrega para pedir un libro físico.",
+    "fillAddress": "Rellenar mi dirección",
+    "myOrders": "Mis pedidos",
+    "seeAll": "Ver todo"
   },
   "account": {
     "title": "Mi cuenta",
@@ -145,6 +150,7 @@
     "postalCode": "Código postal",
     "city": "Ciudad",
     "country": "País",
+    "phone": "Teléfono",
     "saveAddress": "Guardar dirección",
     "addressSaved": "Dirección actualizada",
     "cancelSection": "Cancelar suscripción",

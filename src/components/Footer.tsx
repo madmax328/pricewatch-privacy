@@ -41,7 +41,6 @@ export default function Footer({ locale }: { locale: string }) {
             <ul className="space-y-2 text-sm">
               <li><Link href={`/${locale}/about`} className="hover:text-white transition-colors">{t('links.about')}</Link></li>
               <li><Link href={`/${locale}/contact`} className="hover:text-white transition-colors">{t('links.contact')}</Link></li>
-              <li><Link href={`/${locale}/blog`} className="hover:text-white transition-colors">{t('links.blog')}</Link></li>
             </ul>
           </div>
 

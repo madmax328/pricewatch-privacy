@@ -17,7 +17,30 @@ export async function GET() {
 
   if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
-  return NextResponse.json({ user });
+  // Compute effective counters without writing to DB
+  // (actual DB reset happens on next story creation)
+  const now = new Date();
+  const userObj = user.toObject();
+
+  // Effective daily count for premium
+  if (userObj.storiesDailyResetDate) {
+    const d = new Date(userObj.storiesDailyResetDate);
+    const sameDay =
+      now.getDate() === d.getDate() &&
+      now.getMonth() === d.getMonth() &&
+      now.getFullYear() === d.getFullYear();
+    if (!sameDay) userObj.storiesCreatedToday = 0;
+  }
+
+  // Effective monthly count for free
+  if (userObj.storiesResetDate) {
+    const d = new Date(userObj.storiesResetDate);
+    if (now.getMonth() !== d.getMonth() || now.getFullYear() !== d.getFullYear()) {
+      userObj.storiesUsedThisMonth = 0;
+    }
+  }
+
+  return NextResponse.json({ user: userObj });
 }
 
 export async function PUT(req: NextRequest) {

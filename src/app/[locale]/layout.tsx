@@ -8,6 +8,7 @@ import { authOptions } from '@/lib/auth';
 import SessionProvider from '@/components/SessionProvider';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import CookieBanner from '@/components/CookieBanner';
 import { Toaster } from 'react-hot-toast';
 import '../globals.css';
 
@@ -47,6 +48,7 @@ export default async function LocaleLayout({
             <Navbar locale={locale} />
             <main className="min-h-screen">{children}</main>
             <Footer locale={locale} />
+            <CookieBanner />
           </SessionProvider>
         </NextIntlClientProvider>
       </body>

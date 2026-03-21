@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { Sparkles, Crown, Plus, Zap, User } from 'lucide-react';
+import { Sparkles, Crown, Plus, Zap, User, AlertCircle, Package } from 'lucide-react';
 import StoryCard from '@/components/StoryCard';
 import toast from 'react-hot-toast';
 
@@ -24,6 +24,23 @@ interface UserData {
   plan: 'free' | 'premium' | 'superpremium';
   storiesUsedThisMonth: number;
   storiesCreatedToday: number;
+  stripeCurrentPeriodEnd?: string;
+  stripeSubscriptionId?: string;
+  deliveryAddress?: {
+    firstName?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+  };
+}
+
+interface BookOrder {
+  _id: string;
+  storyTitle: string;
+  childName: string;
+  status: string;
+  amountPaid: number;
+  createdAt: string;
 }
 
 export default function DashboardPage() {
@@ -34,6 +51,7 @@ export default function DashboardPage() {
 
   const [stories, setStories] = useState<Story[]>([]);
   const [user, setUser] = useState<UserData | null>(null);
+  const [orders, setOrders] = useState<BookOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -48,14 +66,17 @@ export default function DashboardPage() {
 
   const fetchData = async () => {
     try {
-      const [storiesRes, userRes] = await Promise.all([
+      const [storiesRes, userRes, ordersRes] = await Promise.all([
         fetch('/api/stories'),
         fetch('/api/user'),
+        fetch('/api/orders'),
       ]);
       const storiesData = await storiesRes.json();
       const userData = await userRes.json();
+      const ordersData = await ordersRes.json();
       setStories(storiesData.stories || []);
       setUser(userData.user);
+      setOrders(ordersData.orders || []);
     } catch {
       toast.error(t('loadingError'));
     } finally {
@@ -92,6 +113,10 @@ export default function DashboardPage() {
   const plan = user?.plan || 'free';
   const storiesLeft = Math.max(0, 3 - (user?.storiesUsedThisMonth || 0));
   const storiesTodayLeft = Math.max(0, 1 - (user?.storiesCreatedToday || 0));
+  const periodEnd = user?.stripeCurrentPeriodEnd
+    ? new Date(user.stripeCurrentPeriodEnd).toLocaleDateString(locale, { day: '2-digit', month: 'long', year: 'numeric' })
+    : null;
+  const hasAddress = !!(user?.deliveryAddress?.address && user?.deliveryAddress?.city && user?.deliveryAddress?.country);
 
   const planIcon = plan === 'superpremium'
     ? <Zap className="w-5 h-5 text-purple-600" />
@@ -142,6 +167,9 @@ export default function DashboardPage() {
               {planIcon}
               <span className="font-bold text-gray-900">{planLabel}</span>
             </div>
+            {periodEnd && (
+              <p className="text-xs text-gray-400 mt-1">{t('renewsOn')} {periodEnd}</p>
+            )}
           </div>
 
           <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
@@ -206,6 +234,44 @@ export default function DashboardPage() {
             >
               {t('upgradeCta')}
             </button>
+          </div>
+        )}
+
+        {/* Alert: no delivery address */}
+        {!hasAddress && (
+          <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
+            <p className="text-sm text-amber-800 flex-1">{t('noAddressAlert')}</p>
+            <Link
+              href={`/${locale}/account`}
+              className="text-sm font-semibold text-amber-700 hover:text-amber-900 underline shrink-0"
+            >
+              {t('fillAddress')}
+            </Link>
+          </div>
+        )}
+
+        {/* Recent orders */}
+        {orders.length > 0 && (
+          <div className="mb-8 bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Package className="w-4 h-4 text-gray-400" />
+                <h2 className="font-semibold text-gray-800 text-sm">{t('myOrders')}</h2>
+              </div>
+              <Link href={`/${locale}/account`} className="text-xs text-purple-600 hover:underline">{t('seeAll')}</Link>
+            </div>
+            <div className="space-y-2">
+              {orders.slice(0, 3).map((order) => (
+                <div key={order._id} className="flex items-center justify-between text-sm py-1.5 border-b border-gray-50 last:border-0">
+                  <div>
+                    <span className="font-medium text-gray-800">{order.storyTitle}</span>
+                    <span className="text-gray-400 ml-2">— {order.childName}</span>
+                  </div>
+                  <span className="text-gray-500 text-xs">€{(order.amountPaid / 100).toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

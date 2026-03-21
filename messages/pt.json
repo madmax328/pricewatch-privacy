@@ -123,7 +123,12 @@
     "deleteError": "Erro ao eliminar",
     "account": "Minha conta",
     "dailyLimitTitle": "Limite diário atingido",
-    "dailyLimitPrompt": "Upgrade para Super Premium para histórias ilimitadas!"
+    "dailyLimitPrompt": "Upgrade para Super Premium para histórias ilimitadas!",
+    "renewsOn": "Renovação em",
+    "noAddressAlert": "Adicione seu endereço de entrega para pedir um livro físico.",
+    "fillAddress": "Preencher meu endereço",
+    "myOrders": "Meus pedidos",
+    "seeAll": "Ver tudo"
   },
   "account": {
     "title": "Minha conta",
@@ -145,6 +150,7 @@
     "postalCode": "Código postal",
     "city": "Cidade",
     "country": "País",
+    "phone": "Telefone",
     "saveAddress": "Salvar endereço",
     "addressSaved": "Endereço atualizado",
     "cancelSection": "Cancelar assinatura",

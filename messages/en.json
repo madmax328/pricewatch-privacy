@@ -123,7 +123,12 @@
     "deleteError": "Error deleting story",
     "account": "My account",
     "dailyLimitTitle": "Daily limit reached",
-    "dailyLimitPrompt": "Upgrade to Super Premium for unlimited stories!"
+    "dailyLimitPrompt": "Upgrade to Super Premium for unlimited stories!",
+    "renewsOn": "Renews on",
+    "noAddressAlert": "Add your delivery address to order a physical book.",
+    "fillAddress": "Fill my address",
+    "myOrders": "My orders",
+    "seeAll": "See all"
   },
   "pricing": {
     "title": "Choose your plan",
@@ -241,6 +246,7 @@
     "postalCode": "Postal code",
     "city": "City",
     "country": "Country",
+    "phone": "Phone",
     "saveAddress": "Save address",
     "addressSaved": "Address updated",
     "cancelSection": "Cancel subscription",
