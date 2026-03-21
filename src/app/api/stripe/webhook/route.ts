@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { waitUntil } from '@vercel/functions';
 import { stripe } from '@/lib/stripe';
 import { connectToDatabase } from '@/lib/mongodb';
 import User from '@/models/User';
@@ -125,18 +126,21 @@ export async function POST(req: NextRequest) {
           });
         }
 
-        // Submit to Lulu (async, non-blocking — errors are logged but don't affect Stripe response)
-        submitToLulu({
-          orderId: String(bookOrder._id),
-          userEmail: user.email,
-          storyTitle: story.title,
-          childName: story.childName,
-          storyContent: story.content,
-          theme: story.theme || 'space',
-          address: deliveryAddress,
-          illustrationUrls: illustrationUrlsObj,
-          loyaltyPromoCode: loyaltyCode,
-        }).catch((err) => console.error('[Lulu] submission failed:', err));
+        // Submit to Lulu — use waitUntil so Vercel keeps the function alive
+        // until PDF generation + Lulu API call complete, without blocking the Stripe response
+        waitUntil(
+          submitToLulu({
+            orderId: String(bookOrder._id),
+            userEmail: user.email,
+            storyTitle: story.title,
+            childName: story.childName,
+            storyContent: story.content,
+            theme: story.theme || 'space',
+            address: deliveryAddress,
+            illustrationUrls: illustrationUrlsObj,
+            loyaltyPromoCode: loyaltyCode,
+          }).catch((err) => console.error('[Lulu] submission failed:', err))
+        );
       }
       break;
     }
