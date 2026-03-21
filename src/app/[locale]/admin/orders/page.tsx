@@ -111,10 +111,15 @@ export default function AdminOrdersPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId }),
       });
-      if (!res.ok) throw new Error();
-      toast.success('Envoyé à Lulu — statut mis à jour dans quelques secondes');
-    } catch {
-      toast.error('Erreur lors de la relance Lulu');
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(`Erreur Lulu: ${data.error ?? res.status}`);
+        return;
+      }
+      toast.success(`Envoyé à Lulu ✓ jobId: ${data.luluJobId}`);
+      await fetchOrders();
+    } catch (err) {
+      toast.error(`Erreur réseau: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setRetryingId(null);
     }
