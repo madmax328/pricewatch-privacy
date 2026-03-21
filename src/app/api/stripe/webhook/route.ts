@@ -73,6 +73,7 @@ export async function POST(req: NextRequest) {
           city: addr.city || '',
           postalCode: addr.postalCode || '',
           country: addr.country || '',
+          phone: addr.phone || '',
         };
 
         // Create BookOrder

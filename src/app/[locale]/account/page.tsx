@@ -14,6 +14,7 @@ interface DeliveryAddress {
   city?: string;
   postalCode?: string;
   country?: string;
+  phone?: string;
 }
 
 interface UserData {
@@ -320,6 +321,16 @@ export default function AccountPage() {
                   <option value="AT">Autriche</option>
                   <option value="AU">Australie</option>
                 </select>
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('phone')}</label>
+                <input
+                  type="tel"
+                  value={address.phone || ''}
+                  onChange={(e) => setAddress({ ...address, phone: e.target.value })}
+                  placeholder="+33612345678"
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-300 text-sm"
+                />
               </div>
             </div>
             <button

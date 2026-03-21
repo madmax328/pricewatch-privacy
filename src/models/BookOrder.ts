@@ -13,6 +13,7 @@ export interface IBookOrder extends Document {
     city: string;
     postalCode: string;
     country: string;
+    phone?: string;
   };
   // Pricing
   amountPaid: number; // in cents
@@ -51,6 +52,7 @@ const BookOrderSchema = new Schema<IBookOrder>(
       city: { type: String, required: true },
       postalCode: { type: String, required: true },
       country: { type: String, required: true },
+      phone: { type: String },
     },
     amountPaid: { type: Number, required: true },
     currency: { type: String, default: 'eur' },

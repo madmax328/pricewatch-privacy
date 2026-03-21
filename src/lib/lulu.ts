@@ -57,6 +57,7 @@ export interface LuluAddress {
   city: string;
   postalCode: string;
   country: string;
+  phone?: string;
 }
 
 export async function createLuluPrintJob(params: {
@@ -93,6 +94,7 @@ export async function createLuluPrintJob(params: {
       city: params.address.city,
       postcode: params.address.postalCode,
       country_code: normalizeCountryCode(params.address.country),
+      phone_number: params.address.phone || '',
     },
     shipping_option_level: shippingLevel,
   };

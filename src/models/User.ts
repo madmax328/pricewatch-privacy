@@ -7,6 +7,7 @@ export interface IDeliveryAddress {
   city?: string;
   postalCode?: string;
   country?: string;
+  phone?: string;
 }
 
 export interface IUser extends Document {
@@ -42,6 +43,7 @@ const DeliveryAddressSchema = new Schema<IDeliveryAddress>(
     city: { type: String },
     postalCode: { type: String },
     country: { type: String },
+    phone: { type: String },
   },
   { _id: false }
 );
