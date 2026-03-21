@@ -199,7 +199,7 @@ export default function AdminOrdersPage() {
                       >
                         Modifier
                       </button>
-                      {o.status === 'paid' && !o.luluJobId && (
+                      {(o.status === 'paid' || o.status === 'error') && (
                         <button
                           onClick={() => retryLulu(o._id)}
                           disabled={retryingId === o._id}
