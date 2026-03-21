@@ -65,8 +65,10 @@ export async function POST(req: NextRequest) {
       put(`lulu/${orderId}/cover.pdf`, Buffer.from(coverBytes), { access: 'public', contentType: 'application/pdf', allowOverwrite: true }),
     ]);
 
+    // Use a unique external_id suffix to avoid Lulu 403 on duplicate external_id
+    const retryExternalId = `${orderId}_r${Date.now()}`;
     const { luluJobId, luluOrderId } = await createLuluPrintJob({
-      orderId,
+      orderId: retryExternalId,
       userEmail: user.email,
       storyTitle: story.title,
       coverUrl: coverBlob.url,
