@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/adminGuard';
 import { connectToDatabase } from '@/lib/mongodb';
 import BookOrder from '@/models/BookOrder';
+import '@/models/Story'; // register schema for populate
 
 // GET /api/admin/orders?page=1&status=paid
 export async function GET(req: NextRequest) {
