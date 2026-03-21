@@ -144,7 +144,8 @@ export async function POST(req: NextRequest) {
     case 'customer.subscription.updated': {
       const subscription = event.data.object as Stripe.Subscription;
       const isActive = subscription.status === 'active';
-      const periodEnd = new Date(subscription.current_period_end * 1000);
+      const periodEndTs = subscription.items.data[0]?.current_period_end ?? (subscription as unknown as { current_period_end?: number }).current_period_end;
+      const periodEnd = periodEndTs ? new Date(periodEndTs * 1000) : null;
 
       const priceId = subscription.items.data[0]?.price.id;
       let plan: 'free' | 'premium' | 'superpremium' = 'free';
