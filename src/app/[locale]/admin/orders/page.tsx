@@ -19,6 +19,7 @@ interface Order {
   trackingUrl?: string;
   trackingNumber?: string;
   carrier?: string;
+  luluJobId?: string;
   createdAt: string;
   paidAt?: string;
   shippedAt?: string;
@@ -56,6 +57,7 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [editOrder, setEditOrder] = useState<Order | null>(null);
   const [saving, setSaving] = useState(false);
+  const [retryingId, setRetryingId] = useState<string | null>(null);
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
@@ -98,6 +100,23 @@ export default function AdminOrdersPage() {
       toast.error('Erreur');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const retryLulu = async (orderId: string) => {
+    setRetryingId(orderId);
+    try {
+      const res = await fetch('/api/admin/orders/retry-lulu', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId }),
+      });
+      if (!res.ok) throw new Error();
+      toast.success('Envoyé à Lulu — statut mis à jour dans quelques secondes');
+    } catch {
+      toast.error('Erreur lors de la relance Lulu');
+    } finally {
+      setRetryingId(null);
     }
   };
 
@@ -168,13 +187,22 @@ export default function AdminOrdersPage() {
                     <td className="px-4 py-3 text-gray-500 text-xs">
                       {new Date(o.createdAt).toLocaleDateString('fr-FR')}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 flex flex-col gap-1">
                       <button
                         onClick={() => setEditOrder(o)}
                         className="text-xs px-3 py-1.5 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 font-medium transition-colors"
                       >
                         Modifier
                       </button>
+                      {o.status === 'paid' && !o.luluJobId && (
+                        <button
+                          onClick={() => retryLulu(o._id)}
+                          disabled={retryingId === o._id}
+                          className="text-xs px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 hover:bg-orange-100 font-medium transition-colors disabled:opacity-50"
+                        >
+                          {retryingId === o._id ? 'Envoi...' : 'Relancer Lulu'}
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
