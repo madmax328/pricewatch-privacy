@@ -5,6 +5,7 @@
 import fs from 'fs';
 import path from 'path';
 import { PDFDocument, rgb } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
 import type { PDFFont, PDFPage, PDFImage } from 'pdf-lib';
 
 function loadFont(name: string): Uint8Array {
@@ -165,6 +166,7 @@ export async function generateInteriorPdf(params: {
   const [ar, ag, ab] = accent;
 
   const doc = await PDFDocument.create();
+  doc.registerFontkit(fontkit);
   const bold = await doc.embedFont(loadFont('Geist-Bold.ttf'));
   const regular = await doc.embedFont(loadFont('Geist-Regular.ttf'));
 
@@ -489,6 +491,7 @@ export async function generateCoverPdf(params: {
   const [ar, ag, ab] = accent;
 
   const doc = await PDFDocument.create();
+  doc.registerFontkit(fontkit);
   const bold = await doc.embedFont(loadFont('Geist-Bold.ttf'));
   const regular = await doc.embedFont(loadFont('Geist-Regular.ttf'));
   const p = doc.addPage([COVER_W, COVER_H]);
