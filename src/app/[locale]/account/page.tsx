@@ -298,12 +298,28 @@ export default function AccountPage() {
               </div>
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">{t('country')}</label>
-                <input
-                  type="text"
+                <select
                   value={address.country || ''}
                   onChange={(e) => setAddress({ ...address, country: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-300 text-sm"
-                />
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-300 text-sm bg-white"
+                >
+                  <option value="">—</option>
+                  <option value="FR">France</option>
+                  <option value="BE">Belgique</option>
+                  <option value="CH">Suisse</option>
+                  <option value="CA">Canada</option>
+                  <option value="LU">Luxembourg</option>
+                  <option value="MC">Monaco</option>
+                  <option value="DE">Allemagne</option>
+                  <option value="ES">Espagne</option>
+                  <option value="IT">Italie</option>
+                  <option value="GB">Royaume-Uni</option>
+                  <option value="US">États-Unis</option>
+                  <option value="PT">Portugal</option>
+                  <option value="NL">Pays-Bas</option>
+                  <option value="AT">Autriche</option>
+                  <option value="AU">Australie</option>
+                </select>
               </div>
             </div>
             <button

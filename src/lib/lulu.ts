@@ -3,6 +3,20 @@
 
 const LULU_API_BASE = 'https://api.lulu.com';
 
+const COUNTRY_NAME_TO_CODE: Record<string, string> = {
+  france: 'FR', belgique: 'BE', belgium: 'BE', suisse: 'CH', switzerland: 'CH',
+  canada: 'CA', luxembourg: 'LU', monaco: 'MC', allemagne: 'DE', germany: 'DE',
+  espagne: 'ES', spain: 'ES', italie: 'IT', italy: 'IT', 'royaume-uni': 'GB',
+  'united kingdom': 'GB', uk: 'GB', 'états-unis': 'US', 'etats-unis': 'US',
+  'united states': 'US', usa: 'US', portugal: 'PT', 'pays-bas': 'NL',
+  netherlands: 'NL', autriche: 'AT', austria: 'AT', australie: 'AU', australia: 'AU',
+};
+
+function normalizeCountryCode(country: string): string {
+  if (/^[A-Z]{2}$/.test(country)) return country;
+  return COUNTRY_NAME_TO_CODE[country.toLowerCase().trim()] ?? country.toUpperCase().slice(0, 2);
+}
+
 let _cachedToken: { value: string; expiresAt: number } | null = null;
 
 async function getToken(): Promise<string> {
@@ -78,7 +92,7 @@ export async function createLuluPrintJob(params: {
       street1: params.address.address,
       city: params.address.city,
       postcode: params.address.postalCode,
-      country_code: params.address.country,
+      country_code: normalizeCountryCode(params.address.country),
     },
     shipping_option_level: shippingLevel,
   };
