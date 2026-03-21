@@ -61,8 +61,8 @@ export async function POST(req: NextRequest) {
     ]);
 
     const [interiorBlob, coverBlob] = await Promise.all([
-      put(`lulu/${orderId}/interior.pdf`, Buffer.from(interiorBytes), { access: 'public', contentType: 'application/pdf' }),
-      put(`lulu/${orderId}/cover.pdf`, Buffer.from(coverBytes), { access: 'public', contentType: 'application/pdf' }),
+      put(`lulu/${orderId}/interior.pdf`, Buffer.from(interiorBytes), { access: 'public', contentType: 'application/pdf', allowOverwrite: true }),
+      put(`lulu/${orderId}/cover.pdf`, Buffer.from(coverBytes), { access: 'public', contentType: 'application/pdf', allowOverwrite: true }),
     ]);
 
     const { luluJobId, luluOrderId } = await createLuluPrintJob({
