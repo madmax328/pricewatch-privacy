@@ -228,6 +228,7 @@ async function submitToLulu(params: {
     city: string;
     postalCode: string;
     country: string;
+    phone?: string;
   };
   illustrationUrls?: Record<number, string>;
   loyaltyPromoCode?: string;

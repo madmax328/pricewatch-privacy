@@ -73,7 +73,10 @@ export async function POST(req: NextRequest) {
       storyTitle: story.title,
       coverUrl: coverBlob.url,
       interiorUrl: interiorBlob.url,
-      address: order.deliveryAddress,
+      address: {
+        ...order.deliveryAddress,
+        phone: order.deliveryAddress.phone || user.deliveryAddress?.phone || '',
+      },
     });
 
     await BookOrder.findByIdAndUpdate(orderId, { luluJobId, luluOrderId, status: 'in_production' });

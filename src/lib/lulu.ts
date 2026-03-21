@@ -94,7 +94,7 @@ export async function createLuluPrintJob(params: {
       city: params.address.city,
       postcode: params.address.postalCode,
       country_code: normalizeCountryCode(params.address.country),
-      phone_number: params.address.phone || '',
+      phone_number: params.address.phone || (() => { throw new Error('phone is required for Lulu shipping address'); })(),
     },
     shipping_option_level: shippingLevel,
   };
