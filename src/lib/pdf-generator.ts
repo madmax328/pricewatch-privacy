@@ -2,8 +2,15 @@
 // Book format: 5.83" × 8.27" (A5) — matches Lulu pod package 0583X0827FCSTDPB080CW444GXX
 // Total pages: 32 (Lulu minimum)
 
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import fs from 'fs';
+import path from 'path';
+import { PDFDocument, rgb } from 'pdf-lib';
 import type { PDFFont, PDFPage, PDFImage } from 'pdf-lib';
+
+function loadFont(name: string): Uint8Array {
+  const fontPath = path.join(process.cwd(), 'public', 'fonts', name);
+  return new Uint8Array(fs.readFileSync(fontPath));
+}
 
 // ── Dimensions ────────────────────────────────────────────────────────────────
 // 1 inch = 72 points
@@ -158,8 +165,8 @@ export async function generateInteriorPdf(params: {
   const [ar, ag, ab] = accent;
 
   const doc = await PDFDocument.create();
-  const bold = await doc.embedFont(StandardFonts.HelveticaBold);
-  const regular = await doc.embedFont(StandardFonts.Helvetica);
+  const bold = await doc.embedFont(loadFont('Geist-Bold.ttf'));
+  const regular = await doc.embedFont(loadFont('Geist-Regular.ttf'));
 
   const bgColor = rgb(br, bg2, bb);
   const accentColor = rgb(ar, ag, ab);
@@ -482,8 +489,8 @@ export async function generateCoverPdf(params: {
   const [ar, ag, ab] = accent;
 
   const doc = await PDFDocument.create();
-  const bold = await doc.embedFont(StandardFonts.HelveticaBold);
-  const regular = await doc.embedFont(StandardFonts.Helvetica);
+  const bold = await doc.embedFont(loadFont('Geist-Bold.ttf'));
+  const regular = await doc.embedFont(loadFont('Geist-Regular.ttf'));
   const p = doc.addPage([COVER_W, COVER_H]);
 
   const bgColor = rgb(br, bg2, bb);
