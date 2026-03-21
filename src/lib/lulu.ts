@@ -80,14 +80,15 @@ export async function createLuluPrintJob(params: {
       postcode: params.address.postalCode,
       country_code: params.address.country,
     },
-    shipping_level: shippingLevel,
+    shipping_option_level: shippingLevel,
   };
 
-  const res = await fetch(`${LULU_API_BASE}/v1/print-jobs/`, {
+  const res = await fetch(`${LULU_API_BASE}/print-jobs/`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache',
     },
     body: JSON.stringify(body),
   });
@@ -109,8 +110,8 @@ export async function getLuluPrintJobStatus(
 ): Promise<{ status: string; trackingUrl?: string; trackingNumber?: string; carrier?: string }> {
   const token = await getToken();
 
-  const res = await fetch(`${LULU_API_BASE}/v1/print-jobs/${jobId}/`, {
-    headers: { Authorization: `Bearer ${token}` },
+  const res = await fetch(`${LULU_API_BASE}/print-jobs/${jobId}/`, {
+    headers: { Authorization: `Bearer ${token}`, 'Cache-Control': 'no-cache' },
   });
 
   if (!res.ok) throw new Error(`Lulu status check failed (${res.status}): ${await res.text()}`);
