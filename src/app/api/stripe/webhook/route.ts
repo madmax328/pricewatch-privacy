@@ -10,6 +10,7 @@ import Stripe from 'stripe';
 import { generateInteriorPdf, generateCoverPdf } from '@/lib/pdf-generator';
 import { createLuluPrintJob } from '@/lib/lulu';
 import { put } from '@vercel/blob';
+import { sendOrderConfirmationEmail } from '@/lib/email';
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -95,6 +96,19 @@ export async function POST(req: NextRequest) {
 
         // Mark story as having a print order
         await Story.findByIdAndUpdate(storyId, { printOrdered: true });
+
+        // Send order confirmation email
+        try {
+          await sendOrderConfirmationEmail({
+            to: user.email,
+            childName: story.childName,
+            storyTitle: story.title,
+            amountPaid: session.amount_total || 2999,
+          });
+        } catch (emailErr) {
+          console.error('[Webhook] Order confirmation email failed:', emailErr);
+          // Non-fatal
+        }
 
         // Increment promo usage
         if (promoCode) {
