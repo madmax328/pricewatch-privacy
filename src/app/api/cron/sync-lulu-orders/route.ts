@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
       // Send email notification when shipped
       if (newStatus === 'shipped') {
         try {
-          const user = await User.findById(order.userId).select('email').lean();
+          const user = await User.findById(order.userId).select('email').lean() as { email?: string } | null;
           if (user?.email) {
             await sendOrderShippedEmail({
               to: user.email,
