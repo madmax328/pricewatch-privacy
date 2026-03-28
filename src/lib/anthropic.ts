@@ -61,27 +61,32 @@ export async function generateStory({
 - Engaging, page-turner style with real tension and satisfying resolution`;
   }
 
-  const prompt = `You are a talented children's book author. Write a ${childAge <= 9 ? 'magical bedtime' : 'captivating'} story entirely in ${langName}, perfectly calibrated for a ${childAge}-year-old reader.
+  const prompt = `You are a talented children's picture book author. Write a ${childAge <= 9 ? 'magical bedtime' : 'captivating'} story entirely in ${langName}, perfectly calibrated for a ${childAge}-year-old reader.
+
+This story will be printed as an illustrated book with exactly 26 pages. Each paragraph you write will appear on its own page, so each paragraph MUST be rich and self-contained.
 
 Story requirements:
 - The main hero/heroine is a child named "${childName}", aged ${childAge} years old
 - Theme: ${theme}
 - Language: ${langName} (VERY IMPORTANT: the entire story must be written in ${langName})
-- Length: ${childAge <= 5 ? '450-600' : childAge <= 9 ? '700-900' : '900-1200'} words
+- STRUCTURE: Write EXACTLY 20 paragraphs separated by blank lines (\\n\\n)
+- EACH paragraph must contain ${childAge <= 5 ? '3-5' : childAge <= 9 ? '4-6' : '5-8'} complete sentences
+- Total length: ${childAge <= 5 ? '900-1100' : childAge <= 9 ? '1100-1400' : '1400-1800'} words
 - Writing style for age ${childAge}:
 ${ageGuidelines}
-- Structure: beginning (introduce hero and setting), middle (exciting adventure/challenge), end (happy resolution with a ${childAge >= 10 ? 'meaningful' : 'gentle'} moral lesson)
+- Story arc: paragraphs 1-4 introduce ${childName} and the setting; paragraphs 5-12 build the adventure and challenge; paragraphs 13-18 reach the exciting climax; paragraphs 19-20 resolve happily with a gentle moral
 - "${childName}" must be the central hero who solves the problem through their own initiative
+- Make every paragraph visually descriptive so it can be illustrated (describe what can be seen)
 
 Respond ONLY with a valid JSON object in this exact format (no markdown, no extra text):
 {
   "title": "The story title in ${langName}",
-  "content": "The full story text in ${langName}, with paragraphs separated by \\n\\n"
+  "content": "The full story text in ${langName}, with exactly 20 paragraphs separated by \\n\\n"
 }`;
 
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 2500,
+    max_tokens: 4000,
     messages: [{ role: 'user', content: prompt }],
   });
 

@@ -8,7 +8,7 @@ export const runtime = 'nodejs';
 export const maxDuration = 60;
 
 const HF_URL = 'https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell';
-const NO_TEXT = 'no text, no words, no letters, no watermark';
+const NO_TEXT = 'no text, no words, no letters, no watermark, no writing, no alphabet, no signs, no symbols, no captions, no labels';
 
 function styleForAge(age: number): string {
   if (age <= 4)  return `children's picture book illustration, watercolor, soft pastel colors, very cute, simple shapes, ${NO_TEXT}`;
@@ -30,7 +30,7 @@ async function fetchHF(prompt: string, seed: number, token: string, timeoutMs: n
         parameters: {
           seed,
           negative_prompt:
-            'text, words, letters, alphabet, numbers, watermark, label, caption, title, signature, logo, subtitle, writing, font, typography, inscription',
+            'text, words, letters, alphabet, numbers, watermark, label, caption, title, signature, logo, subtitle, writing, font, typography, inscription, signs, symbols, written text, speech bubbles, banners, posters, book text, printed words',
         },
       }),
       signal: controller.signal,

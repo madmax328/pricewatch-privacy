@@ -8,6 +8,165 @@ import { PDFDocument, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import type { PDFFont, PDFPage, PDFImage } from 'pdf-lib';
 
+// ── Book translations ──────────────────────────────────────────────────────────
+interface BookStrings {
+  storyOf: string;         // "L'histoire de" / "The story of"
+  dedicationLine1: string; // "Ce livre magique"
+  dedicationLine2: string; // "appartient à"
+  dedicationWish1: string;
+  dedicationWish2: string;
+  drawAdventureTitle: string;
+  drawAdventureSubtitle: string;
+  heroPortraitTitle: (name: string) => string;
+  heroPortraitSubtitle: string;
+  superpowers: string;
+  theEnd: string;
+  bravo: (name: string) => string;
+  closingLines: string[];
+  nextAdventure: string;
+  aboutTitle: string;
+  aboutLines: string[];
+  thankYou: string;
+  discountLine1: string;
+  discountLine2: string;
+  loyaltyValidity: string;
+  loyaltyEmailFallback: string;
+  backCoverLine1: string;
+  backCoverLine2: string;
+}
+
+const BOOK_STRINGS: Record<string, BookStrings> = {
+  fr: {
+    storyOf: "L'histoire de",
+    dedicationLine1: 'Ce livre magique',
+    dedicationLine2: 'appartient à',
+    dedicationWish1: 'Que tes aventures soient',
+    dedicationWish2: 'toujours extraordinaires.',
+    drawAdventureTitle: 'Dessine ton aventure !',
+    drawAdventureSubtitle: "La scène la plus magique de l'histoire...",
+    heroPortraitTitle: (n) => `${n}, le héros !`,
+    heroPortraitSubtitle: 'Dessine ton portrait de super-héros :',
+    superpowers: 'Mes super-pouvoirs :',
+    theEnd: 'FIN',
+    bravo: (n) => `Bravo ${n} !`,
+    closingLines: ["Tu as vécu une grande aventure.", "Chaque histoire que tu lis", "t'ouvre une porte vers un", "nouveau monde magique."],
+    nextAdventure: "La prochaine aventure t'attend...",
+    aboutTitle: 'À propos de Kidshade',
+    aboutLines: ["Kidshade crée des histoires personnalisées", "pour chaque enfant unique.", "", "Votre enfant est le héros de sa propre aventure,", "imprimée et livrée avec soin.", "", "kidshade.net"],
+    thankYou: 'Merci de votre confiance !',
+    discountLine1: 'Profitez de 5% de réduction sur votre',
+    discountLine2: 'prochain livre avec le code :',
+    loyaltyValidity: 'Valable 1 fois · kidshade.net',
+    loyaltyEmailFallback: 'Code transmis par e-mail',
+    backCoverLine1: 'Une histoire',
+    backCoverLine2: 'rien que pour',
+  },
+  en: {
+    storyOf: 'The story of',
+    dedicationLine1: 'This magical book',
+    dedicationLine2: 'belongs to',
+    dedicationWish1: 'May your adventures',
+    dedicationWish2: 'always be extraordinary.',
+    drawAdventureTitle: 'Draw your adventure!',
+    drawAdventureSubtitle: 'The most magical scene from the story...',
+    heroPortraitTitle: (n) => `${n}, the hero!`,
+    heroPortraitSubtitle: 'Draw your superhero portrait:',
+    superpowers: 'My superpowers:',
+    theEnd: 'THE END',
+    bravo: (n) => `Well done, ${n}!`,
+    closingLines: ["You lived a great adventure.", "Every story you read", "opens a door to a", "new magical world."],
+    nextAdventure: 'The next adventure awaits...',
+    aboutTitle: 'About Kidshade',
+    aboutLines: ["Kidshade creates personalised stories", "for every unique child.", "", "Your child is the hero of their own adventure,", "printed and delivered with care.", "", "kidshade.net"],
+    thankYou: 'Thank you for your trust!',
+    discountLine1: 'Enjoy 5% off your next',
+    discountLine2: 'book with the code:',
+    loyaltyValidity: 'Valid once · kidshade.net',
+    loyaltyEmailFallback: 'Code sent by email',
+    backCoverLine1: 'A story',
+    backCoverLine2: 'just for',
+  },
+  es: {
+    storyOf: 'La historia de',
+    dedicationLine1: 'Este libro mágico',
+    dedicationLine2: 'pertenece a',
+    dedicationWish1: 'Que tus aventuras sean',
+    dedicationWish2: 'siempre extraordinarias.',
+    drawAdventureTitle: '¡Dibuja tu aventura!',
+    drawAdventureSubtitle: 'La escena más mágica de la historia...',
+    heroPortraitTitle: (n) => `¡${n}, el héroe!`,
+    heroPortraitSubtitle: 'Dibuja tu retrato de superhéroe:',
+    superpowers: 'Mis superpoderes:',
+    theEnd: 'FIN',
+    bravo: (n) => `¡Bravo, ${n}!`,
+    closingLines: ["Has vivido una gran aventura.", "Cada historia que lees", "te abre una puerta a un", "nuevo mundo mágico."],
+    nextAdventure: 'La próxima aventura te espera...',
+    aboutTitle: 'Sobre Kidshade',
+    aboutLines: ["Kidshade crea historias personalizadas", "para cada niño único.", "", "Tu hijo es el héroe de su propia aventura,", "impresa y entregada con cuidado.", "", "kidshade.net"],
+    thankYou: '¡Gracias por su confianza!',
+    discountLine1: 'Disfruta de 5% de descuento en tu',
+    discountLine2: 'próximo libro con el código:',
+    loyaltyValidity: 'Válido 1 vez · kidshade.net',
+    loyaltyEmailFallback: 'Código enviado por email',
+    backCoverLine1: 'Una historia',
+    backCoverLine2: 'solo para',
+  },
+  pt: {
+    storyOf: 'A história de',
+    dedicationLine1: 'Este livro mágico',
+    dedicationLine2: 'pertence a',
+    dedicationWish1: 'Que as tuas aventuras sejam',
+    dedicationWish2: 'sempre extraordinárias.',
+    drawAdventureTitle: 'Desenha a tua aventura!',
+    drawAdventureSubtitle: 'A cena mais mágica da história...',
+    heroPortraitTitle: (n) => `${n}, o herói!`,
+    heroPortraitSubtitle: 'Desenha o teu retrato de super-herói:',
+    superpowers: 'Os meus superpoderes:',
+    theEnd: 'FIM',
+    bravo: (n) => `Parabéns, ${n}!`,
+    closingLines: ["Viveste uma grande aventura.", "Cada história que lês", "abre-te uma porta para um", "novo mundo mágico."],
+    nextAdventure: 'A próxima aventura espera por ti...',
+    aboutTitle: 'Sobre a Kidshade',
+    aboutLines: ["A Kidshade cria histórias personalizadas", "para cada criança única.", "", "O teu filho é o herói da sua própria aventura,", "impressa e entregue com cuidado.", "", "kidshade.net"],
+    thankYou: 'Obrigado pela sua confiança!',
+    discountLine1: 'Aproveite 5% de desconto no seu',
+    discountLine2: 'próximo livro com o código:',
+    loyaltyValidity: 'Válido 1 vez · kidshade.net',
+    loyaltyEmailFallback: 'Código enviado por email',
+    backCoverLine1: 'Uma história',
+    backCoverLine2: 'só para',
+  },
+  de: {
+    storyOf: 'Die Geschichte von',
+    dedicationLine1: 'Dieses magische Buch',
+    dedicationLine2: 'gehört',
+    dedicationWish1: 'Mögen deine Abenteuer',
+    dedicationWish2: 'immer außergewöhnlich sein.',
+    drawAdventureTitle: 'Zeichne dein Abenteuer!',
+    drawAdventureSubtitle: 'Die magischste Szene aus der Geschichte...',
+    heroPortraitTitle: (n) => `${n}, der Held!`,
+    heroPortraitSubtitle: 'Zeichne dein Superhelden-Porträt:',
+    superpowers: 'Meine Superkräfte:',
+    theEnd: 'ENDE',
+    bravo: (n) => `Toll gemacht, ${n}!`,
+    closingLines: ["Du hast ein großes Abenteuer erlebt.", "Jede Geschichte, die du liest,", "öffnet dir eine Tür zu einer", "neuen magischen Welt."],
+    nextAdventure: 'Das nächste Abenteuer wartet...',
+    aboutTitle: 'Über Kidshade',
+    aboutLines: ["Kidshade erstellt personalisierte Geschichten", "für jedes einzigartige Kind.", "", "Dein Kind ist der Held seines eigenen Abenteuers,", "gedruckt und liebevoll geliefert.", "", "kidshade.net"],
+    thankYou: 'Danke für Ihr Vertrauen!',
+    discountLine1: '5% Rabatt auf Ihr nächstes',
+    discountLine2: 'Buch mit dem Code:',
+    loyaltyValidity: 'Einmal gültig · kidshade.net',
+    loyaltyEmailFallback: 'Code per E-Mail gesendet',
+    backCoverLine1: 'Eine Geschichte',
+    backCoverLine2: 'nur für',
+  },
+};
+
+function getStrings(language: string): BookStrings {
+  return BOOK_STRINGS[language] ?? BOOK_STRINGS.fr;
+}
+
 function loadFont(name: string): Uint8Array {
   const fontPath = path.join(process.cwd(), 'public', 'fonts', name);
   return new Uint8Array(fs.readFileSync(fontPath));
@@ -157,10 +316,12 @@ export async function generateInteriorPdf(params: {
   storyTitle: string;
   storyContent: string;
   theme: string;
+  language?: string;
   illustrationUrls?: Record<number, string>; // page index 0-25 → blob URL
   loyaltyPromoCode?: string;                 // printed on page 32
 }): Promise<Uint8Array> {
-  const { childName, storyTitle, storyContent, theme, illustrationUrls, loyaltyPromoCode } = params;
+  const { childName, storyTitle, storyContent, theme, language = 'fr', illustrationUrls, loyaltyPromoCode } = params;
+  const s = getStrings(language);
   const { bg, accent } = palette(theme);
   const [br, bg2, bb] = bg;
   const [ar, ag, ab] = accent;
@@ -221,7 +382,7 @@ export async function generateInteriorPdf(params: {
       drawCenteredText(p, line, bold, 26, ty, accentColor);
       ty -= 36;
     }
-    drawCenteredText(p, `L'histoire de ${childName}`, regular, 16, PAGE_H * 0.58, white, PAGE_W, 0, 0.85);
+    drawCenteredText(p, `${s.storyOf} ${childName}`, regular, 16, PAGE_H * 0.58, white, PAGE_W, 0, 0.85);
     drawCenteredText(p, 'Kidshade', bold, 12, 28, accentColor, PAGE_W, 0, 0.65);
   }
 
@@ -235,12 +396,12 @@ export async function generateInteriorPdf(params: {
     });
 
     const lines: Array<{ text: string; size: number; isBold: boolean }> = [
-      { text: 'Ce livre magique', size: 16, isBold: false },
-      { text: 'appartient à', size: 16, isBold: false },
+      { text: s.dedicationLine1, size: 16, isBold: false },
+      { text: s.dedicationLine2, size: 16, isBold: false },
       { text: childName, size: 28, isBold: true },
       { text: '', size: 16, isBold: false },
-      { text: 'Que tes aventures soient', size: 14, isBold: false },
-      { text: 'toujours extraordinaires.', size: 14, isBold: false },
+      { text: s.dedicationWish1, size: 14, isBold: false },
+      { text: s.dedicationWish2, size: 14, isBold: false },
     ];
 
     let y = PAGE_H * 0.68;
@@ -339,8 +500,8 @@ export async function generateInteriorPdf(params: {
     p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: cream });
     p.drawRectangle({ x: 0, y: PAGE_H - 30, width: PAGE_W, height: 30, color: bgColor });
 
-    drawCenteredText(p, 'Dessine ton aventure !', bold, 20, PAGE_H - 62, rgb(ar * 0.75, ag * 0.75, ab * 0.75));
-    drawCenteredText(p, 'La scène la plus magique de l\'histoire...', regular, 12, PAGE_H - 85, dark);
+    drawCenteredText(p, s.drawAdventureTitle, bold, 20, PAGE_H - 62, rgb(ar * 0.75, ag * 0.75, ab * 0.75));
+    drawCenteredText(p, s.drawAdventureSubtitle, regular, 12, PAGE_H - 85, dark);
 
     const frameY = 45;
     const frameH = PAGE_H - 110;
@@ -366,8 +527,8 @@ export async function generateInteriorPdf(params: {
     p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: cream });
     p.drawRectangle({ x: 0, y: PAGE_H - 30, width: PAGE_W, height: 30, color: bgColor });
 
-    drawCenteredText(p, `${childName}, le héros !`, bold, 20, PAGE_H - 62, rgb(ar * 0.75, ag * 0.75, ab * 0.75));
-    drawCenteredText(p, 'Dessine ton portrait de super-héros :', regular, 12, PAGE_H - 85, dark);
+    drawCenteredText(p, s.heroPortraitTitle(childName), bold, 20, PAGE_H - 62, rgb(ar * 0.75, ag * 0.75, ab * 0.75));
+    drawCenteredText(p, s.heroPortraitSubtitle, regular, 12, PAGE_H - 85, dark);
 
     p.drawEllipse({
       x: PAGE_W / 2, y: PAGE_H * 0.46,
@@ -381,7 +542,7 @@ export async function generateInteriorPdf(params: {
       width: PAGE_W - (MARGIN + 30) * 2, height: 55,
       borderColor: accentColor, borderWidth: 0.8, borderOpacity: 0.30,
     });
-    drawCenteredText(p, 'Mes super-pouvoirs :', regular, 11, 88, dark);
+    drawCenteredText(p, s.superpowers, regular, 11, 88, dark);
     drawCenteredText(p, '___________________________', regular, 11, 72, rgb(0.7, 0.7, 0.7));
   }
 
@@ -396,23 +557,17 @@ export async function generateInteriorPdf(params: {
     p.drawCircle({ x: PAGE_W - 40, y: PAGE_H - 40, size: 50, color: accentColor, opacity: 0.10 });
     p.drawCircle({ x: 40, y: 60, size: 35, color: accentColor, opacity: 0.10 });
 
-    drawCenteredText(p, 'FIN', bold, 48, PAGE_H * 0.70, accentColor);
-    drawCenteredText(p, `Bravo ${childName} !`, bold, 20, PAGE_H * 0.58, white, PAGE_W, 0, 0.92);
+    drawCenteredText(p, s.theEnd, bold, 48, PAGE_H * 0.70, accentColor);
+    drawCenteredText(p, s.bravo(childName), bold, 20, PAGE_H * 0.58, white, PAGE_W, 0, 0.92);
 
-    const closingLines = [
-      'Tu as vécu une grande aventure.',
-      'Chaque histoire que tu lis',
-      't\'ouvre une porte vers un',
-      'nouveau monde magique.',
-    ];
     let cy = PAGE_H * 0.46;
-    for (const line of closingLines) {
+    for (const line of s.closingLines) {
       drawCenteredText(p, line, regular, 13, cy, white, PAGE_W, 0, 0.70);
       cy -= 22;
     }
 
     drawCenteredText(p, '* * *', regular, 14, PAGE_H * 0.25, accentColor, PAGE_W, 0, 0.55);
-    drawCenteredText(p, 'La prochaine aventure t\'attend...', regular, 12, PAGE_H * 0.19, white, PAGE_W, 0, 0.50);
+    drawCenteredText(p, s.nextAdventure, regular, 12, PAGE_H * 0.19, white, PAGE_W, 0, 0.50);
 
     drawCenteredText(p, 'Kidshade', bold, 11, 26, accentColor, PAGE_W, 0, 0.55);
   }
@@ -423,19 +578,10 @@ export async function generateInteriorPdf(params: {
     p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: cream });
     p.drawRectangle({ x: 0, y: PAGE_H - 30, width: PAGE_W, height: 30, color: bgColor });
 
-    drawCenteredText(p, 'À propos de Kidshade', bold, 16, PAGE_H - 66, rgb(ar * 0.7, ag * 0.7, ab * 0.7));
+    drawCenteredText(p, s.aboutTitle, bold, 16, PAGE_H - 66, rgb(ar * 0.7, ag * 0.7, ab * 0.7));
 
-    const aboutLines = [
-      'Kidshade crée des histoires personnalisées',
-      'pour chaque enfant unique.',
-      '',
-      'Votre enfant est le héros de sa propre aventure,',
-      'imprimée et livrée avec soin.',
-      '',
-      'kidshade.net',
-    ];
     let ay = PAGE_H - 100;
-    for (const line of aboutLines) {
+    for (const line of s.aboutLines) {
       if (!line) { ay -= 10; continue; }
       const isUrl = line === 'kidshade.net';
       drawCenteredText(p, line, isUrl ? bold : regular, isUrl ? 13 : 12, ay, isUrl ? accentColor : dark);
@@ -462,15 +608,15 @@ export async function generateInteriorPdf(params: {
       p.drawCircle({ x: cx2, y: cy2, size: 3.5, color: accentColor, opacity: 0.55 });
     }
 
-    drawCenteredText(p, 'Merci de votre confiance !', bold, 12, BOX_Y + BOX_H - 22, dark);
-    drawCenteredText(p, 'Profitez de 5% de réduction sur votre', regular, 10, BOX_Y + BOX_H - 42, dark, PAGE_W, 0, 0.80);
-    drawCenteredText(p, 'prochain livre avec le code :', regular, 10, BOX_Y + BOX_H - 56, dark, PAGE_W, 0, 0.80);
+    drawCenteredText(p, s.thankYou, bold, 12, BOX_Y + BOX_H - 22, dark);
+    drawCenteredText(p, s.discountLine1, regular, 10, BOX_Y + BOX_H - 42, dark, PAGE_W, 0, 0.80);
+    drawCenteredText(p, s.discountLine2, regular, 10, BOX_Y + BOX_H - 56, dark, PAGE_W, 0, 0.80);
 
     if (loyaltyPromoCode) {
       drawCenteredText(p, loyaltyPromoCode, bold, 18, BOX_Y + 42, accentColor);
-      drawCenteredText(p, 'Valable 1 fois · kidshade.net', regular, 9, BOX_Y + 24, dark, PAGE_W, 0, 0.55);
+      drawCenteredText(p, s.loyaltyValidity, regular, 9, BOX_Y + 24, dark, PAGE_W, 0, 0.55);
     } else {
-      drawCenteredText(p, 'Code transmis par e-mail', bold, 13, BOX_Y + 42, accentColor, PAGE_W, 0, 0.75);
+      drawCenteredText(p, s.loyaltyEmailFallback, bold, 13, BOX_Y + 42, accentColor, PAGE_W, 0, 0.75);
       drawCenteredText(p, 'kidshade.net', regular, 9, BOX_Y + 24, dark, PAGE_W, 0, 0.55);
     }
   }
@@ -483,9 +629,11 @@ export async function generateCoverPdf(params: {
   childName: string;
   storyTitle: string;
   theme: string;
+  language?: string;
   coverIllustrationUrl?: string; // optional — embedded on front cover
 }): Promise<Uint8Array> {
-  const { childName, storyTitle, theme, coverIllustrationUrl } = params;
+  const { childName, storyTitle, theme, language = 'fr', coverIllustrationUrl } = params;
+  const s = getStrings(language);
   const { bg, accent } = palette(theme);
   const [br, bg2, bb] = bg;
   const [ar, ag, ab] = accent;
@@ -517,8 +665,8 @@ export async function generateCoverPdf(params: {
   });
 
   const backTexts: Array<{ text: string; size: number; bold: boolean }> = [
-    { text: 'Une histoire', size: 15, bold: false },
-    { text: 'rien que pour', size: 15, bold: false },
+    { text: s.backCoverLine1, size: 15, bold: false },
+    { text: s.backCoverLine2, size: 15, bold: false },
     { text: childName, size: 24, bold: true },
     { text: '', size: 12, bold: false },
     { text: 'kidshade.net', size: 13, bold: true },
@@ -583,7 +731,7 @@ export async function generateCoverPdf(params: {
   }
 
   // Child name
-  const nameStr = `L'histoire de ${childName}`;
+  const nameStr = `${s.storyOf} ${childName}`;
   const nameW = regular.widthOfTextAtSize(nameStr, 15);
   p.drawText(nameStr, {
     x: frontX + (PAGE_W - nameW) / 2,
