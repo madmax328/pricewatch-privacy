@@ -264,10 +264,10 @@ function buildIllustrationPrompt(params: {
   const character = traits ? `${gender} with ${traits}, named ${childName}` : `${gender} named ${childName}`;
   const scene = isCover ? `${theme} adventure, magical landscape` : pageContent.slice(0, 80).replace(/[^\w\s,.']/gi, '').trim() || `${theme} scene`;
   const styleAge = childAge <= 4
-    ? "children's picture book illustration, watercolor, soft pastel colors, very cute, simple shapes"
+    ? "children's picture book illustration, watercolor, soft pastel colors, bright white background, very cute, simple shapes, cheerful warm lighting"
     : childAge <= 7
-    ? "children's book illustration, colorful watercolor, whimsical, friendly characters"
-    : "illustrated storybook, digital painting, vibrant colors, adventurous, detailed";
+    ? "children's book illustration, colorful watercolor, bright white or light background, whimsical, friendly characters, soft natural lighting"
+    : "illustrated storybook, digital painting, vibrant colors, bright background, adventurous, detailed, warm natural lighting";
   return `${styleAge}, ${character}, ${scene}`;
 }
 

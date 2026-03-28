@@ -11,11 +11,11 @@ const HF_URL = 'https://router.huggingface.co/hf-inference/models/black-forest-l
 const NO_TEXT = 'no text, no words, no letters, no watermark, no writing, no alphabet, no signs, no symbols, no captions, no labels';
 
 function styleForAge(age: number): string {
-  if (age <= 4)  return `children's picture book illustration, watercolor, soft pastel colors, very cute, simple shapes, ${NO_TEXT}`;
-  if (age <= 7)  return `children's book illustration, colorful watercolor, whimsical, friendly characters, ${NO_TEXT}`;
-  if (age <= 10) return `illustrated storybook, digital painting, vibrant colors, adventurous, detailed, ${NO_TEXT}`;
-  if (age <= 13) return `young adult graphic novel style, dynamic composition, cinematic lighting, detailed illustration, ${NO_TEXT}`;
-  return `young adult illustration, semi-realistic digital art, dramatic lighting, detailed, cinematic, ${NO_TEXT}`;
+  if (age <= 4)  return `children's picture book illustration, watercolor, soft pastel colors, bright white background, very cute, simple shapes, cheerful warm lighting, ${NO_TEXT}`;
+  if (age <= 7)  return `children's book illustration, colorful watercolor, bright white or light background, whimsical, friendly characters, soft natural lighting, ${NO_TEXT}`;
+  if (age <= 10) return `illustrated storybook, digital painting, vibrant colors, bright background, adventurous, detailed, warm natural lighting, ${NO_TEXT}`;
+  if (age <= 13) return `young adult graphic novel style, dynamic composition, bright colorful background, detailed illustration, natural lighting, ${NO_TEXT}`;
+  return `young adult illustration, semi-realistic digital art, bright colorful background, detailed, natural lighting, ${NO_TEXT}`;
 }
 
 async function fetchHF(prompt: string, seed: number, token: string, timeoutMs: number) {

@@ -185,26 +185,26 @@ const SPINE_W = 6;
 const COVER_W = BLEED + PAGE_W + SPINE_W + PAGE_W + BLEED;
 const COVER_H = PAGE_H + BLEED * 2;
 
-// ── Theme color palettes ───────────────────────────────────────────────────────
+// ── Theme accent colors (for text/decorations, NOT dark backgrounds) ──────────
 type RGB3 = [number, number, number];
 interface ThemePalette {
-  bg: RGB3;
-  accent: RGB3;
+  accent: RGB3;   // primary color (title, borders)
+  soft: RGB3;     // lighter tint for backgrounds
 }
 
 const THEME_PALETTES: Record<string, ThemePalette> = {
-  dragons:     { bg: [0.10, 0.02, 0.20], accent: [0.98, 0.45, 0.09] },
-  space:       { bg: [0.01, 0.02, 0.09], accent: [0.51, 0.55, 0.97] },
-  forest:      { bg: [0.02, 0.18, 0.08], accent: [0.53, 0.94, 0.67] },
-  ocean:       { bg: [0.05, 0.29, 0.43], accent: [0.49, 0.83, 0.99] },
-  princess:    { bg: [0.31, 0.03, 0.14], accent: [0.98, 0.66, 0.83] },
-  dinosaurs:   { bg: [0.21, 0.33, 0.08], accent: [0.53, 0.94, 0.67] },
-  superheroes: { bg: [0.12, 0.11, 0.29], accent: [0.98, 0.75, 0.14] },
-  animals:     { bg: [0.47, 0.21, 0.04], accent: [0.99, 0.91, 0.54] },
-  pirates:     { bg: [0.05, 0.29, 0.43], accent: [0.98, 0.75, 0.14] },
-  fairies:     { bg: [0.18, 0.06, 0.40], accent: [0.94, 0.67, 0.99] },
+  dragons:     { accent: [0.85, 0.22, 0.07], soft: [1.00, 0.93, 0.90] },
+  space:       { accent: [0.34, 0.37, 0.90], soft: [0.92, 0.93, 1.00] },
+  forest:      { accent: [0.13, 0.60, 0.23], soft: [0.90, 0.97, 0.91] },
+  ocean:       { accent: [0.05, 0.55, 0.80], soft: [0.90, 0.96, 1.00] },
+  princess:    { accent: [0.85, 0.28, 0.52], soft: [1.00, 0.92, 0.96] },
+  dinosaurs:   { accent: [0.22, 0.55, 0.10], soft: [0.91, 0.97, 0.90] },
+  superheroes: { accent: [0.20, 0.18, 0.75], soft: [0.93, 0.93, 1.00] },
+  animals:     { accent: [0.75, 0.42, 0.05], soft: [1.00, 0.95, 0.88] },
+  pirates:     { accent: [0.10, 0.42, 0.65], soft: [0.90, 0.95, 1.00] },
+  fairies:     { accent: [0.62, 0.22, 0.80], soft: [0.97, 0.92, 1.00] },
 };
-const DEFAULT_PALETTE: ThemePalette = { bg: [0.12, 0.11, 0.29], accent: [0.65, 0.48, 0.98] };
+const DEFAULT_PALETTE: ThemePalette = { accent: [0.45, 0.28, 0.85], soft: [0.95, 0.93, 1.00] };
 
 function palette(theme: string): ThemePalette {
   return THEME_PALETTES[theme] ?? DEFAULT_PALETTE;
@@ -322,20 +322,20 @@ export async function generateInteriorPdf(params: {
 }): Promise<Uint8Array> {
   const { childName, storyTitle, storyContent, theme, language = 'fr', illustrationUrls, loyaltyPromoCode } = params;
   const s = getStrings(language);
-  const { bg, accent } = palette(theme);
-  const [br, bg2, bb] = bg;
+  const { accent, soft } = palette(theme);
   const [ar, ag, ab] = accent;
+  const [sr, sg, sb] = soft;
 
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
   const bold = await doc.embedFont(loadFont('Geist-Bold.ttf'));
   const regular = await doc.embedFont(loadFont('Geist-Regular.ttf'));
 
-  const bgColor = rgb(br, bg2, bb);
   const accentColor = rgb(ar, ag, ab);
+  const softColor = rgb(sr, sg, sb);
   const white = rgb(1, 1, 1);
-  const dark = rgb(0.08, 0.08, 0.12);
-  const cream = rgb(1, 0.99, 0.97);
+  const dark = rgb(0.10, 0.10, 0.14);
+  const gray = rgb(0.50, 0.50, 0.55);
 
   // Pre-fetch all illustrations in parallel (gracefully handle failures)
   const STORY_PAGES = 26;
@@ -344,69 +344,75 @@ export async function generateInteriorPdf(params: {
     await Promise.all(
       Array.from({ length: STORY_PAGES }, async (_, i) => {
         const url = illustrationUrls[i];
-        if (url) {
-          embeddedImages[i] = await fetchAndEmbedImage(doc, url);
-        }
+        if (url) embeddedImages[i] = await fetchAndEmbedImage(doc, url);
       })
     );
   }
 
+  // Layout constants for story pages (Disney picture-book style)
+  const TOP_BAND = 16;     // thin colored header
+  const ILLUS_H = 340;     // large illustration (57% of page height)
+  const TEXT_FONT = 15;
+  const TEXT_LINE = 23;
+  const TEXT_MARGIN = 32;
+
   // ── Page 1: Title ──────────────────────────────────────────────────────────
   {
     const p = doc.addPage([PAGE_W, PAGE_H]);
-    p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: bgColor });
-    p.drawCircle({ x: PAGE_W - 55, y: PAGE_H - 55, size: 75, color: accentColor, opacity: 0.18 });
-    p.drawCircle({ x: 55, y: 90, size: 55, color: accentColor, opacity: 0.12 });
-    p.drawCircle({ x: PAGE_W / 2, y: PAGE_H * 0.52, size: 110, color: accentColor, opacity: 0.07 });
+    // Soft pastel background
+    p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: softColor });
+    // Decorative circles (light, playful)
+    p.drawCircle({ x: PAGE_W - 40, y: PAGE_H - 40, size: 55, color: accentColor, opacity: 0.12 });
+    p.drawCircle({ x: 40, y: 60, size: 40, color: accentColor, opacity: 0.10 });
+    p.drawCircle({ x: PAGE_W * 0.2, y: PAGE_H * 0.35, size: 30, color: accentColor, opacity: 0.08 });
+    p.drawCircle({ x: PAGE_W * 0.82, y: PAGE_H * 0.28, size: 22, color: accentColor, opacity: 0.08 });
 
-    // Illustration: use first story page image if available, else placeholder
-    const TITLE_ILLUS_X = MARGIN + 10;
-    const TITLE_ILLUS_Y = PAGE_H * 0.22;
-    const TITLE_ILLUS_W = PAGE_W - (MARGIN + 10) * 2;
-    const TITLE_ILLUS_H = PAGE_H * 0.24;
-
+    // Large illustration centered on upper half
+    const IY = PAGE_H * 0.33;
+    const IH = PAGE_H * 0.40;
+    const IX = MARGIN;
+    const IW = PAGE_W - MARGIN * 2;
     if (embeddedImages[0]) {
-      drawImageFit(p, embeddedImages[0], TITLE_ILLUS_X, TITLE_ILLUS_Y, TITLE_ILLUS_W, TITLE_ILLUS_H);
+      drawImageFit(p, embeddedImages[0], IX, IY, IW, IH);
     } else {
-      p.drawRectangle({
-        x: TITLE_ILLUS_X, y: TITLE_ILLUS_Y,
-        width: TITLE_ILLUS_W, height: TITLE_ILLUS_H,
-        color: accentColor, opacity: 0.10,
-        borderColor: accentColor, borderWidth: 1.5, borderOpacity: 0.30,
-      });
+      p.drawRectangle({ x: IX, y: IY, width: IW, height: IH, color: white, opacity: 0.50,
+        borderColor: accentColor, borderWidth: 1.5, borderOpacity: 0.30 });
     }
 
-    const titleLines = wrapText(storyTitle, bold, 26, PAGE_W - MARGIN * 2);
-    let ty = PAGE_H * 0.72;
+    // Title — bold, colorful, centered
+    const titleLines = wrapText(storyTitle, bold, 24, PAGE_W - MARGIN * 2 - 8);
+    let ty = IY - 20;
     for (const line of titleLines.slice(0, 3)) {
-      drawCenteredText(p, line, bold, 26, ty, accentColor);
-      ty -= 36;
+      drawCenteredText(p, line, bold, 24, ty, accentColor);
+      ty -= 32;
     }
-    drawCenteredText(p, `${s.storyOf} ${childName}`, regular, 16, PAGE_H * 0.58, white, PAGE_W, 0, 0.85);
-    drawCenteredText(p, 'Kidshade', bold, 12, 28, accentColor, PAGE_W, 0, 0.65);
+    // Subtitle
+    drawCenteredText(p, `${s.storyOf} ${childName}`, regular, 14, ty - 4, gray);
+    // Branding
+    drawCenteredText(p, 'Kidshade', bold, 11, 28, accentColor, PAGE_W, 0, 0.55);
   }
 
   // ── Page 2: Dedication ─────────────────────────────────────────────────────
   {
     const p = doc.addPage([PAGE_W, PAGE_H]);
-    p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: cream });
-    p.drawRectangle({
-      x: 18, y: 18, width: PAGE_W - 36, height: PAGE_H - 36,
-      borderColor: accentColor, borderWidth: 1.5, borderOpacity: 0.40,
-    });
+    p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: white });
+    // Soft top band
+    p.drawRectangle({ x: 0, y: PAGE_H - TOP_BAND, width: PAGE_W, height: TOP_BAND, color: accentColor, opacity: 0.15 });
+    // Decorative frame
+    p.drawRectangle({ x: 22, y: 22, width: PAGE_W - 44, height: PAGE_H - 44,
+      borderColor: accentColor, borderWidth: 1.2, borderOpacity: 0.30 });
 
     const lines: Array<{ text: string; size: number; isBold: boolean }> = [
-      { text: s.dedicationLine1, size: 16, isBold: false },
-      { text: s.dedicationLine2, size: 16, isBold: false },
-      { text: childName, size: 28, isBold: true },
-      { text: '', size: 16, isBold: false },
-      { text: s.dedicationWish1, size: 14, isBold: false },
-      { text: s.dedicationWish2, size: 14, isBold: false },
+      { text: s.dedicationLine1, size: 15, isBold: false },
+      { text: s.dedicationLine2, size: 15, isBold: false },
+      { text: childName, size: 30, isBold: true },
+      { text: '', size: 14, isBold: false },
+      { text: s.dedicationWish1, size: 13, isBold: false },
+      { text: s.dedicationWish2, size: 13, isBold: false },
     ];
-
-    let y = PAGE_H * 0.68;
+    let y = PAGE_H * 0.65;
     for (const line of lines) {
-      if (!line.text) { y -= 14; continue; }
+      if (!line.text) { y -= 12; continue; }
       const f = line.isBold ? bold : regular;
       const color = line.isBold ? accentColor : dark;
       drawCenteredText(p, line.text, f, line.size, y, color);
@@ -414,102 +420,79 @@ export async function generateInteriorPdf(params: {
     }
   }
 
-  // ── Pages 3–28: Story (26 pages) ──────────────────────────────────────────
+  // ── Pages 3–28: Story pages ───────────────────────────────────────────────
+  // New design: white page, large illustration at top, text below (Disney style)
   const chunks = splitIntoChunks(storyContent, STORY_PAGES);
 
   for (let i = 0; i < STORY_PAGES; i++) {
     const p = doc.addPage([PAGE_W, PAGE_H]);
     const pageNum = i + 3;
     const chunk = chunks[i] ?? '';
-    const isEven = pageNum % 2 === 0;
 
-    p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: cream });
+    // White background
+    p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: white });
 
-    // Header bar
-    const HEADER_H = 30;
-    p.drawRectangle({ x: 0, y: PAGE_H - HEADER_H, width: PAGE_W, height: HEADER_H, color: bgColor });
+    // Thin top colored band
+    p.drawRectangle({ x: 0, y: PAGE_H - TOP_BAND, width: PAGE_W, height: TOP_BAND, color: accentColor, opacity: 0.18 });
 
-    // Page number
+    // Title in top band (small, subtle)
+    const shortTitle = storyTitle.length > 30 ? storyTitle.slice(0, 28) + '…' : storyTitle;
+    drawCenteredText(p, shortTitle, regular, 8, PAGE_H - TOP_BAND + 5, dark, PAGE_W, 0, 0.45);
+
+    // Page number — small circles on alternating sides
     const pnStr = String(pageNum);
-    const pnW = bold.widthOfTextAtSize(pnStr, 10);
-    p.drawText(pnStr, {
-      x: isEven ? MARGIN : PAGE_W - MARGIN - pnW,
-      y: PAGE_H - HEADER_H + 10,
-      size: 10, font: bold, color: accentColor,
-    });
+    const pnX = pageNum % 2 === 0 ? TEXT_MARGIN : PAGE_W - TEXT_MARGIN - bold.widthOfTextAtSize(pnStr, 9);
+    p.drawText(pnStr, { x: pnX, y: PAGE_H - TOP_BAND + 4, size: 9, font: bold, color: accentColor, opacity: 0.70 });
 
-    // Title in header
-    const shortTitle = storyTitle.length > 28 ? storyTitle.slice(0, 26) + '…' : storyTitle;
-    const stW = regular.widthOfTextAtSize(shortTitle, 8);
-    p.drawText(shortTitle, {
-      x: isEven ? PAGE_W - MARGIN - stW : MARGIN,
-      y: PAGE_H - HEADER_H + 11,
-      size: 8, font: regular, color: white, opacity: 0.65,
-    });
-
-    // Illustration area
-    const ILLUS_TOP = PAGE_H - HEADER_H - 6;
-    const ILLUS_H = 220;
-    const ILLUS_Y = ILLUS_TOP - ILLUS_H;
-    const ILLUS_X = MARGIN;
-    const ILLUS_W = PAGE_W - MARGIN * 2;
+    // Large illustration — takes up most of the page
+    const ILLUS_Y = PAGE_H - TOP_BAND - 4 - ILLUS_H;
+    const ILLUS_X = 0; // full width, no side margin for max visual impact
+    const ILLUS_W = PAGE_W;
 
     const img = embeddedImages[i];
     if (img) {
       drawImageFit(p, img, ILLUS_X, ILLUS_Y, ILLUS_W, ILLUS_H);
-      // Thin border over image
-      p.drawRectangle({
-        x: ILLUS_X, y: ILLUS_Y,
-        width: ILLUS_W, height: ILLUS_H,
-        borderColor: accentColor, borderWidth: 0.5, borderOpacity: 0.20,
-      });
     } else {
-      p.drawRectangle({
-        x: ILLUS_X, y: ILLUS_Y,
-        width: ILLUS_W, height: ILLUS_H,
-        color: bgColor, opacity: 0.07,
-        borderColor: accentColor, borderWidth: 0.8, borderOpacity: 0.25,
-      });
-      p.drawCircle({
-        x: PAGE_W / 2, y: ILLUS_Y + ILLUS_H / 2,
-        size: 28, color: accentColor, opacity: 0.08,
-      });
+      // Soft placeholder that looks intentional
+      p.drawRectangle({ x: ILLUS_X, y: ILLUS_Y, width: ILLUS_W, height: ILLUS_H, color: softColor });
+      p.drawCircle({ x: PAGE_W / 2, y: ILLUS_Y + ILLUS_H / 2, size: 40, color: accentColor, opacity: 0.15 });
     }
 
-    // Story text
+    // Text zone — white area below illustration
     if (chunk) {
-      const TEXT_TOP = ILLUS_Y - 14;
-      const TEXT_BOTTOM = 34;
-      const FONT_SIZE = 13;
-      const LINE_H = 20;
-      const maxLines = Math.floor((TEXT_TOP - TEXT_BOTTOM) / LINE_H);
-      const textLines = wrapText(chunk, regular, FONT_SIZE, PAGE_W - MARGIN * 2);
+      const TEXT_TOP = ILLUS_Y - 16;
+      const TEXT_BOTTOM = 30;
+      const maxLines = Math.floor((TEXT_TOP - TEXT_BOTTOM) / TEXT_LINE);
+      const textLines = wrapText(chunk, regular, TEXT_FONT, PAGE_W - TEXT_MARGIN * 2);
       let ty = TEXT_TOP;
       for (const line of textLines.slice(0, maxLines)) {
-        p.drawText(line, { x: MARGIN, y: ty, size: FONT_SIZE, font: regular, color: dark });
-        ty -= LINE_H;
+        p.drawText(line, { x: TEXT_MARGIN, y: ty, size: TEXT_FONT, font: regular, color: dark });
+        ty -= TEXT_LINE;
       }
     }
 
-    p.drawRectangle({ x: MARGIN, y: 22, width: PAGE_W - MARGIN * 2, height: 1, color: accentColor, opacity: 0.20 });
+    // Thin bottom accent line
+    p.drawRectangle({ x: TEXT_MARGIN, y: 20, width: PAGE_W - TEXT_MARGIN * 2, height: 1.5,
+      color: accentColor, opacity: 0.18 });
   }
 
   // ── Page 29: Activité — Dessine ton aventure ───────────────────────────────
   {
     const p = doc.addPage([PAGE_W, PAGE_H]);
-    p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: cream });
-    p.drawRectangle({ x: 0, y: PAGE_H - 30, width: PAGE_W, height: 30, color: bgColor });
+    // White background with soft top band (matches story pages)
+    p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: white });
+    p.drawRectangle({ x: 0, y: PAGE_H - TOP_BAND, width: PAGE_W, height: TOP_BAND, color: accentColor, opacity: 0.18 });
 
-    drawCenteredText(p, s.drawAdventureTitle, bold, 20, PAGE_H - 62, rgb(ar * 0.75, ag * 0.75, ab * 0.75));
-    drawCenteredText(p, s.drawAdventureSubtitle, regular, 12, PAGE_H - 85, dark);
+    drawCenteredText(p, s.drawAdventureTitle, bold, 20, PAGE_H - 52, accentColor);
+    drawCenteredText(p, s.drawAdventureSubtitle, regular, 12, PAGE_H - 76, gray);
 
     const frameY = 45;
     const frameH = PAGE_H - 110;
     p.drawRectangle({
       x: MARGIN + 8, y: frameY,
       width: PAGE_W - (MARGIN + 8) * 2, height: frameH,
-      color: white,
-      borderColor: accentColor, borderWidth: 1.2, borderOpacity: 0.45,
+      color: softColor,
+      borderColor: accentColor, borderWidth: 1.2, borderOpacity: 0.35,
     });
     for (const [cx, cy] of [
       [MARGIN + 8, frameY],
@@ -517,70 +500,81 @@ export async function generateInteriorPdf(params: {
       [PAGE_W - MARGIN - 8, frameY],
       [PAGE_W - MARGIN - 8, frameY + frameH],
     ] as [number, number][]) {
-      p.drawCircle({ x: cx, y: cy, size: 4, color: accentColor, opacity: 0.55 });
+      p.drawCircle({ x: cx, y: cy, size: 4, color: accentColor, opacity: 0.45 });
     }
+    // Thin bottom line
+    p.drawRectangle({ x: TEXT_MARGIN, y: 20, width: PAGE_W - TEXT_MARGIN * 2, height: 1.5, color: accentColor, opacity: 0.18 });
   }
 
   // ── Page 30: Activité — Portrait du héros ──────────────────────────────────
   {
     const p = doc.addPage([PAGE_W, PAGE_H]);
-    p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: cream });
-    p.drawRectangle({ x: 0, y: PAGE_H - 30, width: PAGE_W, height: 30, color: bgColor });
+    p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: white });
+    p.drawRectangle({ x: 0, y: PAGE_H - TOP_BAND, width: PAGE_W, height: TOP_BAND, color: accentColor, opacity: 0.18 });
 
-    drawCenteredText(p, s.heroPortraitTitle(childName), bold, 20, PAGE_H - 62, rgb(ar * 0.75, ag * 0.75, ab * 0.75));
-    drawCenteredText(p, s.heroPortraitSubtitle, regular, 12, PAGE_H - 85, dark);
+    drawCenteredText(p, s.heroPortraitTitle(childName), bold, 20, PAGE_H - 52, accentColor);
+    drawCenteredText(p, s.heroPortraitSubtitle, regular, 12, PAGE_H - 76, gray);
 
+    // Portrait oval — soft background for drawing
     p.drawEllipse({
-      x: PAGE_W / 2, y: PAGE_H * 0.46,
+      x: PAGE_W / 2, y: PAGE_H * 0.52,
       xScale: 110, yScale: 140,
-      borderColor: accentColor, borderWidth: 1.5, borderOpacity: 0.50,
-      color: white,
+      borderColor: accentColor, borderWidth: 1.5, borderOpacity: 0.40,
+      color: softColor,
     });
 
+    // Superpowers box at bottom
     p.drawRectangle({
       x: MARGIN + 30, y: 45,
       width: PAGE_W - (MARGIN + 30) * 2, height: 55,
+      color: softColor,
       borderColor: accentColor, borderWidth: 0.8, borderOpacity: 0.30,
     });
     drawCenteredText(p, s.superpowers, regular, 11, 88, dark);
-    drawCenteredText(p, '___________________________', regular, 11, 72, rgb(0.7, 0.7, 0.7));
+    drawCenteredText(p, '___________________________', regular, 11, 72, gray);
+    p.drawRectangle({ x: TEXT_MARGIN, y: 20, width: PAGE_W - TEXT_MARGIN * 2, height: 1.5, color: accentColor, opacity: 0.18 });
   }
 
   // ── Page 31: Mot de la fin ─────────────────────────────────────────────────
   {
     const p = doc.addPage([PAGE_W, PAGE_H]);
-    p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: bgColor });
+    // Soft pastel background (cheerful, not dark)
+    p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: softColor });
 
     // Decorative circles
-    p.drawCircle({ x: PAGE_W / 2, y: PAGE_H * 0.55, size: 130, color: accentColor, opacity: 0.08 });
-    p.drawCircle({ x: PAGE_W / 2, y: PAGE_H * 0.55, size: 80, color: accentColor, opacity: 0.08 });
-    p.drawCircle({ x: PAGE_W - 40, y: PAGE_H - 40, size: 50, color: accentColor, opacity: 0.10 });
-    p.drawCircle({ x: 40, y: 60, size: 35, color: accentColor, opacity: 0.10 });
+    p.drawCircle({ x: PAGE_W / 2, y: PAGE_H * 0.50, size: 150, color: accentColor, opacity: 0.07 });
+    p.drawCircle({ x: PAGE_W / 2, y: PAGE_H * 0.50, size: 90, color: accentColor, opacity: 0.07 });
+    p.drawCircle({ x: PAGE_W - 30, y: PAGE_H - 30, size: 55, color: accentColor, opacity: 0.12 });
+    p.drawCircle({ x: 30, y: 50, size: 40, color: accentColor, opacity: 0.10 });
+    p.drawCircle({ x: 25, y: PAGE_H - 40, size: 28, color: accentColor, opacity: 0.09 });
 
-    drawCenteredText(p, s.theEnd, bold, 48, PAGE_H * 0.70, accentColor);
-    drawCenteredText(p, s.bravo(childName), bold, 20, PAGE_H * 0.58, white, PAGE_W, 0, 0.92);
+    // THE END — large, colorful
+    drawCenteredText(p, s.theEnd, bold, 52, PAGE_H * 0.70, accentColor);
 
-    let cy = PAGE_H * 0.46;
+    // Bravo — dark text (readable on pastel bg)
+    drawCenteredText(p, s.bravo(childName), bold, 20, PAGE_H * 0.57, dark);
+
+    let closingY = PAGE_H * 0.46;
     for (const line of s.closingLines) {
-      drawCenteredText(p, line, regular, 13, cy, white, PAGE_W, 0, 0.70);
-      cy -= 22;
+      drawCenteredText(p, line, regular, 13, closingY, dark, PAGE_W, 0, 0.72);
+      closingY -= 22;
     }
 
-    drawCenteredText(p, '* * *', regular, 14, PAGE_H * 0.25, accentColor, PAGE_W, 0, 0.55);
-    drawCenteredText(p, s.nextAdventure, regular, 12, PAGE_H * 0.19, white, PAGE_W, 0, 0.50);
+    drawCenteredText(p, '✦  ✦  ✦', regular, 13, PAGE_H * 0.26, accentColor, PAGE_W, 0, 0.60);
+    drawCenteredText(p, s.nextAdventure, regular, 12, PAGE_H * 0.19, dark, PAGE_W, 0, 0.55);
 
-    drawCenteredText(p, 'Kidshade', bold, 11, 26, accentColor, PAGE_W, 0, 0.55);
+    drawCenteredText(p, 'Kidshade', bold, 11, 26, accentColor, PAGE_W, 0, 0.60);
   }
 
   // ── Page 32: À propos + Code fidélité ─────────────────────────────────────
   {
     const p = doc.addPage([PAGE_W, PAGE_H]);
-    p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: cream });
-    p.drawRectangle({ x: 0, y: PAGE_H - 30, width: PAGE_W, height: 30, color: bgColor });
+    p.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: white });
+    p.drawRectangle({ x: 0, y: PAGE_H - TOP_BAND, width: PAGE_W, height: TOP_BAND, color: accentColor, opacity: 0.18 });
 
-    drawCenteredText(p, s.aboutTitle, bold, 16, PAGE_H - 66, rgb(ar * 0.7, ag * 0.7, ab * 0.7));
+    drawCenteredText(p, s.aboutTitle, bold, 16, PAGE_H - 52, accentColor);
 
-    let ay = PAGE_H - 100;
+    let ay = PAGE_H - 82;
     for (const line of s.aboutLines) {
       if (!line) { ay -= 10; continue; }
       const isUrl = line === 'kidshade.net';
@@ -597,15 +591,15 @@ export async function generateInteriorPdf(params: {
     p.drawRectangle({
       x: BOX_X, y: BOX_Y,
       width: BOX_W, height: BOX_H,
-      color: bgColor, opacity: 0.07,
-      borderColor: accentColor, borderWidth: 1.2, borderOpacity: 0.45,
+      color: softColor,
+      borderColor: accentColor, borderWidth: 1.2, borderOpacity: 0.40,
     });
     // Corner accents
     for (const [cx2, cy2] of [
       [BOX_X, BOX_Y], [BOX_X, BOX_Y + BOX_H],
       [BOX_X + BOX_W, BOX_Y], [BOX_X + BOX_W, BOX_Y + BOX_H],
     ] as [number, number][]) {
-      p.drawCircle({ x: cx2, y: cy2, size: 3.5, color: accentColor, opacity: 0.55 });
+      p.drawCircle({ x: cx2, y: cy2, size: 3.5, color: accentColor, opacity: 0.50 });
     }
 
     drawCenteredText(p, s.thankYou, bold, 12, BOX_Y + BOX_H - 22, dark);
@@ -634,9 +628,9 @@ export async function generateCoverPdf(params: {
 }): Promise<Uint8Array> {
   const { childName, storyTitle, theme, language = 'fr', coverIllustrationUrl } = params;
   const s = getStrings(language);
-  const { bg, accent } = palette(theme);
-  const [br, bg2, bb] = bg;
+  const { accent, soft } = palette(theme);
   const [ar, ag, ab] = accent;
+  const [sr, sg, sb] = soft;
 
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
@@ -644,9 +638,10 @@ export async function generateCoverPdf(params: {
   const regular = await doc.embedFont(loadFont('Geist-Regular.ttf'));
   const p = doc.addPage([COVER_W, COVER_H]);
 
-  const bgColor = rgb(br, bg2, bb);
   const accentColor = rgb(ar, ag, ab);
+  const softColor = rgb(sr, sg, sb);
   const white = rgb(1, 1, 1);
+  const dark = rgb(0.10, 0.10, 0.14);
 
   // Pre-fetch cover illustration
   let coverImg: PDFImage | null = null;
@@ -654,33 +649,41 @@ export async function generateCoverPdf(params: {
     coverImg = await fetchAndEmbedImage(doc, coverIllustrationUrl);
   }
 
-  p.drawRectangle({ x: 0, y: 0, width: COVER_W, height: COVER_H, color: bgColor });
+  // Full cover: soft pastel background (light and cheerful)
+  p.drawRectangle({ x: 0, y: 0, width: COVER_W, height: COVER_H, color: softColor });
 
   // ── Back cover ────────────────────────────────────────────────────────────
   const backX = BLEED;
+
+  // Back cover: white panel
+  p.drawRectangle({ x: backX, y: BLEED, width: PAGE_W, height: PAGE_H, color: white });
   p.drawRectangle({
     x: backX + 18, y: BLEED + 18,
     width: PAGE_W - 36, height: PAGE_H - 36,
-    borderColor: accentColor, borderWidth: 1, borderOpacity: 0.28,
+    borderColor: accentColor, borderWidth: 1, borderOpacity: 0.25,
   });
 
-  const backTexts: Array<{ text: string; size: number; bold: boolean }> = [
-    { text: s.backCoverLine1, size: 15, bold: false },
-    { text: s.backCoverLine2, size: 15, bold: false },
-    { text: childName, size: 24, bold: true },
-    { text: '', size: 12, bold: false },
-    { text: 'kidshade.net', size: 13, bold: true },
+  // Decorative circles on back
+  p.drawCircle({ x: backX + PAGE_W * 0.15, y: BLEED + PAGE_H * 0.85, size: 45, color: accentColor, opacity: 0.10 });
+  p.drawCircle({ x: backX + PAGE_W * 0.80, y: BLEED + PAGE_H * 0.20, size: 30, color: accentColor, opacity: 0.08 });
+
+  const backTexts: Array<{ text: string; size: number; isBold: boolean }> = [
+    { text: s.backCoverLine1, size: 15, isBold: false },
+    { text: s.backCoverLine2, size: 15, isBold: false },
+    { text: childName, size: 26, isBold: true },
+    { text: '', size: 12, isBold: false },
+    { text: 'kidshade.net', size: 12, isBold: true },
   ];
-  let bY = BLEED + PAGE_H * 0.60;
+  let bY = BLEED + PAGE_H * 0.58;
   for (const item of backTexts) {
     if (!item.text) { bY -= 10; continue; }
-    const f = item.bold ? bold : regular;
-    const color = item.bold && item.text === childName ? accentColor : white;
+    const f = item.isBold ? bold : regular;
+    const color = item.text === childName ? accentColor : dark;
     const w = f.widthOfTextAtSize(item.text, item.size);
     p.drawText(item.text, {
       x: backX + (PAGE_W - w) / 2,
       y: bY, size: item.size, font: f, color,
-      opacity: item.text === childName ? 1 : 0.82,
+      opacity: item.text === 'kidshade.net' ? 0.65 : 1,
     });
     bY -= item.size + 10;
   }
@@ -690,61 +693,63 @@ export async function generateCoverPdf(params: {
   p.drawRectangle({
     x: spineX, y: 0,
     width: SPINE_W, height: COVER_H,
-    color: rgb(ar * 0.75, ag * 0.75, ab * 0.75),
+    color: accentColor,
   });
 
   // ── Front cover ───────────────────────────────────────────────────────────
   const frontX = BLEED + PAGE_W + SPINE_W;
 
-  // Decorative circles (always drawn — visible behind/around image)
-  p.drawCircle({ x: frontX + PAGE_W - 50, y: BLEED + PAGE_H - 50, size: 80, color: accentColor, opacity: 0.16 });
-  p.drawCircle({ x: frontX + 50, y: BLEED + 70, size: 60, color: accentColor, opacity: 0.12 });
-  p.drawCircle({ x: frontX + PAGE_W / 2, y: BLEED + PAGE_H * 0.48, size: 120, color: accentColor, opacity: 0.06 });
+  // Front: white panel
+  p.drawRectangle({ x: frontX, y: BLEED, width: PAGE_W, height: PAGE_H, color: white });
 
-  // Illustration area
-  const ILLUS_X = frontX + MARGIN;
-  const ILLUS_Y = BLEED + PAGE_H * 0.36;
-  const ILLUS_W = PAGE_W - MARGIN * 2;
-  const ILLUS_H = PAGE_H * 0.44;
+  // Colored top bar (bold, cheerful)
+  const TOP_BAR_H = PAGE_H * 0.10;
+  p.drawRectangle({ x: frontX, y: BLEED + PAGE_H - TOP_BAR_H, width: PAGE_W, height: TOP_BAR_H, color: accentColor });
+
+  // Decorative circles behind illustration
+  p.drawCircle({ x: frontX + PAGE_W - 40, y: BLEED + PAGE_H - 40, size: 65, color: accentColor, opacity: 0.10 });
+  p.drawCircle({ x: frontX + 35, y: BLEED + 55, size: 50, color: accentColor, opacity: 0.08 });
+
+  // Large illustration — takes up ~55% of page height, full width
+  const COVER_ILLUS_H = PAGE_H * 0.55;
+  const COVER_ILLUS_Y = BLEED + PAGE_H * 0.26;
+  const COVER_ILLUS_X = frontX;
+  const COVER_ILLUS_W = PAGE_W;
 
   if (coverImg) {
-    drawImageFit(p, coverImg, ILLUS_X, ILLUS_Y, ILLUS_W, ILLUS_H);
-    p.drawRectangle({
-      x: ILLUS_X, y: ILLUS_Y, width: ILLUS_W, height: ILLUS_H,
-      borderColor: accentColor, borderWidth: 0.8, borderOpacity: 0.25,
-    });
+    drawImageFit(p, coverImg, COVER_ILLUS_X, COVER_ILLUS_Y, COVER_ILLUS_W, COVER_ILLUS_H);
   } else {
     p.drawRectangle({
-      x: ILLUS_X, y: ILLUS_Y, width: ILLUS_W, height: ILLUS_H,
-      color: accentColor, opacity: 0.09,
-      borderColor: accentColor, borderWidth: 1.5, borderOpacity: 0.35,
+      x: COVER_ILLUS_X, y: COVER_ILLUS_Y, width: COVER_ILLUS_W, height: COVER_ILLUS_H,
+      color: softColor,
     });
+    p.drawCircle({ x: frontX + PAGE_W / 2, y: COVER_ILLUS_Y + COVER_ILLUS_H / 2, size: 55, color: accentColor, opacity: 0.18 });
   }
 
-  // Title
-  const titleLines = wrapText(storyTitle, bold, 22, PAGE_W - MARGIN * 2);
-  let ty = BLEED + PAGE_H * 0.305;
+  // Title text — large, bold, colorful, on white area below illustration
+  const titleLines = wrapText(storyTitle, bold, 24, PAGE_W - MARGIN * 2);
+  let ty = COVER_ILLUS_Y - 18;
   for (const line of titleLines.slice(0, 3)) {
-    const w = bold.widthOfTextAtSize(line, 22);
-    p.drawText(line, { x: frontX + (PAGE_W - w) / 2, y: ty, size: 22, font: bold, color: accentColor });
-    ty -= 30;
+    const w = bold.widthOfTextAtSize(line, 24);
+    p.drawText(line, { x: frontX + (PAGE_W - w) / 2, y: ty, size: 24, font: bold, color: accentColor });
+    ty -= 32;
   }
 
-  // Child name
+  // "Story of [name]" subtitle
   const nameStr = `${s.storyOf} ${childName}`;
-  const nameW = regular.widthOfTextAtSize(nameStr, 15);
+  const nameW = regular.widthOfTextAtSize(nameStr, 14);
   p.drawText(nameStr, {
     x: frontX + (PAGE_W - nameW) / 2,
-    y: BLEED + PAGE_H * 0.23,
-    size: 15, font: regular, color: white, opacity: 0.87,
+    y: BLEED + PAGE_H * 0.175,
+    size: 14, font: regular, color: dark, opacity: 0.75,
   });
 
-  // Kidshade branding
+  // Kidshade branding — white text on top color bar
   const brandW = bold.widthOfTextAtSize('Kidshade', 12);
   p.drawText('Kidshade', {
     x: frontX + (PAGE_W - brandW) / 2,
-    y: BLEED + 18,
-    size: 12, font: bold, color: accentColor, opacity: 0.72,
+    y: BLEED + PAGE_H - TOP_BAR_H + (TOP_BAR_H - 12) / 2,
+    size: 12, font: bold, color: white, opacity: 0.92,
   });
 
   return doc.save();
